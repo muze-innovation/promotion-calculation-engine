@@ -1,0 +1,5 @@
+export { default as BuyXGetYRule } from './buyXgetYRule'
+export { default as FixedPercentRule } from './fixedPercentRule'
+export { default as FixedPriceRule } from './fixedPriceRule'
+export { default as StepVolumeDiscountRule } from './stepVolumeDiscountRule'
+export { default as FreeShippingRule } from './freeShippingRule'
