@@ -1,27 +1,47 @@
-# TSDX Bootstrap
+# Promotion Calculation Engine
 
-This project was bootstrapped with [TSDX](https://github.com/jaredpalmer/tsdx).
+Utility Promotion Calculation with TypeScript
 
-## Local Development
+## Installation
+Use the node package manager [npm](https://www.npmjs.com/get-npm/) to install foobar.
+```bash
+npm install
+```
+recommended node version: 12
 
-Below is a list of commands you will probably find useful.
+## How Calculation Engine Works
+[Rules] -> [Calculate Engine] -> [Calculated Result]
 
-### `npm start` or `yarn start`
+## Usage
 
-Runs the project in development/watch mode. Your project will be rebuilt upon changes. TSDX has a special logger for you convenience. Error messages are pretty printed and formatted for compatibility VS Code's Problems tab.
+```typescript
+import { CalculationEngine } from 'promotion-calculation-engine'
 
-<img src="https://user-images.githubusercontent.com/4060187/52168303-574d3a00-26f6-11e9-9f3b-71dbec9ebfcb.gif" width="600" />
+const calculationEngine = new CalculationEngine()
+const calculateOrder = await calculationEngine.process({
+    rules,
+    items,
+    deliveryAddresses,
+    customer: {
+      uniqueId: customer.id,
+      email: customer.email,
+      msisdn: customer.mobileNo,
+      isNewCustomer: customer.isNewCustomer,
+    } || null,
+    usageCounts: [{
+       salesRuleId: rule.id,
+       total: 10,
+       byCustomer: 1
+    }],
+  }, {
+  
+})
+  
+```
 
-Your library will be rebuilt if you make edits.
+## Test and Development
 
-### `npm run build` or `yarn build`
+See example rules in test folder
 
-Bundles the package to the `dist` folder.
-The package is optimized and bundled with Rollup into multiple formats (CommonJS, UMD, and ES Module).
-
-<img src="https://user-images.githubusercontent.com/4060187/52168322-a98e5b00-26f6-11e9-8cf6-222d716b75ef.gif" width="600" />
-
-### `npm test` or `yarn test`
-
-Runs the test watcher (Jest) in an interactive mode.
-By default, runs tests related to files changed since the last commit.
+To run all test rules use command
+### `npm run test` or `yarn test`
