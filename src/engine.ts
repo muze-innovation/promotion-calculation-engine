@@ -13,16 +13,17 @@ export class CalculationEngine {
     meta: CalculationEngineMeta
   ): Promise<CalculationEngineOutput> {
     // Sort rules
-    const sorted = orderBy(input.rules, ['priority', 'uid'], ['asc', 'desc'])
+    const sorted = orderBy(input.rules, ['priority', 'uid'], ['asc', 'desc'])
 
     // Perform reducing
     let buffer = new CalculationBuffer(input, meta)
+
     for (const rule of sorted) {
       const conditions = rule.getConditions()
       const actions = rule.getActions()
-      const results = await Promise.all(
+      const results = !input.ignoreCondition ? await Promise.all(
         conditions.map((o: Condition) => o.check(buffer))
-      )
+      ) : []
       if (results.includes(false)) {
         continue
       }

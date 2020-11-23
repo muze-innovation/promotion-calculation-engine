@@ -103,6 +103,7 @@ export interface CalculationEngineInput {
   customer?: Customer
   rules: ARule[]
   usageCounts?: UsageCount[]
+  ignoreCondition?: boolean
 }
 
 export interface ItemDiscount {
