@@ -25,7 +25,7 @@ describe('Calculation Engine', () => {
           type: "percent",
         },
         {
-          startQty: 6,
+          startQty: 9,
           endQty: null,
           discount: 20,
           type: "percent",
@@ -360,5 +360,295 @@ describe('Calculation Engine', () => {
     expect(result).toEqual({ input, meta })
   })
 
-})
+  it('fixed discount case: 5 pieces of same item get 200 discount.', async () => {
+    const stepVolumeDiscount = new StepVolumeDiscountRule(
+      'fixedStepVolume01',
+      0,
+      '5 items in cart get 200 discount.',
+      [],
+      [
+        {
+          startQty: 1,
+          endQty: 4,
+          discount: 100,
+          type: "fixed",
+        },
+        {
+          startQty: 5,
+          endQty: 8,
+          discount: 200,
+          type: "fixed",
+        },
+        {
+          startQty: 6,
+          endQty: null,
+          discount: 400,
+          type: "fixed",
+        },
+      ],
+      []
+    )
 
+    const input = {
+      items: [
+        {
+          uid: 'TEST',
+          cartItemIndexKey: '0',
+          qty: 5,
+          perItemPrice: 500,
+          categories: ['Main'],
+          tags: ['TAG#1'],
+        },
+      ],
+      rules: [stepVolumeDiscount],
+    }
+
+    const result = await engine.process(input, {})
+
+    const meta = { applicableRuleUids: ['fixedStepVolume01'], wholeCartDiscount: [{ applicableRuleUid: 'fixedStepVolume01', discountedAmount: 200, setFree: false }] }
+    expect(result).toEqual({ input, meta })
+  })
+
+  it('fixed discount case: 2 item 10 pieces in total get 400 discount.', async () => {
+    const stepVolumeDiscount = new StepVolumeDiscountRule(
+      'fixedStepVolume02',
+      0,
+      '8 items in cart get 400 discount.',
+      [],
+      [
+        {
+          startQty: 1,
+          endQty: 4,
+          discount: 100,
+          type: "fixed",
+        },
+        {
+          startQty: 5,
+          endQty: 8,
+          discount: 200,
+          type: "fixed",
+        },
+        {
+          startQty: 9,
+          endQty: null,
+          discount: 400,
+          type: "fixed",
+        },
+      ],
+      []
+    )
+
+    const input = {
+      items: [
+        {
+          uid: 'TEST1',
+          cartItemIndexKey: '0',
+          qty: 5,
+          perItemPrice: 500,
+          categories: ['Main'],
+          tags: ['TAG#1'],
+        },
+        {
+          uid: 'TEST2',
+          cartItemIndexKey: '0',
+          qty: 5,
+          perItemPrice: 500,
+          categories: ['Main'],
+          tags: ['TAG#1'],
+        },
+      ],
+      rules: [stepVolumeDiscount], 
+    }
+
+    const result = await engine.process(input, {})
+
+    const meta = { applicableRuleUids: ['fixedStepVolume02'], wholeCartDiscount: [{ applicableRuleUid: 'fixedStepVolume02', discountedAmount: 400, setFree: false }] }
+    expect(result).toEqual({ input, meta })
+  })
+
+  it('fixed discount case: 1 of product uids matches salesrule uid condition', async () => {
+    const stepVolumeDiscount = new StepVolumeDiscountRule(
+      'fixedStepVolume03',
+      0,
+      '1 of product uids matches salesrule uid condition',
+      [{
+        type: 'uids',
+        uids: ['TEST1','TEST2'],
+      }],
+      [
+        {
+          startQty: 1,
+          endQty: 4,
+          discount: 200,
+          type: "fixed",
+        },
+        {
+          startQty: 5,
+          endQty: null,
+          discount: 500,
+          type: "fixed",
+        },
+      ],
+      ['TEST1','TEST2'],
+    )
+
+    const input = {
+      items: [
+        {
+          uid: 'TEST1',
+          cartItemIndexKey: '0',
+          qty: 4,
+          perItemPrice: 500,
+          categories: ['Main'],
+          tags: ['TAG#1'],
+        },
+        {
+          uid: 'TEST3',
+          cartItemIndexKey: '0',
+          qty: 5,
+          perItemPrice: 400,
+          categories: ['Main1'],
+          tags: ['TAG#2'],
+        },
+      ],
+      rules: [stepVolumeDiscount],
+    }
+
+    const result = await engine.process(input, {})
+    const meta = {
+      applicableRuleUids: ['fixedStepVolume03'],
+      itemDiscounts: [
+        {
+          uid: 'TEST1',
+          perLineDiscountedAmount: 200,
+          setFree: false,
+          applicableRuleUid: 'fixedStepVolume03'
+        },
+      ],
+    }
+    expect(result).toEqual({ input, meta })
+  })
+
+  it('fixed discount case: multiple product uids match salesrule uid condition', async () => {
+    const stepVolumeDiscount = new StepVolumeDiscountRule(
+      'fixedStepVolume04',
+      0,
+      'multiple product uids match salesrule uid condition',
+      [{
+        type: 'uids',
+        uids: ['TEST1','TEST2'],
+      }],
+      [
+        {
+          startQty: 1,
+          endQty: 4,
+          discount: 200,
+          type: "fixed",
+        },
+        {
+          startQty: 5,
+          endQty: null,
+          discount: 500,
+          type: "fixed",
+        },
+      ],
+      ['TEST1','TEST2'],
+    )
+
+    const input = {
+      items: [
+        {
+          uid: 'TEST1',
+          cartItemIndexKey: '0',
+          qty: 3,
+          perItemPrice: 500,
+          categories: ['Main'],
+          tags: ['TAG#1'],
+        },
+        {
+          uid: 'TEST2',
+          cartItemIndexKey: '0',
+          qty: 2,
+          perItemPrice: 500,
+          categories: ['Main1'],
+          tags: ['TAG#2'],
+        },
+      ],
+      rules: [stepVolumeDiscount],
+    }
+
+    const result = await engine.process(input, {})
+    const meta = {
+      applicableRuleUids: ['fixedStepVolume04'],
+      itemDiscounts: [
+        {
+          uid: 'TEST1',
+          perLineDiscountedAmount: 300,
+          setFree: false,
+          applicableRuleUid: 'fixedStepVolume04'
+        },
+        {
+          uid: 'TEST2',
+          perLineDiscountedAmount: 200,
+          setFree: false,
+          applicableRuleUid: 'fixedStepVolume04'
+        },
+      ],
+    }
+    expect(result).toEqual({ input, meta })
+  })
+
+  it('no fixed discount case: product uids not match salesrule uid condition', async () => {
+    const stepVolumeDiscount = new StepVolumeDiscountRule(
+      'fixedStepVolume04',
+      0,
+      'multiple product uids match salesrule uid condition',
+      [{
+        type: 'uids',
+        uids: ['TEST1','TEST2'],
+      }],
+      [
+        {
+          startQty: 1,
+          endQty: 4,
+          discount: 200,
+          type: "fixed",
+        },
+        {
+          startQty: 5,
+          endQty: null,
+          discount: 500,
+          type: "fixed",
+        },
+      ],
+      ['TEST1','TEST2'],
+    )
+
+    const input = {
+      items: [
+        {
+          uid: 'TEST3',
+          cartItemIndexKey: '0',
+          qty: 3,
+          perItemPrice: 500,
+          categories: ['Main'],
+          tags: ['TAG#1'],
+        },
+        {
+          uid: 'TEST4',
+          cartItemIndexKey: '0',
+          qty: 2,
+          perItemPrice: 500,
+          categories: ['Main1'],
+          tags: ['TAG#2'],
+        },
+      ],
+      rules: [stepVolumeDiscount],
+    }
+
+    const result = await engine.process(input, {})
+    const meta = {}
+    expect(result).toEqual({ input, meta })
+  })
+
+})

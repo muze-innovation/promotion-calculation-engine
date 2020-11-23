@@ -1,4 +1,5 @@
 import isEmpty from 'lodash/isEmpty'
+import sumBy from 'lodash/sumBy'
 import { ARule } from "../rule";
 import { CalculationBuffer } from "../buffer";
 import { Action, CalculationEngineMeta, Condition, UID } from "../index";
@@ -37,12 +38,13 @@ export default class StepVolumeDiscountRule extends ARule {
       perform: async (
         calculationBuffer: CalculationBuffer
       ): Promise<CalculationEngineMeta> => {
+        const itemsToProcess = calculationBuffer.calculateCartItems(this.uids)
+        const totalAmount = sumBy(itemsToProcess.items, (item) => item.totalAmount)
+        const step = this.processStep(itemsToProcess.totalQty)
         if (!isEmpty(this.uids)) {
           const itemDiscounts = calculationBuffer.itemDiscounts
             ? calculationBuffer.itemDiscounts
             : []
-          const itemsToProcess = calculationBuffer.calculateCartItems(this.uids)
-          const step = this.processStep(itemsToProcess.totalQty)
           itemsToProcess.items.forEach((item) => {
             if (step) {
               if (step.type === "percent") {
@@ -54,13 +56,15 @@ export default class StepVolumeDiscountRule extends ARule {
                   setFree: false,
                 })
               }
-              // else if (step.type === "percent") {
-              //   itemDiscounts.push({
-              //     uid: item.uid,
-              //     perLineDiscountedAmount: step.discount,
-              //     setFree: false,
-              //   })
-              // }
+              else if (step.type === "fixed") {
+                const discount = (item.totalAmount / totalAmount) * step.discount
+                itemDiscounts.push({
+                  applicableRuleUid: this.uid,
+                  uid: item.uid,
+                  perLineDiscountedAmount: discount > item.totalAmount ? item.totalAmount : discount,
+                  setFree: false,
+                })
+              }
             }
           })
           return {
@@ -71,18 +75,15 @@ export default class StepVolumeDiscountRule extends ARule {
           const wholeCartDiscount = calculationBuffer.wholeCartDiscount
             ? calculationBuffer.wholeCartDiscount
             : []
-          const totalQty = calculationBuffer.getCartTotalQty() - calculationBuffer.countSetFreeInItemDiscounts()
-          const subTotal = calculationBuffer.getCartSubtotal() - calculationBuffer.getTotalDiscountWithoutShipping()
-          const step = this.processStep(totalQty)
           if (step && step.type === "percent") {
             wholeCartDiscount.push({
-              discountedAmount: (subTotal * step.discount) / 100,
+              discountedAmount: (totalAmount * step.discount) / 100,
               setFree: false,
               applicableRuleUid: this.uid
             })
           } else if (step && step.type === "fixed") {
             wholeCartDiscount.push({
-              discountedAmount: step.discount,
+              discountedAmount: step.discount > totalAmount ? totalAmount : step.discount,
               setFree: false,
               applicableRuleUid: this.uid
             })
