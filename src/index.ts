@@ -29,6 +29,8 @@ export interface Customer {
    * Customer's Flag.
    */
   tier?: string
+
+  customerGroups?: string[]
 }
 
 export type UID = string | number

@@ -33,6 +33,11 @@ export interface UsesPerCustomerCondition {
   value: number
 }
 
+export interface CustomerTagCondition {
+  type: 'customer_group'
+  value: string[]
+}
+
 export type JsonConditionType =
   | QuantityAtLeastCondition
   | SubTotalAtLeastCondition
@@ -40,6 +45,7 @@ export type JsonConditionType =
   | UidCondition
   | UsageLimitCondition
   | UsesPerCustomerCondition
+  | CustomerTagCondition
 
 export class ConditionTypes {
   static parse(raw: JsonConditionType, salesRuleId?: UID): Condition {
@@ -95,6 +101,13 @@ export class ConditionTypes {
             )
             const byCustomerCount = salesRuleUsageCount?.byCustomer
             return !isNil(byCustomerCount) ? byCustomerCount < raw.value : false
+          },
+        }
+      case 'customer_group':
+        return {
+          check: async (input: CalculationBuffer) => {
+            const setCustomerGroups = new Set(input?.customer?.customerGroups)
+            return raw.value.every(customerGroup => setCustomerGroups.has(customerGroup))
           },
         }
     }
