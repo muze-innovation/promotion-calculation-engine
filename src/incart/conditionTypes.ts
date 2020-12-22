@@ -33,7 +33,7 @@ export interface UsesPerCustomerCondition {
   value: number
 }
 
-export interface CustomerTagCondition {
+export interface CustomerGroupCondition {
   type: 'customer_group'
   value: string[]
 }
@@ -45,7 +45,7 @@ export type JsonConditionType =
   | UidCondition
   | UsageLimitCondition
   | UsesPerCustomerCondition
-  | CustomerTagCondition
+  | CustomerGroupCondition
 
 export class ConditionTypes {
   static parse(raw: JsonConditionType, salesRuleId?: UID): Condition {
