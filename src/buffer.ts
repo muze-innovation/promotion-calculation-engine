@@ -14,7 +14,7 @@ import {
   UID,
   UsageCount,
 } from 'index'
-import { ARule } from 'rule'
+import { ARule } from './rule'
 
 export class CalculationBuffer implements CalculationEngineOutput {
   constructor(

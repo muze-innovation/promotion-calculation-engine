@@ -1,6 +1,6 @@
 import isEmpty from 'lodash/isEmpty'
 import { ARule } from '../rule'
-import { Action, Condition, UID } from '../index'
+import { Action, Condition, UID } from 'index'
 import { CalculationBuffer } from '../buffer'
 import ConditionTypes, { JsonConditionType } from './conditionTypes'
 
@@ -11,7 +11,7 @@ export default class FixedPercentRule extends ARule {
     name: string,
     private readonly conditions: JsonConditionType[],
     private readonly value: number,
-    private readonly uids?: UID[],
+    private readonly uids?: UID[]
   ) {
     super(uid, priority, name)
   }

@@ -1,5 +1,5 @@
 import { CalculationBuffer } from './buffer'
-import { ARule } from './rule'
+import { ARule } from 'rule'
 
 /**
  * Represent single customer meta data to processes through our engine.
@@ -34,6 +34,7 @@ export interface Customer {
 }
 
 export type UID = string | number
+
 /**
  * Interface represent one cart item.
  */
@@ -161,7 +162,7 @@ export interface CalculatedCartItem extends CartItem {
 
 export interface CalculatedCartItems {
   items: CalculatedCartItem[]
-  totalQty: number,
+  totalQty: number
 }
 
 export interface Action {

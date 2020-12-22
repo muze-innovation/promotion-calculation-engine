@@ -1,5 +1,5 @@
 import { ARule } from '../rule'
-import { Action, Condition, UID } from '../index'
+import { Action, Condition, UID } from 'index'
 import { CalculationBuffer } from '../buffer'
 import ConditionTypes, { JsonConditionType } from './conditionTypes'
 
@@ -8,7 +8,7 @@ export default class FreeShippingRule extends ARule {
     uid: UID,
     priority: number,
     name: string,
-    private readonly conditions: JsonConditionType[],
+    private readonly conditions: JsonConditionType[]
   ) {
     super(uid, priority, name)
   }
@@ -43,7 +43,7 @@ export default class FreeShippingRule extends ARule {
           shippingDiscount,
         }
       },
-    }
+    },
   ]
 
   getActions(): Action[] {

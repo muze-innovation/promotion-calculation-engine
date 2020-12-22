@@ -1,6 +1,6 @@
 import isNil from 'lodash/isNil'
 import isEmpty from 'lodash/isEmpty'
-import { Condition, UID } from '../index'
+import { Condition, UID } from 'index'
 import { CalculationBuffer } from '../buffer'
 
 export interface SubTotalAtLeastCondition {
@@ -82,7 +82,8 @@ export class ConditionTypes {
       case 'usage_limit':
         return {
           check: async (input: CalculationBuffer) => {
-            if (isNil(salesRuleId) || isNil(input.customer?.uniqueId)) return false
+            if (isNil(salesRuleId) || isNil(input.customer?.uniqueId))
+              return false
 
             const salesRuleUsageCount = input.usageCounts?.find(
               usageCount => usageCount.salesRuleId === salesRuleId
@@ -107,7 +108,9 @@ export class ConditionTypes {
         return {
           check: async (input: CalculationBuffer) => {
             const setCustomerGroups = new Set(input?.customer?.customerGroups)
-            return raw.value.every(customerGroup => setCustomerGroups.has(customerGroup))
+            return raw.value.every(customerGroup =>
+              setCustomerGroups.has(customerGroup)
+            )
           },
         }
     }
