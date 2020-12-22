@@ -20,7 +20,6 @@ describe('Calculation Engine', () => {
         email: 'test@test.com',
         msisdn: 'A',
         isNewCustomer: true,
-        customerTags: [],
       },
       items: [
         {
@@ -54,7 +53,6 @@ describe('Calculation Engine', () => {
         email: 'test@test.com',
         msisdn: 'A',
         isNewCustomer: true,
-        customerTags: [],
       },
       items: [
         {

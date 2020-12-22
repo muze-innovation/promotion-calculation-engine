@@ -30,7 +30,6 @@ describe('Calculation Engine', () => {
         email: 'xx@xxxx.com',
         msisdn: 'x',
         isNewCustomer: false,
-        customerTags: [],
       },
       usageCounts: [{ salesRuleId: 1, total: 199 }]
     }
@@ -72,7 +71,6 @@ describe('Calculation Engine', () => {
         email: 'xx@xxxx.com',
         msisdn: 'x',
         isNewCustomer: false,
-        customerTags: [],
       },
       usageCounts: [{ salesRuleId: 2, total: 200 }]
     }
@@ -107,7 +105,6 @@ describe('Calculation Engine', () => {
         email: 'xx@xxxx.com',
         msisdn: 'x',
         isNewCustomer: false,
-        customerTags: [],
       },
       usageCounts: [{ salesRuleId: 1, total: 100 }],
       ignoreCondition: true
