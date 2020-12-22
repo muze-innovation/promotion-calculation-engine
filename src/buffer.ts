@@ -13,13 +13,13 @@ import {
   CalculatedCartItems,
   UID,
   UsageCount,
-} from './index'
-import { ARule } from './rule'
+} from 'index'
+import { ARule } from 'rule'
 
 export class CalculationBuffer implements CalculationEngineOutput {
   constructor(
     public readonly input: CalculationEngineInput,
-    public readonly meta: CalculationEngineMeta,
+    public readonly meta: CalculationEngineMeta
   ) {
     //
   }
@@ -75,20 +75,28 @@ export class CalculationBuffer implements CalculationEngineOutput {
   }
 
   getShippingDiscountAmount() {
-    return sumBy(this.meta.shippingDiscount, (item) => item.discountedAmount)
+    return sumBy(this.meta.shippingDiscount, item => item.discountedAmount)
   }
 
   getAllShippingFees() {
-    return this.input.deliveryAddresses?.map(deliveryAddress => ({ uid: deliveryAddress?.uid, shippingFee: deliveryAddress?.shipping?.fee }))
+    return this.input.deliveryAddresses?.map(deliveryAddress => ({
+      uid: deliveryAddress?.uid,
+      shippingFee: deliveryAddress?.shipping?.fee,
+    }))
   }
 
   getFreeQtyFor(uid: string | number) {
-    return sumBy(this.meta.itemDiscounts, (item) => item.uid === uid && item.setFree ? 1 : 0)
+    return sumBy(this.meta.itemDiscounts, item =>
+      item.uid === uid && item.setFree ? 1 : 0
+    )
   }
 
   getAllItemDiscounts(): number {
     if (this.itemDiscounts?.length) {
-      return this.itemDiscounts.reduce((acc: number, item: ItemDiscount) => acc + item.perLineDiscountedAmount, 0)
+      return this.itemDiscounts.reduce(
+        (acc: number, item: ItemDiscount) => acc + item.perLineDiscountedAmount,
+        0
+      )
     }
     return 0
   }
@@ -98,8 +106,14 @@ export class CalculationBuffer implements CalculationEngineOutput {
   }
 
   getTotalDiscountWithoutShipping(): number {
-    const totalItemDiscounts = sumBy(this.meta.itemDiscounts, (item) => item.perLineDiscountedAmount)
-    const totalWholeCartDiscount = sumBy(this.meta.wholeCartDiscount, (item) => item.discountedAmount)
+    const totalItemDiscounts = sumBy(
+      this.meta.itemDiscounts,
+      item => item.perLineDiscountedAmount
+    )
+    const totalWholeCartDiscount = sumBy(
+      this.meta.wholeCartDiscount,
+      item => item.discountedAmount
+    )
     return totalItemDiscounts + totalWholeCartDiscount
   }
 
@@ -115,9 +129,8 @@ export class CalculationBuffer implements CalculationEngineOutput {
         if (!isEmpty(uids) && !uids?.includes(cur.uid)) return { ...acc }
         const freeQty = this.getFreeQtyFor(cur.uid)
         const totalDiscounted = this.getDiscountFor(cur.uid)
-        const totalAmount = (cur.perItemPrice * cur.qty) - totalDiscounted
-        const totalPerItemPrice =
-          totalAmount / (cur.qty - freeQty)
+        const totalAmount = cur.perItemPrice * cur.qty - totalDiscounted
+        const totalPerItemPrice = totalAmount / (cur.qty - freeQty)
         return {
           items: [
             ...acc.items,
@@ -140,7 +153,7 @@ export class CalculationBuffer implements CalculationEngineOutput {
    * Utility method return cheapest of CartItem in uid group.
    */
   getCheapestItemFromGroupBySku(uid: string | number): CartItem | undefined {
-    const itemGroup = this.input.items.filter((item) => item.uid === uid)
+    const itemGroup = this.input.items.filter(item => item.uid === uid)
     if (itemGroup) {
       return itemGroup.reduce(
         (minPriceItem: CartItem, item: CartItem) =>
@@ -152,7 +165,9 @@ export class CalculationBuffer implements CalculationEngineOutput {
   }
 
   getCartTotalQty(): number {
-    return this.input.items.reduce((acc: number, item: CartItem) => { return acc + item.qty }, 0)
+    return this.input.items.reduce((acc: number, item: CartItem) => {
+      return acc + item.qty
+    }, 0)
   }
 
   countSetFreeInItemDiscounts(uid?: UID): number {
