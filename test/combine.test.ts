@@ -13,31 +13,33 @@ describe('Calculation Engine', () => {
       'StepUId01',
       0,
       'Step volume Discount',
-      [{
-        type: 'uids',
-        uids: ["TEST"],
-      }],
+      [
+        {
+          type: 'uids',
+          uids: ['TEST'],
+        },
+      ],
       [
         {
           startQty: 1,
           endQty: 3,
           discount: 0,
-          type: "percent",
+          type: 'percent',
         },
         {
           startQty: 4,
           endQty: 7,
           discount: 10,
-          type: "percent",
+          type: 'percent',
         },
         {
           startQty: 8,
           endQty: null,
           discount: 15,
-          type: "percent",
+          type: 'percent',
         },
       ],
-      ["TEST"],
+      ['TEST']
     )
 
     const input = {
@@ -71,19 +73,19 @@ describe('Calculation Engine', () => {
           uid: 'TEST',
           perLineDiscountedAmount: 300,
           setFree: false,
-          applicableRuleUid: 'StepUId01'
+          applicableRuleUid: 'StepUId01',
         },
         {
           uid: 'TEST',
           perLineDiscountedAmount: 450,
           setFree: true,
-          applicableRuleUid: 'BuyXGetYUId01'
+          applicableRuleUid: 'BuyXGetYUId01',
         },
         {
           uid: 'TEST',
           perLineDiscountedAmount: 450,
           setFree: true,
-          applicableRuleUid: 'BuyXGetYUId01'
+          applicableRuleUid: 'BuyXGetYUId01',
         },
       ],
     }
@@ -104,19 +106,19 @@ describe('Calculation Engine', () => {
           startQty: 1,
           endQty: 3,
           discount: 5,
-          type: "percent",
+          type: 'percent',
         },
         {
           startQty: 4,
           endQty: 6,
           discount: 10,
-          type: "percent",
+          type: 'percent',
         },
         {
           startQty: 7,
           endQty: null,
           discount: 15,
-          type: "percent",
+          type: 'percent',
         },
       ],
       []
@@ -160,22 +162,22 @@ describe('Calculation Engine', () => {
           uid: 'TEST2',
           perLineDiscountedAmount: 150,
           setFree: true,
-          applicableRuleUid: 10
+          applicableRuleUid: 10,
         },
         {
           uid: 'TEST3',
           perLineDiscountedAmount: 400,
           setFree: true,
-          applicableRuleUid: 10
+          applicableRuleUid: 10,
         },
       ],
       wholeCartDiscount: [
         {
           discountedAmount: 75,
           setFree: false,
-          applicableRuleUid: 11
-        }
-      ]
+          applicableRuleUid: 11,
+        },
+      ],
     }
     expect(result).toEqual({ input, meta })
   })
@@ -185,31 +187,33 @@ describe('Calculation Engine', () => {
       'step01',
       0,
       'Step volume Discount',
-      [{
-        type: 'uids',
-        uids: ["TEST"],
-      }],
+      [
+        {
+          type: 'uids',
+          uids: ['TEST'],
+        },
+      ],
       [
         {
           startQty: 1,
           endQty: 3,
           discount: 0,
-          type: "fixed",
+          type: 'fixed',
         },
         {
           startQty: 4,
           endQty: 7,
           discount: 300,
-          type: "fixed",
+          type: 'fixed',
         },
         {
           startQty: 8,
           endQty: null,
           discount: 600,
-          type: "fixed",
+          type: 'fixed',
         },
       ],
-      ["TEST"],
+      ['TEST']
     )
     const x = 3
     const y = 2
@@ -246,19 +250,19 @@ describe('Calculation Engine', () => {
           uid: 'TEST',
           perLineDiscountedAmount: 300,
           setFree: false,
-          applicableRuleUid: 'step01'
+          applicableRuleUid: 'step01',
         },
         {
           uid: 'TEST',
           perLineDiscountedAmount: 450,
           setFree: true,
-          applicableRuleUid: 'buyXGetY01'
+          applicableRuleUid: 'buyXGetY01',
         },
         {
           uid: 'TEST',
           perLineDiscountedAmount: 450,
           setFree: true,
-          applicableRuleUid: 'buyXGetY01'
+          applicableRuleUid: 'buyXGetY01',
         },
       ],
     }
@@ -279,19 +283,19 @@ describe('Calculation Engine', () => {
           startQty: 1,
           endQty: 3,
           discount: 0,
-          type: "fixed",
+          type: 'fixed',
         },
         {
           startQty: 4,
           endQty: 6,
           discount: 100,
-          type: "fixed",
+          type: 'fixed',
         },
         {
           startQty: 7,
           endQty: null,
           discount: 300,
-          type: "fixed",
+          type: 'fixed',
         },
       ],
       []
@@ -335,24 +339,23 @@ describe('Calculation Engine', () => {
           uid: 'TEST2',
           perLineDiscountedAmount: 150,
           setFree: true,
-          applicableRuleUid: 'buyXGetY02'
+          applicableRuleUid: 'buyXGetY02',
         },
         {
           uid: 'TEST3',
           perLineDiscountedAmount: 400,
           setFree: true,
-          applicableRuleUid: 'buyXGetY02'
+          applicableRuleUid: 'buyXGetY02',
         },
       ],
       wholeCartDiscount: [
         {
           discountedAmount: 100,
           setFree: false,
-          applicableRuleUid: 'step02'
-        }
-      ]
+          applicableRuleUid: 'step02',
+        },
+      ],
     }
     expect(result).toEqual({ input, meta })
   })
-
 })

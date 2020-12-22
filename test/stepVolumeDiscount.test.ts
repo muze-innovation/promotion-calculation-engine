@@ -16,19 +16,19 @@ describe('Calculation Engine', () => {
           startQty: 1,
           endQty: 4,
           discount: 0,
-          type: "percent",
+          type: 'percent',
         },
         {
           startQty: 5,
           endQty: 8,
           discount: 15,
-          type: "percent",
+          type: 'percent',
         },
         {
           startQty: 9,
           endQty: null,
           discount: 20,
-          type: "percent",
+          type: 'percent',
         },
       ],
       []
@@ -50,7 +50,16 @@ describe('Calculation Engine', () => {
 
     const result = await engine.process(input, {})
 
-    const meta = { applicableRuleUids: ['stepVolume01'], wholeCartDiscount: [{ applicableRuleUid: 'stepVolume01', discountedAmount: 0, setFree: false }] }
+    const meta = {
+      applicableRuleUids: ['stepVolume01'],
+      wholeCartDiscount: [
+        {
+          applicableRuleUid: 'stepVolume01',
+          discountedAmount: 0,
+          setFree: false,
+        },
+      ],
+    }
     expect(result).toEqual({ input, meta })
   })
 
@@ -59,25 +68,27 @@ describe('Calculation Engine', () => {
       'stepVolume02',
       0,
       'Step volume Discount',
-      [{
-        type: 'uids',
-        uids: ['TEST'],
-      }],
+      [
+        {
+          type: 'uids',
+          uids: ['TEST'],
+        },
+      ],
       [
         {
           startQty: 1,
           endQty: 3,
           discount: 5,
-          type: "percent",
+          type: 'percent',
         },
         {
           startQty: 4,
           endQty: null,
           discount: 10,
-          type: "percent",
+          type: 'percent',
         },
       ],
-      ['TEST'],
+      ['TEST']
     )
 
     const input = {
@@ -111,7 +122,7 @@ describe('Calculation Engine', () => {
           uid: 'TEST',
           perLineDiscountedAmount: 75,
           setFree: false,
-          applicableRuleUid: 'stepVolume02'
+          applicableRuleUid: 'stepVolume02',
         },
       ],
     }
@@ -129,22 +140,22 @@ describe('Calculation Engine', () => {
           startQty: 1,
           endQty: 4,
           discount: 5,
-          type: "percent",
+          type: 'percent',
         },
         {
           startQty: 5,
           endQty: 8,
           discount: 10,
-          type: "percent",
+          type: 'percent',
         },
         {
           startQty: 9,
           endQty: null,
           discount: 15,
-          type: "percent",
+          type: 'percent',
         },
       ],
-      [],
+      []
     )
 
     const input = {
@@ -168,7 +179,7 @@ describe('Calculation Engine', () => {
         {
           discountedAmount: 750,
           setFree: false,
-          applicableRuleUid: 'stepVolume03'
+          applicableRuleUid: 'stepVolume03',
         },
       ],
     }
@@ -180,25 +191,27 @@ describe('Calculation Engine', () => {
       'stepVolume04',
       0,
       'Cannot create step volume discount rule for not match Uid',
-      [{
-        type: 'uids',
-        uids: ['TEST1'],
-      }],
+      [
+        {
+          type: 'uids',
+          uids: ['TEST1'],
+        },
+      ],
       [
         {
           startQty: 1,
           endQty: 4,
           discount: 5,
-          type: "percent",
+          type: 'percent',
         },
         {
           startQty: 5,
           endQty: null,
           discount: 10,
-          type: "percent",
+          type: 'percent',
         },
       ],
-      ['TEST1'],
+      ['TEST1']
     )
 
     const input = {
@@ -233,25 +246,27 @@ describe('Calculation Engine', () => {
       'stepVolume05',
       0,
       'Can calculate step only product that match product condition',
-      [{
-        type: 'uids',
-        uids: ['TEST1'],
-      }],
+      [
+        {
+          type: 'uids',
+          uids: ['TEST1'],
+        },
+      ],
       [
         {
           startQty: 1,
           endQty: 4,
           discount: 5,
-          type: "percent",
+          type: 'percent',
         },
         {
           startQty: 5,
           endQty: null,
           discount: 10,
-          type: "percent",
+          type: 'percent',
         },
       ],
-      ['TEST1'],
+      ['TEST1']
     )
 
     const input = {
@@ -284,7 +299,7 @@ describe('Calculation Engine', () => {
           uid: 'TEST1',
           perLineDiscountedAmount: 200,
           setFree: false,
-          applicableRuleUid: 'stepVolume05'
+          applicableRuleUid: 'stepVolume05',
         },
       ],
     }
@@ -296,25 +311,27 @@ describe('Calculation Engine', () => {
       'stepVolume06',
       0,
       'Can calculate step only product that match product condition',
-      [{
-        type: 'uids',
-        uids: ['TEST', 'TEST1'],
-      }],
+      [
+        {
+          type: 'uids',
+          uids: ['TEST', 'TEST1'],
+        },
+      ],
       [
         {
           startQty: 1,
           endQty: 4,
           discount: 5,
-          type: "percent",
+          type: 'percent',
         },
         {
           startQty: 5,
           endQty: null,
           discount: 10,
-          type: "percent",
+          type: 'percent',
         },
       ],
-      ['TEST', 'TEST1'],
+      ['TEST', 'TEST1']
     )
 
     const input = {
@@ -341,19 +358,19 @@ describe('Calculation Engine', () => {
 
     const result = await engine.process(input, {})
     const meta = {
-      applicableRuleUids: ['stepVolume06',],
+      applicableRuleUids: ['stepVolume06'],
       itemDiscounts: [
         {
           uid: 'TEST',
           perLineDiscountedAmount: 80,
           setFree: false,
-          applicableRuleUid: 'stepVolume06'
+          applicableRuleUid: 'stepVolume06',
         },
         {
           uid: 'TEST1',
           perLineDiscountedAmount: 20,
           setFree: false,
-          applicableRuleUid: 'stepVolume06'
+          applicableRuleUid: 'stepVolume06',
         },
       ],
     }
@@ -371,19 +388,19 @@ describe('Calculation Engine', () => {
           startQty: 1,
           endQty: 4,
           discount: 100,
-          type: "fixed",
+          type: 'fixed',
         },
         {
           startQty: 5,
           endQty: 8,
           discount: 200,
-          type: "fixed",
+          type: 'fixed',
         },
         {
           startQty: 6,
           endQty: null,
           discount: 400,
-          type: "fixed",
+          type: 'fixed',
         },
       ],
       []
@@ -405,7 +422,16 @@ describe('Calculation Engine', () => {
 
     const result = await engine.process(input, {})
 
-    const meta = { applicableRuleUids: ['fixedStepVolume01'], wholeCartDiscount: [{ applicableRuleUid: 'fixedStepVolume01', discountedAmount: 200, setFree: false }] }
+    const meta = {
+      applicableRuleUids: ['fixedStepVolume01'],
+      wholeCartDiscount: [
+        {
+          applicableRuleUid: 'fixedStepVolume01',
+          discountedAmount: 200,
+          setFree: false,
+        },
+      ],
+    }
     expect(result).toEqual({ input, meta })
   })
 
@@ -420,19 +446,19 @@ describe('Calculation Engine', () => {
           startQty: 1,
           endQty: 4,
           discount: 100,
-          type: "fixed",
+          type: 'fixed',
         },
         {
           startQty: 5,
           endQty: 8,
           discount: 200,
-          type: "fixed",
+          type: 'fixed',
         },
         {
           startQty: 9,
           endQty: null,
           discount: 400,
-          type: "fixed",
+          type: 'fixed',
         },
       ],
       []
@@ -457,12 +483,21 @@ describe('Calculation Engine', () => {
           tags: ['TAG#1'],
         },
       ],
-      rules: [stepVolumeDiscount], 
+      rules: [stepVolumeDiscount],
     }
 
     const result = await engine.process(input, {})
 
-    const meta = { applicableRuleUids: ['fixedStepVolume02'], wholeCartDiscount: [{ applicableRuleUid: 'fixedStepVolume02', discountedAmount: 400, setFree: false }] }
+    const meta = {
+      applicableRuleUids: ['fixedStepVolume02'],
+      wholeCartDiscount: [
+        {
+          applicableRuleUid: 'fixedStepVolume02',
+          discountedAmount: 400,
+          setFree: false,
+        },
+      ],
+    }
     expect(result).toEqual({ input, meta })
   })
 
@@ -471,25 +506,27 @@ describe('Calculation Engine', () => {
       'fixedStepVolume03',
       0,
       '1 of product uids matches salesrule uid condition',
-      [{
-        type: 'uids',
-        uids: ['TEST1','TEST2'],
-      }],
+      [
+        {
+          type: 'uids',
+          uids: ['TEST1', 'TEST2'],
+        },
+      ],
       [
         {
           startQty: 1,
           endQty: 4,
           discount: 200,
-          type: "fixed",
+          type: 'fixed',
         },
         {
           startQty: 5,
           endQty: null,
           discount: 500,
-          type: "fixed",
+          type: 'fixed',
         },
       ],
-      ['TEST1','TEST2'],
+      ['TEST1', 'TEST2']
     )
 
     const input = {
@@ -522,7 +559,7 @@ describe('Calculation Engine', () => {
           uid: 'TEST1',
           perLineDiscountedAmount: 200,
           setFree: false,
-          applicableRuleUid: 'fixedStepVolume03'
+          applicableRuleUid: 'fixedStepVolume03',
         },
       ],
     }
@@ -534,25 +571,27 @@ describe('Calculation Engine', () => {
       'fixedStepVolume04',
       0,
       'multiple product uids match salesrule uid condition',
-      [{
-        type: 'uids',
-        uids: ['TEST1','TEST2'],
-      }],
+      [
+        {
+          type: 'uids',
+          uids: ['TEST1', 'TEST2'],
+        },
+      ],
       [
         {
           startQty: 1,
           endQty: 4,
           discount: 200,
-          type: "fixed",
+          type: 'fixed',
         },
         {
           startQty: 5,
           endQty: null,
           discount: 500,
-          type: "fixed",
+          type: 'fixed',
         },
       ],
-      ['TEST1','TEST2'],
+      ['TEST1', 'TEST2']
     )
 
     const input = {
@@ -585,13 +624,13 @@ describe('Calculation Engine', () => {
           uid: 'TEST1',
           perLineDiscountedAmount: 300,
           setFree: false,
-          applicableRuleUid: 'fixedStepVolume04'
+          applicableRuleUid: 'fixedStepVolume04',
         },
         {
           uid: 'TEST2',
           perLineDiscountedAmount: 200,
           setFree: false,
-          applicableRuleUid: 'fixedStepVolume04'
+          applicableRuleUid: 'fixedStepVolume04',
         },
       ],
     }
@@ -603,25 +642,27 @@ describe('Calculation Engine', () => {
       'fixedStepVolume04',
       0,
       'multiple product uids match salesrule uid condition',
-      [{
-        type: 'uids',
-        uids: ['TEST1','TEST2'],
-      }],
+      [
+        {
+          type: 'uids',
+          uids: ['TEST1', 'TEST2'],
+        },
+      ],
       [
         {
           startQty: 1,
           endQty: 4,
           discount: 200,
-          type: "fixed",
+          type: 'fixed',
         },
         {
           startQty: 5,
           endQty: null,
           discount: 500,
-          type: "fixed",
+          type: 'fixed',
         },
       ],
-      ['TEST1','TEST2'],
+      ['TEST1', 'TEST2']
     )
 
     const input = {
@@ -650,5 +691,4 @@ describe('Calculation Engine', () => {
     const meta = {}
     expect(result).toEqual({ input, meta })
   })
-
 })

@@ -6,13 +6,21 @@ import { JsonConditionType } from '../src/incart/conditionTypes'
 describe('Calculation Engine', () => {
   const engine = new CalculationEngine()
 
-
   it('old customer case', async () => {
-    const conditions: JsonConditionType[] = [{
-      type: 'subtotal_at_least',
-      value: 200
-    }]
-    const rule = new FixedPriceRule('newCustomer01', 0, 'fixedDiscountPrice', conditions, 100, [])
+    const conditions: JsonConditionType[] = [
+      {
+        type: 'subtotal_at_least',
+        value: 200,
+      },
+    ]
+    const rule = new FixedPriceRule(
+      'newCustomer01',
+      0,
+      'fixedDiscountPrice',
+      conditions,
+      100,
+      []
+    )
 
     const input = {
       customer: {
@@ -41,11 +49,20 @@ describe('Calculation Engine', () => {
   })
 
   it('old customer case', async () => {
-    const conditions: JsonConditionType[] = [{
-      type: 'subtotal_at_least',
-      value: 200
-    }]
-    const rule = new FixedPriceRule('newCustomer02', 0, 'fixedDiscountPrice', conditions, 100, [])
+    const conditions: JsonConditionType[] = [
+      {
+        type: 'subtotal_at_least',
+        value: 200,
+      },
+    ]
+    const rule = new FixedPriceRule(
+      'newCustomer02',
+      0,
+      'fixedDiscountPrice',
+      conditions,
+      100,
+      []
+    )
 
     const input = {
       customer: {
@@ -72,6 +89,4 @@ describe('Calculation Engine', () => {
     const meta = {}
     expect(result).toEqual({ input, meta })
   })
-
-
 })

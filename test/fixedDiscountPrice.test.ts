@@ -26,18 +26,26 @@ describe('Calculation Engine', () => {
 
     const meta = {
       applicableRuleUids: [1],
-      wholeCartDiscount: [{
-        discountedAmount: 100,
-        setFree: false,
-        applicableRuleUid: 1
-      }],
+      wholeCartDiscount: [
+        {
+          discountedAmount: 100,
+          setFree: false,
+          applicableRuleUid: 1,
+        },
+      ],
     }
     expect(result).toEqual({ input, meta })
   })
 
   it('discount fixed price : discount > subtotal', async () => {
-
-    const rule = new FixedPriceRule('fixedDiscountPrice0001', 0, 'fixedDiscountPrice', [], 500, [])
+    const rule = new FixedPriceRule(
+      'fixedDiscountPrice0001',
+      0,
+      'fixedDiscountPrice',
+      [],
+      500,
+      []
+    )
 
     const input = {
       items: [
@@ -57,11 +65,13 @@ describe('Calculation Engine', () => {
 
     const meta = {
       applicableRuleUids: ['fixedDiscountPrice0001'],
-      wholeCartDiscount: [{
-        discountedAmount: 400,
-        setFree: false,
-        applicableRuleUid: 'fixedDiscountPrice0001'
-      }],
+      wholeCartDiscount: [
+        {
+          discountedAmount: 400,
+          setFree: false,
+          applicableRuleUid: 'fixedDiscountPrice0001',
+        },
+      ],
     }
     expect(result).toEqual({ input, meta })
   })
@@ -71,10 +81,15 @@ describe('Calculation Engine', () => {
       '0001',
       0,
       'fixedDiscountPrice',
-      [{
-        type: 'uids',
-        uids: ['ABC', 'EFG'],
-      }], 200, ['ABC', 'EFG'])
+      [
+        {
+          type: 'uids',
+          uids: ['ABC', 'EFG'],
+        },
+      ],
+      200,
+      ['ABC', 'EFG']
+    )
     const input = {
       items: [
         {
@@ -106,31 +121,33 @@ describe('Calculation Engine', () => {
           uid: 'ABC',
           perLineDiscountedAmount: 100,
           setFree: false,
-          applicableRuleUid: '0001'
+          applicableRuleUid: '0001',
         },
         {
           uid: 'EFG',
           perLineDiscountedAmount: 100,
           setFree: false,
-          applicableRuleUid: '0001'
+          applicableRuleUid: '0001',
         },
       ],
     }
     expect(result).toEqual({ input, meta })
   })
 
-
   it('discount fixed price : fixed price has uids but got only one uid that match', async () => {
     const rule = new FixedPriceRule(
       '0001',
       0,
       'fixedDiscountPrice',
-      [{
-        type: 'uids',
-        uids: ['ABC'],
-      }],
+      [
+        {
+          type: 'uids',
+          uids: ['ABC'],
+        },
+      ],
       200,
-      ['ABC',])
+      ['ABC']
+    )
     const input = {
       items: [
         {
@@ -162,25 +179,27 @@ describe('Calculation Engine', () => {
           uid: 'ABC',
           perLineDiscountedAmount: 200,
           setFree: false,
-          applicableRuleUid: '0001'
+          applicableRuleUid: '0001',
         },
       ],
     }
     expect(result).toEqual({ input, meta })
   })
 
-
   it('discount fixed price : fixed price has uids but not match', async () => {
     const rule = new FixedPriceRule(
       '0004',
       0,
       'fixedDiscountPrice',
-      [{
-        type: 'uids',
-        uids: ['ABC'],
-      }],
+      [
+        {
+          type: 'uids',
+          uids: ['ABC'],
+        },
+      ],
       200,
-      ['ABC'])
+      ['ABC']
+    )
     const input = {
       items: [
         {

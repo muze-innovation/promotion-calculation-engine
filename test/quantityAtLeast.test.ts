@@ -7,11 +7,20 @@ describe('Calculation Engine', () => {
   const engine = new CalculationEngine()
 
   it('discount case: quantity >= at least', async () => {
-    const conditions: JsonConditionType[] = [{
-      type: "quantity_at_least",
-      value: 3
-    }]
-    const rule = new FixedPriceRule('quantity01', 0, 'fixedDiscountPrice', conditions, 100, [])
+    const conditions: JsonConditionType[] = [
+      {
+        type: 'quantity_at_least',
+        value: 3,
+      },
+    ]
+    const rule = new FixedPriceRule(
+      'quantity01',
+      0,
+      'fixedDiscountPrice',
+      conditions,
+      100,
+      []
+    )
 
     const input = {
       items: [
@@ -39,21 +48,32 @@ describe('Calculation Engine', () => {
 
     const meta = {
       applicableRuleUids: ['quantity01'],
-      wholeCartDiscount: [{
-        discountedAmount: 100,
-        setFree: false,
-        applicableRuleUid: 'quantity01'
-      }],
+      wholeCartDiscount: [
+        {
+          discountedAmount: 100,
+          setFree: false,
+          applicableRuleUid: 'quantity01',
+        },
+      ],
     }
     expect(result).toEqual({ input, meta })
   })
 
   it('no discount case: quantity < at least', async () => {
-    const conditions: JsonConditionType[] = [{
-      type: "quantity_at_least",
-      value: 3
-    }]
-    const rule = new FixedPriceRule('quantity02', 0, 'fixedDiscountPrice', conditions, 100, [])
+    const conditions: JsonConditionType[] = [
+      {
+        type: 'quantity_at_least',
+        value: 3,
+      },
+    ]
+    const rule = new FixedPriceRule(
+      'quantity02',
+      0,
+      'fixedDiscountPrice',
+      conditions,
+      100,
+      []
+    )
 
     const input = {
       items: [
@@ -82,6 +102,4 @@ describe('Calculation Engine', () => {
     const meta = {}
     expect(result).toEqual({ input, meta })
   })
-
-
 })

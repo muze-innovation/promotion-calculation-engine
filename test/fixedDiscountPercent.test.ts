@@ -6,7 +6,13 @@ describe('Calculation Engine', () => {
   const engine = new CalculationEngine()
 
   it('discount fixed percent', async () => {
-    const rule = new FixedPercentRule('fixed01', 0, 'fixedDiscountPercent', [], 20)
+    const rule = new FixedPercentRule(
+      'fixed01',
+      0,
+      'fixedDiscountPercent',
+      [],
+      20
+    )
 
     const input = {
       items: [
@@ -26,13 +32,14 @@ describe('Calculation Engine', () => {
 
     const meta = {
       applicableRuleUids: ['fixed01'],
-      wholeCartDiscount: [{
-        discountedAmount: 40,
-        setFree: false,
-        applicableRuleUid: 'fixed01'
-      }],
+      wholeCartDiscount: [
+        {
+          discountedAmount: 40,
+          setFree: false,
+          applicableRuleUid: 'fixed01',
+        },
+      ],
     }
     expect(result).toEqual({ input, meta })
   })
-
 })

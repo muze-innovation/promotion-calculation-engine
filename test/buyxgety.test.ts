@@ -9,7 +9,7 @@ describe('Calculation Engine', () => {
     uid: 'TEST',
     perLineDiscountedAmount: 500,
     setFree: true,
-    applicableRuleUid: '0001'
+    applicableRuleUid: '0001',
   }
 
   it('Can create buy-3-get-2 rule for uid TEST with 5 item in Cart.', async () => {

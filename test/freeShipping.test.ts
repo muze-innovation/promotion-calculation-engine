@@ -5,7 +5,12 @@ import { FreeShippingRule } from '../src/incart'
 describe('Calculation Engine', () => {
   const engine = new CalculationEngine()
   it('Free shipping', async () => {
-    const freeShipping = new FreeShippingRule('freeShipping01', 0, 'freeShipping', [])
+    const freeShipping = new FreeShippingRule(
+      'freeShipping01',
+      0,
+      'freeShipping',
+      []
+    )
 
     const input = {
       items: [
@@ -18,34 +23,43 @@ describe('Calculation Engine', () => {
           tags: ['TAG#1'],
         },
       ],
-      deliveryAddresses: [{
-        uid: 'shipping_1',
-        postalCode: '00000',
-        city: 'string',
-        country: 'string',
-        shipping: {
-          fee: 10,
-          type: 'test'
+      deliveryAddresses: [
+        {
+          uid: 'shipping_1',
+          postalCode: '00000',
+          city: 'string',
+          country: 'string',
+          shipping: {
+            fee: 10,
+            type: 'test',
+          },
         },
-      }],
+      ],
       rules: [freeShipping],
     }
     const result = await engine.process(input, {})
 
     const meta = {
       applicableRuleUids: ['freeShipping01'],
-      shippingDiscount: [{
-        uid: 'shipping_1',
-        discountedAmount: 10,
-        setFree: true,
-        applicableRuleUid: 'freeShipping01'
-      }],
+      shippingDiscount: [
+        {
+          uid: 'shipping_1',
+          discountedAmount: 10,
+          setFree: true,
+          applicableRuleUid: 'freeShipping01',
+        },
+      ],
     }
     expect(result).toEqual({ input, meta })
   })
 
   it('Free shipping no shipping fee', async () => {
-    const freeShipping = new FreeShippingRule('freeShipping02', 0, 'freeShipping', [])
+    const freeShipping = new FreeShippingRule(
+      'freeShipping02',
+      0,
+      'freeShipping',
+      []
+    )
 
     const input = {
       items: [
@@ -58,16 +72,18 @@ describe('Calculation Engine', () => {
           tags: ['TAG#1'],
         },
       ],
-      deliveryAddresses: [{
-        uid: 'shipping_2',
-        postalCode: '00000',
-        city: 'string',
-        country: 'string',
-        shipping: {
-          fee: 0,
-          type: 'test'
+      deliveryAddresses: [
+        {
+          uid: 'shipping_2',
+          postalCode: '00000',
+          city: 'string',
+          country: 'string',
+          shipping: {
+            fee: 0,
+            type: 'test',
+          },
         },
-      }],
+      ],
       rules: [freeShipping],
     }
 
@@ -79,5 +95,4 @@ describe('Calculation Engine', () => {
     }
     expect(result).toEqual({ input, meta })
   })
-
 })

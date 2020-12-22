@@ -7,11 +7,20 @@ describe('Calculation Engine', () => {
   const engine = new CalculationEngine()
 
   it('match customerGroups', async () => {
-    const conditions: JsonConditionType[] = [{
-      type: 'customer_group',
-      value: ['tagB', 'tagA']
-    }]
-    const rule = new FixedPriceRule('customerTag01', 0, 'fixedDiscountPrice', conditions, 100, [])
+    const conditions: JsonConditionType[] = [
+      {
+        type: 'customer_group',
+        value: ['tagB', 'tagA'],
+      },
+    ]
+    const rule = new FixedPriceRule(
+      'customerTag01',
+      0,
+      'fixedDiscountPrice',
+      conditions,
+      100,
+      []
+    )
 
     const input = {
       customer: {
@@ -37,21 +46,32 @@ describe('Calculation Engine', () => {
     const result = await engine.process(input, {})
     const meta = {
       applicableRuleUids: ['customerTag01'],
-      wholeCartDiscount: [{
-        discountedAmount: 100,
-        setFree: false,
-        applicableRuleUid: 'customerTag01'
-      }],
+      wholeCartDiscount: [
+        {
+          discountedAmount: 100,
+          setFree: false,
+          applicableRuleUid: 'customerTag01',
+        },
+      ],
     }
     expect(result).toEqual({ input, meta })
   })
 
   it('not match customerGroups', async () => {
-    const conditions: JsonConditionType[] = [{
-      type: 'customer_group',
-      value: ['tagA', 'tagB', 'tagC']
-    }]
-    const rule = new FixedPriceRule('customerTag02', 0, 'fixedDiscountPrice', conditions, 100, [])
+    const conditions: JsonConditionType[] = [
+      {
+        type: 'customer_group',
+        value: ['tagA', 'tagB', 'tagC'],
+      },
+    ]
+    const rule = new FixedPriceRule(
+      'customerTag02',
+      0,
+      'fixedDiscountPrice',
+      conditions,
+      100,
+      []
+    )
     const input = {
       customer: {
         uniqueId: 1,
@@ -79,19 +99,37 @@ describe('Calculation Engine', () => {
   })
 
   it('customerGroups match all combine many rules', async () => {
-    const firstConditions: JsonConditionType[] = [{
-      type: 'customer_group',
-      value: ['tagA']
-    }]
+    const firstConditions: JsonConditionType[] = [
+      {
+        type: 'customer_group',
+        value: ['tagA'],
+      },
+    ]
 
-    const secondConditions: JsonConditionType[] = [{
-      type: 'customer_group',
-      value: ['tagB']
-    }]
+    const secondConditions: JsonConditionType[] = [
+      {
+        type: 'customer_group',
+        value: ['tagB'],
+      },
+    ]
 
-    const firstRule = new FixedPriceRule(1, 0, 'fixedDiscountPrice', firstConditions, 100, [])
+    const firstRule = new FixedPriceRule(
+      1,
+      0,
+      'fixedDiscountPrice',
+      firstConditions,
+      100,
+      []
+    )
 
-    const secondRule = new FixedPriceRule(2, 0, 'fixedDiscountPrice', secondConditions, 200, [])
+    const secondRule = new FixedPriceRule(
+      2,
+      0,
+      'fixedDiscountPrice',
+      secondConditions,
+      200,
+      []
+    )
 
     const input = {
       customer: {
@@ -120,13 +158,13 @@ describe('Calculation Engine', () => {
         {
           discountedAmount: 200,
           setFree: false,
-          applicableRuleUid: 2
+          applicableRuleUid: 2,
         },
         {
           discountedAmount: 100,
           setFree: false,
-          applicableRuleUid: 1
-        }
+          applicableRuleUid: 1,
+        },
       ],
     }
 
@@ -135,19 +173,37 @@ describe('Calculation Engine', () => {
   })
 
   it('customerGroups match all combine many rules', async () => {
-    const firstConditions: JsonConditionType[] = [{
-      type: 'customer_group',
-      value: ['tagA']
-    }]
+    const firstConditions: JsonConditionType[] = [
+      {
+        type: 'customer_group',
+        value: ['tagA'],
+      },
+    ]
 
-    const secondConditions: JsonConditionType[] = [{
-      type: 'customer_group',
-      value: ['tagC']
-    }]
+    const secondConditions: JsonConditionType[] = [
+      {
+        type: 'customer_group',
+        value: ['tagC'],
+      },
+    ]
 
-    const firstRule = new FixedPriceRule(1, 0, 'fixedDiscountPrice', firstConditions, 100, [])
+    const firstRule = new FixedPriceRule(
+      1,
+      0,
+      'fixedDiscountPrice',
+      firstConditions,
+      100,
+      []
+    )
 
-    const secondRule = new FixedPriceRule(2, 0, 'fixedDiscountPrice', secondConditions, 200, [])
+    const secondRule = new FixedPriceRule(
+      2,
+      0,
+      'fixedDiscountPrice',
+      secondConditions,
+      200,
+      []
+    )
 
     const input = {
       customer: {
@@ -176,8 +232,8 @@ describe('Calculation Engine', () => {
         {
           discountedAmount: 100,
           setFree: false,
-          applicableRuleUid: 1
-        }
+          applicableRuleUid: 1,
+        },
       ],
     }
 

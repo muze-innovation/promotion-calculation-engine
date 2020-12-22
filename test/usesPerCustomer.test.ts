@@ -7,11 +7,20 @@ describe('Calculation Engine', () => {
   const engine = new CalculationEngine()
 
   it('discount case: customer usage count < usage per customer limit', async () => {
-    const conditions: JsonConditionType[] = [{
-      type: 'uses_per_customer',
-      value: 5
-    }]
-    const rule = new FixedPriceRule('01', 0, 'fixedDiscountPrice', conditions, 100, [])
+    const conditions: JsonConditionType[] = [
+      {
+        type: 'uses_per_customer',
+        value: 5,
+      },
+    ]
+    const rule = new FixedPriceRule(
+      '01',
+      0,
+      'fixedDiscountPrice',
+      conditions,
+      100,
+      []
+    )
 
     const input = {
       items: [
@@ -25,28 +34,39 @@ describe('Calculation Engine', () => {
         },
       ],
       rules: [rule],
-      usageCounts: [{ salesRuleId: '01', byCustomer: 4 }]
+      usageCounts: [{ salesRuleId: '01', byCustomer: 4 }],
     }
 
     const result = await engine.process(input, {})
 
     const meta = {
       applicableRuleUids: ['01'],
-      wholeCartDiscount: [{
-        discountedAmount: 100,
-        setFree: false,
-        applicableRuleUid: '01'
-      }],
+      wholeCartDiscount: [
+        {
+          discountedAmount: 100,
+          setFree: false,
+          applicableRuleUid: '01',
+        },
+      ],
     }
     expect(result).toEqual({ input, meta })
   })
 
   it('no discount case: customer usage count >= usage per customer limit', async () => {
-    const conditions: JsonConditionType[] = [{
-      type: 'uses_per_customer',
-      value: 5
-    }]
-    const rule = new FixedPriceRule('02', 0, 'fixedDiscountPrice', conditions, 100, [])
+    const conditions: JsonConditionType[] = [
+      {
+        type: 'uses_per_customer',
+        value: 5,
+      },
+    ]
+    const rule = new FixedPriceRule(
+      '02',
+      0,
+      'fixedDiscountPrice',
+      conditions,
+      100,
+      []
+    )
 
     const input = {
       items: [
@@ -60,7 +80,7 @@ describe('Calculation Engine', () => {
         },
       ],
       rules: [rule],
-      usageCounts: [{ salesRuleId: '02', byCustomer: 5 }]
+      usageCounts: [{ salesRuleId: '02', byCustomer: 5 }],
     }
 
     const result = await engine.process(input, {})
@@ -70,11 +90,20 @@ describe('Calculation Engine', () => {
   })
 
   it('cause has ignoreCondition: customer usage count >= usage per customer limit', async () => {
-    const conditions: JsonConditionType[] = [{
-      type: 'uses_per_customer',
-      value: 1
-    }]
-    const rule = new FixedPriceRule('03', 0, 'fixedDiscountPrice', conditions, 100, [])
+    const conditions: JsonConditionType[] = [
+      {
+        type: 'uses_per_customer',
+        value: 1,
+      },
+    ]
+    const rule = new FixedPriceRule(
+      '03',
+      0,
+      'fixedDiscountPrice',
+      conditions,
+      100,
+      []
+    )
 
     const input = {
       items: [
@@ -89,16 +118,18 @@ describe('Calculation Engine', () => {
       ],
       rules: [rule],
       usageCounts: [{ salesRuleId: '03', byCustomer: 1 }],
-      ignoreCondition: true
+      ignoreCondition: true,
     }
     const result = await engine.process(input, {})
     const meta = {
       applicableRuleUids: ['03'],
-      wholeCartDiscount: [{
-        discountedAmount: 100,
-        setFree: false,
-        applicableRuleUid: '03'
-      }],
+      wholeCartDiscount: [
+        {
+          discountedAmount: 100,
+          setFree: false,
+          applicableRuleUid: '03',
+        },
+      ],
     }
     expect(result).toEqual({ input, meta })
   })
