@@ -12,7 +12,7 @@ describe('Calculation Engine', () => {
       type: 'subtotal_at_least',
       value: 200
     }]
-    const rule = new FixedPriceRule('newCustomer01', 0, 'fixedDiscountPrice', conditions, 100,[])
+    const rule = new FixedPriceRule('newCustomer01', 0, 'fixedDiscountPrice', conditions, 100, [])
 
     const input = {
       customer: {
@@ -45,7 +45,7 @@ describe('Calculation Engine', () => {
       type: 'subtotal_at_least',
       value: 200
     }]
-    const rule = new FixedPriceRule('newCustomer02',0, 'fixedDiscountPrice', conditions, 100,[])
+    const rule = new FixedPriceRule('newCustomer02', 0, 'fixedDiscountPrice', conditions, 100, [])
 
     const input = {
       customer: {
