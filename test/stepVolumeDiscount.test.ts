@@ -2,10 +2,10 @@ import { CalculationEngine } from '../src/engine'
 import { StepVolumeDiscountRule } from '../src/incart'
 
 // TEST CASE
-describe('Calculation Engine', () => {
+describe('Step Volume Discount', () => {
   const engine = new CalculationEngine()
 
-  it('Can create step volume discount rule for uid TEST with 3 item in Cart.', async () => {
+  it('can match for uid TEST with 3 item in Cart.', async () => {
     const stepVolumeDiscount = new StepVolumeDiscountRule(
       'stepVolume01',
       0,
@@ -30,8 +30,7 @@ describe('Calculation Engine', () => {
           discount: 20,
           type: 'percent',
         },
-      ],
-      []
+      ]
     )
 
     const input = {
@@ -63,7 +62,7 @@ describe('Calculation Engine', () => {
     expect(result).toEqual({ input, meta })
   })
 
-  it('Can create step volume discount rule for uid TEST with 5 item in Cart.', async () => {
+  it('can match for uid TEST with 5 item in Cart.', async () => {
     const stepVolumeDiscount = new StepVolumeDiscountRule(
       'stepVolume02',
       0,
@@ -71,7 +70,7 @@ describe('Calculation Engine', () => {
       [
         {
           type: 'uids',
-          uids: ['TEST'],
+          uids: ['TEST_MATCH_3'],
         },
       ],
       [
@@ -87,14 +86,13 @@ describe('Calculation Engine', () => {
           discount: 10,
           type: 'percent',
         },
-      ],
-      ['TEST']
+      ]
     )
 
     const input = {
       items: [
         {
-          uid: 'TEST',
+          uid: 'TEST_MATCH_3',
           cartItemIndexKey: '0',
           qty: 3,
           perItemPrice: 500,
@@ -119,7 +117,7 @@ describe('Calculation Engine', () => {
       applicableRuleUids: ['stepVolume02'],
       itemDiscounts: [
         {
-          uid: 'TEST',
+          uid: 'TEST_MATCH_3',
           perLineDiscountedAmount: 75,
           setFree: false,
           applicableRuleUid: 'stepVolume02',
@@ -129,7 +127,7 @@ describe('Calculation Engine', () => {
     expect(result).toEqual({ input, meta })
   })
 
-  it('Can create step volume discount rule for uid TEST with 10 item in Cart.', async () => {
+  it('can match for uid TEST with 10 item in Cart.', async () => {
     const stepVolumeDiscount = new StepVolumeDiscountRule(
       'stepVolume03',
       0,
@@ -154,8 +152,7 @@ describe('Calculation Engine', () => {
           discount: 15,
           type: 'percent',
         },
-      ],
-      []
+      ]
     )
 
     const input = {
@@ -186,7 +183,7 @@ describe('Calculation Engine', () => {
     expect(result).toEqual({ input, meta })
   })
 
-  it('Cannot create step volume discount rule for not match Uid', async () => {
+  it('can handle unmatched UID', async () => {
     const stepVolumeDiscount = new StepVolumeDiscountRule(
       'stepVolume04',
       0,
@@ -210,8 +207,7 @@ describe('Calculation Engine', () => {
           discount: 10,
           type: 'percent',
         },
-      ],
-      ['TEST1']
+      ]
     )
 
     const input = {
@@ -241,7 +237,7 @@ describe('Calculation Engine', () => {
     expect(result).toEqual({ input, meta })
   })
 
-  it('Can calculate step only product that match product condition', async () => {
+  it('can handle only matched UID products', async () => {
     const stepVolumeDiscount = new StepVolumeDiscountRule(
       'stepVolume05',
       0,
@@ -265,8 +261,7 @@ describe('Calculation Engine', () => {
           discount: 10,
           type: 'percent',
         },
-      ],
-      ['TEST1']
+      ]
     )
 
     const input = {
@@ -306,7 +301,7 @@ describe('Calculation Engine', () => {
     expect(result).toEqual({ input, meta })
   })
 
-  it('Can calculate combine 2 items steps', async () => {
+  it('Can handle combined 2 items steps', async () => {
     const stepVolumeDiscount = new StepVolumeDiscountRule(
       'stepVolume06',
       0,
@@ -330,8 +325,7 @@ describe('Calculation Engine', () => {
           discount: 10,
           type: 'percent',
         },
-      ],
-      ['TEST', 'TEST1']
+      ]
     )
 
     const input = {
@@ -402,8 +396,7 @@ describe('Calculation Engine', () => {
           discount: 400,
           type: 'fixed',
         },
-      ],
-      []
+      ]
     )
 
     const input = {
@@ -460,8 +453,7 @@ describe('Calculation Engine', () => {
           discount: 400,
           type: 'fixed',
         },
-      ],
-      []
+      ]
     )
 
     const input = {
@@ -525,8 +517,7 @@ describe('Calculation Engine', () => {
           discount: 500,
           type: 'fixed',
         },
-      ],
-      ['TEST1', 'TEST2']
+      ]
     )
 
     const input = {
@@ -590,8 +581,7 @@ describe('Calculation Engine', () => {
           discount: 500,
           type: 'fixed',
         },
-      ],
-      ['TEST1', 'TEST2']
+      ]
     )
 
     const input = {
@@ -661,8 +651,7 @@ describe('Calculation Engine', () => {
           discount: 500,
           type: 'fixed',
         },
-      ],
-      ['TEST1', 'TEST2']
+      ]
     )
 
     const input = {

@@ -1,29 +1,47 @@
-import isEmpty from 'lodash/isEmpty'
-import { ARule } from '../rule'
-import { Action, Condition, UID } from 'index'
+import { Action, UID } from 'index'
+import { InCartRule } from './base'
 import { CalculationBuffer } from '../buffer'
-import ConditionTypes, { JsonConditionType } from './conditionTypes'
+import { JsonConditionType } from './conditionTypes'
 
-export default class FixedPercentRule extends ARule {
+export default class FixedPercentRule extends InCartRule {
+
+  /**
+   * @param uid - uid of Rule
+   * @param priority - priority of Rule
+   * @param name - title of Rule
+   * @param conditions - JSON condition
+   * @param value - 0-100
+   */
   constructor(
     uid: UID,
     priority: number,
     name: string,
-    private readonly conditions: JsonConditionType[],
-    private readonly value: number,
-    private readonly uids?: UID[]
+    conditions: JsonConditionType[],
+    private readonly value: number
   ) {
-    super(uid, priority, name)
+    super(uid, priority, name, conditions)
   }
-
-  parsedConditions = this.conditions.map(condition =>
-    ConditionTypes.parse(condition, this.uid)
-  )
 
   actions = [
     {
       perform: async (input: CalculationBuffer) => {
-        if (isEmpty(this.uids)) {
+        const uids = this.getApplicableCartItemUids(input)
+        if (uids !== 'all' && uids.length) {
+          const itemDiscounts = input.itemDiscounts ? input.itemDiscounts : []
+          const cartItems = input.calculateCartItems(uids)
+          cartItems.items.forEach(item =>
+            itemDiscounts.push({
+              uid: item.uid,
+              perLineDiscountedAmount: (item.totalAmount * this.value) / 100,
+              setFree: false,
+              applicableRuleUid: this.uid,
+            })
+          )
+          return {
+            ...input.itemMeta,
+            itemDiscounts,
+          }
+        } else {
           const subtotal = input.getCartSubtotal()
           const discountWithoutShipping = input.getTotalDiscountWithoutShipping()
           const total = subtotal - discountWithoutShipping
@@ -39,21 +57,6 @@ export default class FixedPercentRule extends ARule {
             ...input.itemMeta,
             wholeCartDiscount,
           }
-        } else {
-          const itemDiscounts = input.itemDiscounts ? input.itemDiscounts : []
-          const cartItems = input.calculateCartItems(this.uids)
-          cartItems.items.forEach(item =>
-            itemDiscounts.push({
-              uid: item.uid,
-              perLineDiscountedAmount: (item.totalAmount * this.value) / 100,
-              setFree: false,
-              applicableRuleUid: this.uid,
-            })
-          )
-          return {
-            ...input.itemMeta,
-            itemDiscounts,
-          }
         }
       },
     },
@@ -61,9 +64,5 @@ export default class FixedPercentRule extends ARule {
 
   getActions(): Action[] {
     return this.actions
-  }
-
-  getConditions(): Condition[] {
-    return this.parsedConditions
   }
 }

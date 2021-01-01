@@ -18,8 +18,7 @@ describe('Calculation Engine', () => {
       0,
       'fixedDiscountPrice',
       conditions,
-      100,
-      []
+      100
     )
 
     const input = {
@@ -64,8 +63,7 @@ describe('Calculation Engine', () => {
       0,
       'fixedDiscountPrice',
       conditions,
-      100,
-      []
+      100
     )
 
     const input = {
@@ -101,8 +99,7 @@ describe('Calculation Engine', () => {
       0,
       'fixedDiscountPrice',
       conditions,
-      100,
-      []
+      100
     )
 
     const input = {

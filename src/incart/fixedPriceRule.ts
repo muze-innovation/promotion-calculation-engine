@@ -1,31 +1,28 @@
-import { ARule } from '../rule'
 import sumBy from 'lodash/sumBy'
 import { Action, Condition, UID } from 'index'
+import { InCartRule } from './base'
 import { CalculationBuffer } from '../buffer'
-import ConditionTypes, { JsonConditionType } from './conditionTypes'
+import { JsonConditionType } from './conditionTypes'
 
-export default class FixedPriceRule extends ARule {
+export default class FixedPriceRule extends InCartRule {
+
   constructor(
     uid: UID,
     priority: number,
     name: string,
-    private readonly conditions: JsonConditionType[],
-    private readonly value: number,
-    private readonly uids: UID[]
+    conditions: JsonConditionType[],
+    private readonly value: number
   ) {
-    super(uid, priority, name)
+    super(uid, priority, name, conditions)
   }
-
-  parsedConditions = this.conditions.map(condition =>
-    ConditionTypes.parse(condition, this.uid)
-  )
 
   actions = [
     {
       perform: async (input: CalculationBuffer) => {
-        if (this.uids.length) {
+        const uids = this.getApplicableCartItemUids(input)
+        if (uids !== 'all' && uids.length) {
           const itemDiscounts = input.itemDiscounts ? input.itemDiscounts : []
-          const itemsToProcess = input.calculateCartItems(this.uids)
+          const itemsToProcess = input.calculateCartItems(uids)
           const totalAmount = sumBy(
             itemsToProcess.items,
             item => item.totalAmount

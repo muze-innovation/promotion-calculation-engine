@@ -1,9 +1,8 @@
-import isEmpty from 'lodash/isEmpty'
 import sumBy from 'lodash/sumBy'
-import { ARule } from '../rule'
+import type { Action, UID } from 'index'
+import { InCartRule } from './base'
+import { JsonConditionType } from './conditionTypes'
 import { CalculationBuffer } from '../buffer'
-import { Action, CalculationEngineMeta, Condition, UID } from 'index'
-import ConditionTypes, { JsonConditionType } from './conditionTypes'
 
 interface Step {
   startQty: number
@@ -12,21 +11,16 @@ interface Step {
   type: 'percent' | 'fixed'
 }
 
-export default class StepVolumeDiscountRule extends ARule {
+export default class StepVolumeDiscountRule extends InCartRule {
   constructor(
     uid: UID,
     priority: number,
     name: string,
-    private readonly conditions: JsonConditionType[],
-    private readonly steps: Step[],
-    private readonly uids: UID[]
+    conditions: JsonConditionType[],
+    private readonly steps: Step[]
   ) {
-    super(uid, priority, name)
+    super(uid, priority, name, conditions)
   }
-
-  parsedConditions = this.conditions.map(condition =>
-    ConditionTypes.parse(condition, this.uid)
-  )
 
   processStep = (totalQty: number) =>
     this.steps.find(step => {
@@ -38,18 +32,17 @@ export default class StepVolumeDiscountRule extends ARule {
 
   actions = [
     {
-      perform: async (
-        calculationBuffer: CalculationBuffer
-      ): Promise<CalculationEngineMeta> => {
-        const itemsToProcess = calculationBuffer.calculateCartItems(this.uids)
+      perform: async (input: CalculationBuffer) => {
+        let uids = this.getApplicableCartItemUids(input)
+        const itemsToProcess = input.calculateCartItems(uids === 'all' ? [] : uids)
         const totalAmount = sumBy(
           itemsToProcess.items,
           item => item.totalAmount
         )
         const step = this.processStep(itemsToProcess.totalQty)
-        if (!isEmpty(this.uids)) {
-          const itemDiscounts = calculationBuffer.itemDiscounts
-            ? calculationBuffer.itemDiscounts
+        if (uids !== 'all' && uids.length > 0) {
+          const itemDiscounts = input.itemDiscounts
+            ? input.itemDiscounts
             : []
           itemsToProcess.items.forEach(item => {
             if (step) {
@@ -75,12 +68,12 @@ export default class StepVolumeDiscountRule extends ARule {
             }
           })
           return {
-            ...calculationBuffer.itemMeta,
+            ...input.itemMeta,
             itemDiscounts,
           }
         } else {
-          const wholeCartDiscount = calculationBuffer.wholeCartDiscount
-            ? calculationBuffer.wholeCartDiscount
+          const wholeCartDiscount = input.wholeCartDiscount
+            ? input.wholeCartDiscount
             : []
           if (step && step.type === 'percent') {
             wholeCartDiscount.push({
@@ -97,7 +90,7 @@ export default class StepVolumeDiscountRule extends ARule {
             })
           }
           return {
-            ...calculationBuffer.itemMeta,
+            ...input.itemMeta,
             wholeCartDiscount,
           }
         }
@@ -107,9 +100,5 @@ export default class StepVolumeDiscountRule extends ARule {
 
   getActions(): Action[] {
     return this.actions
-  }
-
-  getConditions(): Condition[] {
-    return this.parsedConditions
   }
 }

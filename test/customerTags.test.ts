@@ -18,8 +18,7 @@ describe('Calculation Engine', () => {
       0,
       'fixedDiscountPrice',
       conditions,
-      100,
-      []
+      100
     )
 
     const input = {
@@ -69,8 +68,7 @@ describe('Calculation Engine', () => {
       0,
       'fixedDiscountPrice',
       conditions,
-      100,
-      []
+      100
     )
     const input = {
       customer: {
@@ -118,8 +116,7 @@ describe('Calculation Engine', () => {
       0,
       'fixedDiscountPrice',
       firstConditions,
-      100,
-      []
+      100
     )
 
     const secondRule = new FixedPriceRule(
@@ -127,8 +124,7 @@ describe('Calculation Engine', () => {
       0,
       'fixedDiscountPrice',
       secondConditions,
-      200,
-      []
+      200
     )
 
     const input = {
@@ -192,8 +188,7 @@ describe('Calculation Engine', () => {
       0,
       'fixedDiscountPrice',
       firstConditions,
-      100,
-      []
+      100
     )
 
     const secondRule = new FixedPriceRule(
@@ -201,8 +196,7 @@ describe('Calculation Engine', () => {
       0,
       'fixedDiscountPrice',
       secondConditions,
-      200,
-      []
+      200
     )
 
     const input = {

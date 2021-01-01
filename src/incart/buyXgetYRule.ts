@@ -1,31 +1,25 @@
 import minBy from 'lodash/minBy'
-import { ARule } from '../rule'
 import {
   Action,
-  Condition,
   CalculatedCartItems,
   ItemDiscount,
   UID,
 } from 'index'
+import { InCartRule } from './base'
 import { CalculationBuffer } from '../buffer'
-import ConditionTypes, { JsonConditionType } from './conditionTypes'
+import { JsonConditionType } from './conditionTypes'
 
-export default class BuyXGetYRule extends ARule {
+export default class BuyXGetYRule extends InCartRule {
   constructor(
     uid: UID,
     priority: number,
     name: string,
-    private readonly conditions: JsonConditionType[],
+    conditions: JsonConditionType[],
     private readonly x: number,
-    private readonly y: number,
-    private readonly uids?: UID[]
+    private readonly y: number
   ) {
-    super(uid, priority, name)
+    super(uid, priority, name, conditions)
   }
-
-  parsedConditions = this.conditions.map(condition =>
-    ConditionTypes.parse(condition, this.uid)
-  )
 
   private getFreeItems(
     cartItems: CalculatedCartItems,
@@ -61,7 +55,8 @@ export default class BuyXGetYRule extends ARule {
   actions = [
     {
       perform: async (input: CalculationBuffer) => {
-        const cartItems = input.calculateCartItems(this.uids)
+        let uids = this.getApplicableCartItemUids(input)
+        const cartItems = input.calculateCartItems(uids === 'all' ? [] : uids)
         const itemDiscounts = input.itemDiscounts ? input.itemDiscounts : []
         const remainder = cartItems.totalQty % (this.x + this.y)
         const freeQty =
@@ -80,9 +75,5 @@ export default class BuyXGetYRule extends ARule {
 
   getActions(): Action[] {
     return this.actions
-  }
-
-  getConditions(): Condition[] {
-    return this.parsedConditions
   }
 }

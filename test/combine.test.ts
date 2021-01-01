@@ -38,8 +38,7 @@ describe('Calculation Engine', () => {
           discount: 15,
           type: 'percent',
         },
-      ],
-      ['TEST']
+      ]
     )
 
     const input = {
@@ -120,8 +119,7 @@ describe('Calculation Engine', () => {
           discount: 15,
           type: 'percent',
         },
-      ],
-      []
+      ]
     )
 
     const input = {
@@ -212,8 +210,7 @@ describe('Calculation Engine', () => {
           discount: 600,
           type: 'fixed',
         },
-      ],
-      ['TEST']
+      ]
     )
     const x = 3
     const y = 2
@@ -297,8 +294,7 @@ describe('Calculation Engine', () => {
           discount: 300,
           type: 'fixed',
         },
-      ],
-      []
+      ]
     )
 
     const input = {

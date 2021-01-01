@@ -21,9 +21,9 @@ export class CalculationEngine {
     for (const rule of sorted) {
       const conditions = rule.getConditions()
       const actions = rule.getActions()
-      const results = !input.ignoreCondition
-        ? await Promise.all(conditions.map((o: Condition) => o.check(buffer)))
-        : []
+      const results = input.ignoreCondition
+        ? []
+        : await Promise.all(conditions.map((o: Condition) => o.check(buffer)))
       if (results.includes(false)) {
         continue
       }

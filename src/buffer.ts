@@ -16,6 +16,60 @@ import {
 } from 'index'
 import { ARule } from './rule'
 
+export interface TaxonomyQuery {
+  /**
+   * Using 'AND' will need all conditions met.
+   * Using 'OR' will need at least one taxonomy met.
+   */
+  condition: 'AND' | 'OR'
+
+  /**
+   * If true, applicable condition will be used to prevent adding product into processing pool.
+   */
+  exclusion: boolean
+
+  /**
+   * List of value to compare against given CartItem
+   * If this value contain empty list. The taxnomoy condition is considered as disabled
+   */
+  values: (string | number)[]
+}
+
+class TaxonomyQueryProcessor {
+
+  private valueSet: Set<string>
+
+  constructor(
+      public readonly type: 'category' | 'tag',
+      public readonly q: TaxonomyQuery
+    ) {
+    this.valueSet = new Set<string>((q.values || []).map(String))
+  }
+  
+  get isValid(): boolean {
+    return this.valueSet.size > 0
+  }
+
+  isMatch(item: CartItem): 'include' | 'exclude' | false {
+    const poolToQuery = this.type === 'category' ? item.categories : item.tags
+    const matchedCount = poolToQuery.reduce<number>((c, tax) => c + (this.valueSet.has(`${tax}`) ? 1 : 0), 0)
+    let matched: boolean
+    switch (this.q.condition) {
+    case 'AND': matched = matchedCount === this.valueSet.size; break
+    case 'OR': matched = matchedCount > 0; break
+    }
+    return matched ? (this.q.exclusion ? 'exclude' : 'include') : false
+  }
+
+  static make(type: 'category' | 'tag', q: TaxonomyQuery | undefined) {
+    return new TaxonomyQueryProcessor(type, q || {
+      condition: 'AND',
+      exclusion: false,
+      values: [],
+    })
+  }
+}
+
 export class CalculationBuffer implements CalculationEngineOutput {
   constructor(
     public readonly input: CalculationEngineInput,
@@ -66,6 +120,38 @@ export class CalculationBuffer implements CalculationEngineOutput {
 
   get usageCounts(): UsageCount[] | undefined {
     return this.input.usageCounts
+  }
+
+  /**
+   * Filter list of items based on UID, categories, tags, 
+   */
+  filterApplicableCartItems(rawUids: UID[], taxonomies?: { categories?: TaxonomyQuery, tags?: TaxonomyQuery }): CartItem[] | 'all' {
+    const categories = TaxonomyQueryProcessor.make('category', taxonomies?.categories)
+    const tags = TaxonomyQueryProcessor.make('tag', taxonomies?.tags)
+    const uids = new Set<string>((rawUids && rawUids.map(String) || []))
+    if (uids.size === 0 && !categories.isValid && !tags.isValid) {
+      return 'all'
+    }
+    return this.input.items.filter((item) => {
+      // Process UID whitelist
+      const itemUid = `${item.uid}`
+      if (uids.size > 0 && uids.has(itemUid)) {
+        return true
+      }
+      if (categories.isValid) {
+        const r = categories.isMatch(item)
+        if (r) {
+          return r === 'include'
+        }
+      }
+      if (tags.isValid) {
+        const r = tags.isMatch(item)
+        if (r) {
+          return r === 'include'
+        }
+      }
+      return false
+    })
   }
 
   getDiscountFor(uid: UID) {
@@ -120,8 +206,6 @@ export class CalculationBuffer implements CalculationEngineOutput {
   setApplicableRuleUids(applicableRuleUids: UID[]): void {
     this.meta.applicableRuleUids = applicableRuleUids
   }
-
-  // TODO: Add extra methods there.
 
   calculateCartItems(uids?: UID[]): CalculatedCartItems {
     return this.input.items.reduce(

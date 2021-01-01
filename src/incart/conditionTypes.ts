@@ -23,6 +23,22 @@ export interface UidCondition {
   uids: UID[]
 }
 
+export interface CategoryCondition {
+  type: 'category'
+  value: {
+    condition: 'and' | 'or' | 'not'
+    values: UID[]
+  }
+}
+
+export interface TagCondition {
+  type: 'tag'
+  value: {
+    condition: 'and' | 'or' | 'not'
+    values: string[]
+  }
+}
+
 export interface UsageLimitCondition {
   type: 'usage_limit'
   value: number
@@ -46,6 +62,8 @@ export type JsonConditionType =
   | UsageLimitCondition
   | UsesPerCustomerCondition
   | CustomerGroupCondition
+  | CategoryCondition
+  | TagCondition
 
 export class ConditionTypes {
   static parse(raw: JsonConditionType, salesRuleId?: UID): Condition {
@@ -77,6 +95,34 @@ export class ConditionTypes {
           check: async (input: CalculationBuffer) => {
             if (isEmpty(raw.uids)) return false
             return input.items.some(item => raw.uids.includes(item.uid))
+          },
+        }
+      case 'category':
+        return {
+          check: async (input: CalculationBuffer) => {
+            if (isEmpty(raw.value)) return false
+            const found = input.filterApplicableCartItems([], {
+              categories: {
+                condition: raw.value.condition === 'and' ? 'AND' : 'OR',
+                exclusion: raw.value.condition === 'not',
+                values: raw.value.values.map(o => `${o}`),
+              },
+            })
+            return found && found.length > 0
+          },
+        }
+      case 'tag':
+        return {
+          check: async (input: CalculationBuffer) => {
+            if (isEmpty(raw.value)) return false
+            const found = input.filterApplicableCartItems([], {
+              tags: {
+                condition: raw.value.condition === 'and' ? 'AND' : 'OR',
+                exclusion: raw.value.condition === 'not',
+                values: raw.value.values,
+              }
+            })
+            return found && found.length > 0
           },
         }
       case 'usage_limit':

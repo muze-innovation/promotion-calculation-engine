@@ -1,21 +1,8 @@
-import { ARule } from '../rule'
-import { Action, Condition, UID } from 'index'
+import { Action } from 'index'
+import { InCartRule } from './base'
 import { CalculationBuffer } from '../buffer'
-import ConditionTypes, { JsonConditionType } from './conditionTypes'
 
-export default class FreeShippingRule extends ARule {
-  constructor(
-    uid: UID,
-    priority: number,
-    name: string,
-    private readonly conditions: JsonConditionType[]
-  ) {
-    super(uid, priority, name)
-  }
-
-  parsedConditions = this.conditions.map(condition =>
-    ConditionTypes.parse(condition, this.uid)
-  )
+export default class FreeShippingRule extends InCartRule {
 
   actions = [
     {
@@ -48,9 +35,5 @@ export default class FreeShippingRule extends ARule {
 
   getActions(): Action[] {
     return this.actions
-  }
-
-  getConditions(): Condition[] {
-    return this.parsedConditions
   }
 }

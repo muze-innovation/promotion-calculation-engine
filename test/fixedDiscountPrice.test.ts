@@ -6,7 +6,7 @@ describe('Calculation Engine', () => {
   const engine = new CalculationEngine()
 
   it('discount fixed price : discount < subtotal', async () => {
-    const rule = new FixedPriceRule(1, 0, 'fixedDiscountPrice', [], 100, [])
+    const rule = new FixedPriceRule(1, 0, 'fixedDiscountPrice', [], 100)
 
     const input = {
       items: [
@@ -43,8 +43,7 @@ describe('Calculation Engine', () => {
       0,
       'fixedDiscountPrice',
       [],
-      500,
-      []
+      500
     )
 
     const input = {
@@ -87,8 +86,7 @@ describe('Calculation Engine', () => {
           uids: ['ABC', 'EFG'],
         },
       ],
-      200,
-      ['ABC', 'EFG']
+      200
     )
     const input = {
       items: [
@@ -145,8 +143,7 @@ describe('Calculation Engine', () => {
           uids: ['ABC'],
         },
       ],
-      200,
-      ['ABC']
+      200
     )
     const input = {
       items: [
@@ -197,8 +194,7 @@ describe('Calculation Engine', () => {
           uids: ['ABC'],
         },
       ],
-      200,
-      ['ABC']
+      200
     )
     const input = {
       items: [
