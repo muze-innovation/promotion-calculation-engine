@@ -20,7 +20,7 @@ describe('Category Conditions', () => {
         uid: 'TEST2',
         cartItemIndexKey: '0',
         qty: 3,
-        perItemPrice: 500,
+        perItemPrice: 200,
         categories: [],
         tags: ['TAG#2'],
       },
@@ -53,6 +53,45 @@ describe('Category Conditions', () => {
   }
 
   const ruleIdThatMatch = '0001'
+
+  it('Can apply not condition', async () => {
+    const totalValueApplicabelToDiscount = 500 * 5 + 3 * 200
+    const itemDiscounts = [
+      {
+        uid: 'TEST',
+        perLineDiscountedAmount: 10 * ((500 * 5) / totalValueApplicabelToDiscount), // 10 THB - split by value
+        setFree: false,
+        applicableRuleUid: ruleIdThatMatch,
+      },
+      {
+        uid: 'TEST2',
+        perLineDiscountedAmount: 10 * ((3 * 200) / totalValueApplicabelToDiscount), // 10 THB - split by value
+        setFree: false,
+        applicableRuleUid: ruleIdThatMatch,
+      }
+    ]
+    const discountAmount = new FixedPriceRule(ruleIdThatMatch, 0, '10 THB per item on selected item', [
+      {
+        type: 'category',
+        value: { condition: 'not', values: ['TEST_CAT_3_SKUS'] }
+      }
+    ], 10) // 10 THB
+
+    const input = {
+      ...cartContentWithoutRules,
+      rules: [
+        discountAmount
+      ]
+    }
+
+    const result = await engine.process(input, {})
+
+    const meta = {
+      applicableRuleUids: [ruleIdThatMatch],
+      itemDiscounts,
+    }
+    expect(result).toEqual({ input, meta })
+  })
 
   it('Can apply category based selection for % discount.', async () => {
     const discountItem = {

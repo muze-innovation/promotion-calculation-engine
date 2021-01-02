@@ -3,6 +3,7 @@ import {
   CalculationEngineInput,
   CalculationEngineMeta,
   CalculationEngineOutput,
+  CalculationEngineOption,
   Condition,
 } from './index'
 import { CalculationBuffer } from './buffer'
@@ -10,10 +11,17 @@ import { CalculationBuffer } from './buffer'
 export class CalculationEngine {
   async process(
     input: CalculationEngineInput,
-    meta: CalculationEngineMeta
+    meta: CalculationEngineMeta,
+    rawOptions?: CalculationEngineOption
   ): Promise<CalculationEngineOutput> {
     // Sort rules
     const sorted = orderBy(input.rules, ['priority', 'uid'], ['asc', 'desc'])
+    const opt = {
+      ...rawOptions,
+      verbose: !rawOptions?.verbose
+        ? ((...message: string[]) => rawOptions?.verbose?.apply(['[CLE]', ...message]))
+        : undefined
+    }
 
     // Perform reducing
     let buffer = new CalculationBuffer(input, meta)
@@ -27,11 +35,13 @@ export class CalculationEngine {
       if (results.includes(false)) {
         continue
       }
+      opt.verbose && opt.verbose(`Processing rule "${rule.name}"`)
       const applicableRuleUids = buffer.applicableRuleUids || []
       applicableRuleUids.push(rule.uid)
       buffer.setApplicableRuleUids(applicableRuleUids)
       for (const action of actions) {
         const meta = await action.perform(buffer)
+        opt.verbose && opt.verbose(`Result of "${rule.name}" ... ${JSON.stringify(meta)}`)
         buffer = buffer.recreate(meta)
       }
     }

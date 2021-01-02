@@ -1,5 +1,4 @@
 import isNil from 'lodash/isNil'
-import isEmpty from 'lodash/isEmpty'
 import { Condition, UID } from 'index'
 import { CalculationBuffer } from '../buffer'
 
@@ -93,14 +92,14 @@ export class ConditionTypes {
       case 'uids':
         return {
           check: async (input: CalculationBuffer) => {
-            if (isEmpty(raw.uids)) return false
+            if (!raw.uids || raw.uids.length <= 0) return false
             return input.items.some(item => raw.uids.includes(item.uid))
           },
         }
       case 'category':
         return {
           check: async (input: CalculationBuffer) => {
-            if (isEmpty(raw.value)) return false
+            if (!raw.value || !raw.value.values || raw.value.values.length <= 0) return false
             const found = input.filterApplicableCartItems([], {
               categories: {
                 condition: raw.value.condition === 'and' ? 'AND' : 'OR',
@@ -114,7 +113,7 @@ export class ConditionTypes {
       case 'tag':
         return {
           check: async (input: CalculationBuffer) => {
-            if (isEmpty(raw.value)) return false
+            if (!raw.value || !raw.value.values || raw.value.values.length <= 0) return false
             const found = input.filterApplicableCartItems([], {
               tags: {
                 condition: raw.value.condition === 'and' ? 'AND' : 'OR',

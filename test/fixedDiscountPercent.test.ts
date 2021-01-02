@@ -2,41 +2,88 @@ import { CalculationEngine } from '../src/engine'
 import { FixedPercentRule } from '../src/incart'
 // TEST CASE
 
-describe('Calculation Engine', () => {
+describe('Discount with fixed percent', () => {
   const engine = new CalculationEngine()
+  
+  const inputNoRule = {
+    items: [
+      {
+        uid: 'ABC1',
+        cartItemIndexKey: '0',
+        qty: 2,
+        perItemPrice: 100,
+        categories: ['Main'],
+        tags: ['TAG#1'],
+      },
+      {
+        uid: 'ABC2',
+        cartItemIndexKey: '0',
+        qty: 1,
+        perItemPrice: 11,
+        categories: ['Non-Main'],
+        tags: ['TAG#1'],
+      },
+    ],
+  }
 
-  it('discount fixed percent', async () => {
+  it('can handle perItem discount', async () => {
     const rule = new FixedPercentRule(
-      'fixed01',
+      'fixed10perc',
       0,
       'fixedDiscountPercent',
-      [],
-      20
+      [
+        {
+          type: 'uids',
+          uids: ['ABC2'],
+        }
+      ],
+      10
     )
 
     const input = {
-      items: [
+      ...inputNoRule,
+      rules: [rule],
+    }
+  
+    const result = await engine.process(input, {})
+
+    const meta = {
+      applicableRuleUids: ['fixed10perc'],
+      itemDiscounts: [
         {
-          uid: 'ABC',
-          cartItemIndexKey: '0',
-          qty: 2,
-          perItemPrice: 100,
-          categories: ['Main'],
-          tags: ['TAG#1'],
+          perLineDiscountedAmount: 1.1,
+          setFree: false,
+          applicableRuleUid: 'fixed10perc',
+          uid: 'ABC2',
         },
       ],
+    }
+    expect(result).toEqual({ input, meta })
+  })
+
+  it('can handle wholcart discount', async () => {
+    const rule = new FixedPercentRule(
+      'fixed10',
+      0,
+      'fixedDiscountPercent',
+      [],
+      10
+    )
+
+    const input = {
+      ...inputNoRule,
       rules: [rule],
     }
 
     const result = await engine.process(input, {})
 
     const meta = {
-      applicableRuleUids: ['fixed01'],
+      applicableRuleUids: ['fixed10'],
       wholeCartDiscount: [
         {
-          discountedAmount: 40,
+          discountedAmount: 21.1, // (200 + 11) * 10%
           setFree: false,
-          applicableRuleUid: 'fixed01',
+          applicableRuleUid: 'fixed10',
         },
       ],
     }

@@ -58,7 +58,9 @@ class TaxonomyQueryProcessor {
     case 'AND': matched = matchedCount === this.valueSet.size; break
     case 'OR': matched = matchedCount > 0; break
     }
-    return matched ? (this.q.exclusion ? 'exclude' : 'include') : false
+    return matched 
+      ? (this.q.exclusion ? 'exclude' : 'include')
+      : (this.q.exclusion ? 'include' : false )
   }
 
   static make(type: 'category' | 'tag', q: TaxonomyQuery | undefined) {

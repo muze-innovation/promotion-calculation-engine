@@ -153,6 +153,14 @@ export interface CalculationEngineMeta {
   wholeCartDiscount?: WholeCartDiscount[]
 }
 
+export interface CalculationEngineOption {
+
+  /**
+   * Print verbose message
+   */
+  verbose?: (...message: string[]) => void
+}
+
 export interface CalculatedCartItem extends CartItem {
   totalAmount: number
   totalDiscounted: number
