@@ -1,6 +1,6 @@
 import sumBy from 'lodash/sumBy'
 import isEmpty from 'lodash/isEmpty'
-import {
+import type {
   CalculationEngineInput,
   CalculationEngineMeta,
   CalculationEngineOutput,
