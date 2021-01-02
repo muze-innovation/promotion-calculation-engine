@@ -13,7 +13,7 @@ describe('Category Conditions', () => {
         cartItemIndexKey: '0',
         qty: 5,
         perItemPrice: 500,
-        categories: ['TEST_CAT_SINGLE'],
+        categories: ['TEST_CAT_SINGLE', 'TEST_AND_COND'],
         tags: ['TAG#1'],
       },
       {
@@ -29,7 +29,7 @@ describe('Category Conditions', () => {
         cartItemIndexKey: '0',
         qty: 2,
         perItemPrice: 500,
-        categories: ['TEST_CAT_3_SKUS'],
+        categories: ['TEST_CAT_3_SKUS', 'TEST_AND_COND'],
         tags: ['TAG#3'],
       },
       {
@@ -91,6 +91,90 @@ describe('Category Conditions', () => {
       itemDiscounts,
     }
     expect(result).toEqual({ input, meta })
+  })
+
+  it('Can apply or condition', async () => {
+    const totalValueApplicabelToDiscount = 500 * 5 + (2 * 500) + (1 * 1000) + (2 * 1000)
+    const itemDiscounts = [
+      {
+        uid: 'TEST',
+        perLineDiscountedAmount: 100 * ((500 * 5) / totalValueApplicabelToDiscount), // 100 THB - split by value
+        setFree: false,
+        applicableRuleUid: ruleIdThatMatch,
+      },
+      {
+        uid: 'TEST3',
+        perLineDiscountedAmount: 100 * ((2 * 500) / totalValueApplicabelToDiscount), // 100 THB - split by value
+        setFree: false,
+        applicableRuleUid: ruleIdThatMatch,
+      },
+      {
+        uid: 'TEST4',
+        perLineDiscountedAmount: 100 * ((1 * 1000) / totalValueApplicabelToDiscount), // 100 THB - split by value
+        setFree: false,
+        applicableRuleUid: ruleIdThatMatch,
+      },
+      {
+        uid: 'TEST5',
+        perLineDiscountedAmount: 100 * ((2 * 1000) / totalValueApplicabelToDiscount), // 100 THB - split by value
+        setFree: false,
+        applicableRuleUid: ruleIdThatMatch,
+      }
+    ]
+    const discountAmount = new FixedPriceRule(ruleIdThatMatch, 0, '100 THB per item on selected item', [
+      {
+        type: 'category',
+        value: { condition: 'or', values: ['TEST_CAT_SINGLE', 'TEST_CAT_3_SKUS'] }
+      }
+    ], 100) // 100 THB
+
+    const input = {
+      ...cartContentWithoutRules,
+      rules: [
+        discountAmount
+      ]
+    }
+
+    const result = await engine.process(input, {})
+
+    const meta = {
+      applicableRuleUids: [ruleIdThatMatch],
+      itemDiscounts,
+    }
+    expect(result).toEqual({ input, meta })
+  })
+
+  it('Can apply and condition', async () => {
+    const itemDiscounts = [
+      {
+        uid: 'TEST3',
+        perLineDiscountedAmount: 200, // 200 THB - split by value (but noting to split)
+        setFree: false,
+        applicableRuleUid: ruleIdThatMatch,
+      },
+    ]
+    const discountAmount = new FixedPriceRule(ruleIdThatMatch, 0, '100 THB per item on selected item', [
+      {
+        type: 'category',
+        value: { condition: 'and', values: ['TEST_AND_COND', 'TEST_CAT_3_SKUS'] }
+      }
+    ], 200) // 200 THB
+
+    const input = {
+      ...cartContentWithoutRules,
+      rules: [
+        discountAmount
+      ]
+    }
+
+    const result = await engine.process(input, {})
+
+    const meta = {
+      applicableRuleUids: [ruleIdThatMatch],
+      itemDiscounts,
+    }
+    expect(result).toEqual({ input, meta })
+
   })
 
   it('Can apply category based selection for % discount.', async () => {
