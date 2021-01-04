@@ -1,10 +1,5 @@
 import minBy from 'lodash/minBy'
-import {
-  Action,
-  CalculatedCartItems,
-  ItemDiscount,
-  UID,
-} from 'index'
+import { Action, CalculatedCartItems, ItemDiscount, UID } from 'index'
 import { InCartRule } from './base'
 import { CalculationBuffer } from '../buffer'
 import { JsonConditionType } from './conditionTypes'

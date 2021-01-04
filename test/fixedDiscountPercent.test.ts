@@ -4,7 +4,7 @@ import { FixedPercentRule } from '../src/incart'
 
 describe('Discount with fixed percent', () => {
   const engine = new CalculationEngine()
-  
+
   const inputNoRule = {
     items: [
       {
@@ -35,7 +35,7 @@ describe('Discount with fixed percent', () => {
         {
           type: 'uids',
           uids: ['ABC2'],
-        }
+        },
       ],
       10
     )
@@ -44,7 +44,7 @@ describe('Discount with fixed percent', () => {
       ...inputNoRule,
       rules: [rule],
     }
-  
+
     const result = await engine.process(input, {})
 
     const meta = {

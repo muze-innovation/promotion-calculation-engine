@@ -3,7 +3,6 @@ import { InCartRule } from './base'
 import { CalculationBuffer } from '../buffer'
 
 export default class FreeShippingRule extends InCartRule {
-
   actions = [
     {
       perform: async (input: CalculationBuffer) => {

@@ -5,7 +5,6 @@ import { CalculationBuffer } from '../buffer'
 import { JsonConditionType } from './conditionTypes'
 
 export default class FixedPriceRule extends InCartRule {
-
   constructor(
     uid: UID,
     priority: number,

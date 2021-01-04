@@ -1,4 +1,4 @@
-import type { Action, Condition, UID } from 'index'
+import { Action, Condition, UID } from 'index'
 
 export abstract class ARule {
   constructor(

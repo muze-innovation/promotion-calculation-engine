@@ -1,5 +1,5 @@
 import sumBy from 'lodash/sumBy'
-import type { Action, UID } from 'index'
+import { Action, UID } from 'index'
 import { InCartRule } from './base'
 import { JsonConditionType } from './conditionTypes'
 import { CalculationBuffer } from '../buffer'
@@ -34,16 +34,16 @@ export default class StepVolumeDiscountRule extends InCartRule {
     {
       perform: async (input: CalculationBuffer) => {
         let uids = this.getApplicableCartItemUids(input)
-        const itemsToProcess = input.calculateCartItems(uids === 'all' ? [] : uids)
+        const itemsToProcess = input.calculateCartItems(
+          uids === 'all' ? [] : uids
+        )
         const totalAmount = sumBy(
           itemsToProcess.items,
           item => item.totalAmount
         )
         const step = this.processStep(itemsToProcess.totalQty)
         if (uids !== 'all' && uids.length > 0) {
-          const itemDiscounts = input.itemDiscounts
-            ? input.itemDiscounts
-            : []
+          const itemDiscounts = input.itemDiscounts ? input.itemDiscounts : []
           itemsToProcess.items.forEach(item => {
             if (step) {
               if (step.type === 'percent') {

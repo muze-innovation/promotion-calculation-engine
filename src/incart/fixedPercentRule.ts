@@ -4,7 +4,6 @@ import { CalculationBuffer } from '../buffer'
 import { JsonConditionType } from './conditionTypes'
 
 export default class FixedPercentRule extends InCartRule {
-
   /**
    * @param uid - uid of Rule
    * @param priority - priority of Rule

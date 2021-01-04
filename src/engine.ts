@@ -1,11 +1,11 @@
 import orderBy from 'lodash/orderBy'
-import type {
+import {
   CalculationEngineInput,
   CalculationEngineMeta,
   CalculationEngineOutput,
   CalculationEngineOption,
   Condition,
-} from './index'
+} from 'index'
 import { CalculationBuffer } from './buffer'
 
 export class CalculationEngine {
@@ -19,8 +19,9 @@ export class CalculationEngine {
     const opt = {
       ...rawOptions,
       verbose: !rawOptions?.verbose
-        ? ((...message: string[]) => rawOptions?.verbose?.apply(['[CLE]', ...message]))
-        : undefined
+        ? (...message: string[]) =>
+            rawOptions?.verbose?.apply(['[CLE]', ...message])
+        : undefined,
     }
 
     // Perform reducing
@@ -41,7 +42,8 @@ export class CalculationEngine {
       buffer.setApplicableRuleUids(applicableRuleUids)
       for (const action of actions) {
         const meta = await action.perform(buffer)
-        opt.verbose && opt.verbose(`Result of "${rule.name}" ... ${JSON.stringify(meta)}`)
+        opt.verbose &&
+          opt.verbose(`Result of "${rule.name}" ... ${JSON.stringify(meta)}`)
         buffer = buffer.recreate(meta)
       }
     }

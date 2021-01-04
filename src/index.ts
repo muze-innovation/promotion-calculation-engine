@@ -154,7 +154,6 @@ export interface CalculationEngineMeta {
 }
 
 export interface CalculationEngineOption {
-
   /**
    * Print verbose message
    */

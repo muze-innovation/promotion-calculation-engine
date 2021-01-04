@@ -99,7 +99,8 @@ export class ConditionTypes {
       case 'category':
         return {
           check: async (input: CalculationBuffer) => {
-            if (!raw.value || !raw.value.values || raw.value.values.length <= 0) return false
+            if (!raw.value || !raw.value.values || raw.value.values.length <= 0)
+              return false
             const found = input.filterApplicableCartItems([], {
               categories: {
                 condition: raw.value.condition === 'and' ? 'AND' : 'OR',
@@ -113,13 +114,14 @@ export class ConditionTypes {
       case 'tag':
         return {
           check: async (input: CalculationBuffer) => {
-            if (!raw.value || !raw.value.values || raw.value.values.length <= 0) return false
+            if (!raw.value || !raw.value.values || raw.value.values.length <= 0)
+              return false
             const found = input.filterApplicableCartItems([], {
               tags: {
                 condition: raw.value.condition === 'and' ? 'AND' : 'OR',
                 exclusion: raw.value.condition === 'not',
                 values: raw.value.values,
-              }
+              },
             })
             return found && found.length > 0
           },
