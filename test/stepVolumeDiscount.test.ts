@@ -233,7 +233,16 @@ describe('Step Volume Discount', () => {
     }
 
     const result = await engine.process(input, {})
-    const meta = {}
+    const meta = {
+      unapplicableRules: [
+        {
+          uid: 'stepVolume04',
+          errors: [
+            "This promotion doesn't apply to any product in this order.",
+          ],
+        },
+      ],
+    }
     expect(result).toEqual({ input, meta })
   })
 
@@ -677,7 +686,16 @@ describe('Step Volume Discount', () => {
     }
 
     const result = await engine.process(input, {})
-    const meta = {}
+    const meta = {
+      unapplicableRules: [
+        {
+          uid: 'fixedStepVolume04',
+          errors: [
+            "This promotion doesn't apply to any product in this order.",
+          ],
+        },
+      ],
+    }
     expect(result).toEqual({ input, meta })
   })
 })

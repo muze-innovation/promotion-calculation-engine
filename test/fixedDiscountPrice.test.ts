@@ -212,7 +212,16 @@ describe('Calculation Engine', () => {
 
     const result = await engine.process(input, {})
 
-    const meta = {}
+    const meta = {
+      unapplicableRules: [
+        {
+          uid: '0004',
+          errors: [
+            "This promotion doesn't apply to any product in this order.",
+          ],
+        },
+      ],
+    }
     expect(result).toEqual({ input, meta })
   })
 })

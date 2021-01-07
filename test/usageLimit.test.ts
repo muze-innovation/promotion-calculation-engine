@@ -83,7 +83,14 @@ describe('Calculation Engine', () => {
 
     const result = await engine.process(input, {})
 
-    const meta = {}
+    const meta = {
+      unapplicableRules: [
+        {
+          uid: 2,
+          errors: ['This promotion usage limit has been exceeded.'],
+        },
+      ],
+    }
     expect(result).toEqual({ input, meta })
   })
 
