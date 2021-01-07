@@ -33,6 +33,12 @@ describe('Calculation Engine', () => {
         },
       ],
       rules: [rule],
+      customer: {
+        uniqueId: 1,
+        email: 'xx@xxxx.com',
+        msisdn: 'x',
+        isNewCustomer: false,
+      },
       usageCounts: [{ salesRuleId: '01', byCustomer: 4 }],
     }
 
@@ -78,12 +84,25 @@ describe('Calculation Engine', () => {
         },
       ],
       rules: [rule],
+      customer: {
+        uniqueId: 1,
+        email: 'xx@xxxx.com',
+        msisdn: 'x',
+        isNewCustomer: false,
+      },
       usageCounts: [{ salesRuleId: '02', byCustomer: 5 }],
     }
 
     const result = await engine.process(input, {})
 
-    const meta = {}
+    const meta = {
+      unapplicableRules: [
+        {
+          uid: '02',
+          errors: ["Your usage limit for this promotion has been exceeded."],
+        },
+      ],
+    }
     expect(result).toEqual({ input, meta })
   })
 
@@ -114,6 +133,12 @@ describe('Calculation Engine', () => {
         },
       ],
       rules: [rule],
+      customer: {
+        uniqueId: 1,
+        email: 'xx@xxxx.com',
+        msisdn: 'x',
+        isNewCustomer: false,
+      },
       usageCounts: [{ salesRuleId: '03', byCustomer: 1 }],
       ignoreCondition: true,
     }

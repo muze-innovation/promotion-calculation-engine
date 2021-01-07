@@ -6,11 +6,10 @@ import { JsonConditionType } from '../src/incart/conditionTypes'
 describe('Calculation Engine', () => {
   const engine = new CalculationEngine()
 
-  it('old customer case', async () => {
+  it('new customer case', async () => {
     const conditions: JsonConditionType[] = [
       {
-        type: 'subtotal_at_least',
-        value: 200,
+        type: 'new_customer',
       },
     ]
     const rule = new FixedPriceRule(
@@ -43,15 +42,23 @@ describe('Calculation Engine', () => {
 
     const result = await engine.process(input, {})
 
-    const meta = {}
+    const meta = {
+      applicableRuleUids: ['newCustomer01'],
+      wholeCartDiscount: [
+        {
+          applicableRuleUid: 'newCustomer01',
+          discountedAmount: 100,
+          setFree: false,
+        },
+      ],
+    }
     expect(result).toEqual({ input, meta })
   })
 
   it('old customer case', async () => {
     const conditions: JsonConditionType[] = [
       {
-        type: 'subtotal_at_least',
-        value: 200,
+        type: 'new_customer',
       },
     ]
     const rule = new FixedPriceRule(
@@ -67,7 +74,7 @@ describe('Calculation Engine', () => {
         uniqueId: 1,
         email: 'test@test.com',
         msisdn: 'A',
-        isNewCustomer: true,
+        isNewCustomer: false,
       },
       items: [
         {
@@ -84,7 +91,14 @@ describe('Calculation Engine', () => {
 
     const result = await engine.process(input, {})
 
-    const meta = {}
+    const meta = {
+      unapplicableRules: [
+        {
+          uid: 'newCustomer02',
+          errors: ['This promotion only apply to new customer.'],
+        },
+      ],
+    }
     expect(result).toEqual({ input, meta })
   })
 })

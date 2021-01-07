@@ -13,6 +13,7 @@ import {
   CalculatedCartItems,
   UID,
   UsageCount,
+  UnapplicableRule,
 } from 'index'
 import { ARule } from './rule'
 
@@ -121,6 +122,10 @@ export class CalculationBuffer implements CalculationEngineOutput {
     return this.meta.applicableRuleUids
   }
 
+  get unapplicableRules(): UnapplicableRule[] | undefined {
+    return this.meta.unapplicableRules
+  }
+
   get itemDiscounts(): ItemDiscount[] | undefined {
     return this.meta.itemDiscounts
   }
@@ -227,6 +232,12 @@ export class CalculationBuffer implements CalculationEngineOutput {
   setApplicableRuleUids(applicableRuleUids: UID[]): void {
     this.meta.applicableRuleUids = applicableRuleUids
   }
+
+  setUnapplicableRules(unapplicableRules: UnapplicableRule[]): void {
+    this.meta.unapplicableRules = unapplicableRules
+  }
+
+  // TODO: Add extra methods there.
 
   calculateCartItems(uids?: UID[]): CalculatedCartItems {
     return this.input.items.reduce(

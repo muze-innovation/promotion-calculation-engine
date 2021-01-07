@@ -69,7 +69,14 @@ describe('Calculation Engine', () => {
 
     const result = await engine.process(input, {})
 
-    const meta = {}
+    const meta = {
+      unapplicableRules: [
+        {
+          uid: 2,
+          errors: ["Subtotal amount doesn't reach the minimum requirement."],
+        },
+      ],
+    }
     expect(result).toEqual({ input, meta })
   })
 })

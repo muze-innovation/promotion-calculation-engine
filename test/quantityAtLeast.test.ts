@@ -97,7 +97,14 @@ describe('Calculation Engine', () => {
 
     const result = await engine.process(input, {})
 
-    const meta = {}
+    const meta = {
+      unapplicableRules: [
+        {
+          uid: 'quantity02',
+          errors: ["Item quantities doesn't reach the minimum requirement."],
+        },
+      ],
+    }
     expect(result).toEqual({ input, meta })
   })
 })

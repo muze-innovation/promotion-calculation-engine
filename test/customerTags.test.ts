@@ -92,7 +92,14 @@ describe('Calculation Engine', () => {
     }
 
     const result = await engine.process(input, {})
-    const meta = {}
+    const meta = {
+      unapplicableRules: [
+        {
+          uid: 'customerTag02',
+          errors: ["This promotion doesn't apply to your customer group"],
+        },
+      ],
+    }
     expect(result).toEqual({ input, meta })
   })
 
@@ -168,7 +175,7 @@ describe('Calculation Engine', () => {
     expect(result).toEqual({ input, meta })
   })
 
-  it('customerGroups match all combine many rules', async () => {
+  it('customerGroups match some combine many rules', async () => {
     const firstConditions: JsonConditionType[] = [
       {
         type: 'customer_group',
@@ -222,6 +229,12 @@ describe('Calculation Engine', () => {
 
     const meta = {
       applicableRuleUids: [1],
+      unapplicableRules: [
+        {
+          uid: 2,
+          errors: ["This promotion doesn't apply to your customer group"],
+        },
+      ],
       wholeCartDiscount: [
         {
           discountedAmount: 100,

@@ -129,6 +129,11 @@ export interface WholeCartDiscount {
   applicableRuleUid: UID
 }
 
+export interface UnapplicableRule {
+  uid: UID
+  errors: string[]
+}
+
 /**
  * System calculation result use this as a carry over from one step to another.
  */
@@ -137,6 +142,12 @@ export interface CalculationEngineMeta {
    * all rules id that can apply to cart
    */
   applicableRuleUids?: UID[]
+
+  /**
+   * all rules id and error that can't apply to cart
+   */
+  unapplicableRules?: UnapplicableRule[]
+
   /**
    * Discount calculated per items.
    */
@@ -185,7 +196,7 @@ export interface Condition {
    *
    * @param input
    */
-  check(input: CalculationBuffer): Promise<boolean>
+  check(input: CalculationBuffer): Promise<string[]>
 }
 
 export type CalculationEngineOutput = CalculationEngineInput &

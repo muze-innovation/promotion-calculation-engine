@@ -1,4 +1,7 @@
 import orderBy from 'lodash/orderBy'
+import isEmpty from 'lodash/isEmpty'
+import flatten from 'lodash/flatten'
+import uniq from 'lodash/uniq'
 import {
   CalculationEngineInput,
   CalculationEngineMeta,
@@ -30,10 +33,19 @@ export class CalculationEngine {
     for (const rule of sorted) {
       const conditions = rule.getConditions()
       const actions = rule.getActions()
-      const results = input.ignoreCondition
-        ? []
-        : await Promise.all(conditions.map((o: Condition) => o.check(buffer)))
-      if (results.includes(false)) {
+      const conditionResults = !input.ignoreCondition
+        ? await Promise.all(conditions.map((o: Condition) => o.check(buffer)))
+        : []
+      const flattenConditionResults = uniq(flatten(conditionResults))
+      if (!isEmpty(flattenConditionResults)) {
+        const previousUnapplicableRules = buffer.unapplicableRules || []
+        buffer.setUnapplicableRules([
+          ...previousUnapplicableRules,
+          {
+            uid: rule.uid,
+            errors: flattenConditionResults,
+          },
+        ])
         continue
       }
       opt.verbose && opt.verbose(`Processing rule "${rule.name}"`)

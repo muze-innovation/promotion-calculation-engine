@@ -19,7 +19,23 @@ export default class FixedPriceRule extends InCartRule {
     {
       perform: async (input: CalculationBuffer) => {
         const uids = this.getApplicableCartItemUids(input)
-        if (uids !== 'all' && uids.length) {
+        if (uids === 'all') {
+          const subtotal = input.getCartSubtotal()
+          const discountWithoutShipping = input.getTotalDiscountWithoutShipping()
+          const total = subtotal - discountWithoutShipping
+          const wholeCartDiscount = input.wholeCartDiscount
+            ? input.wholeCartDiscount
+            : []
+          wholeCartDiscount.push({
+            discountedAmount: total < this.value ? subtotal : this.value,
+            setFree: false,
+            applicableRuleUid: this.uid,
+          })
+          return {
+            ...input.itemMeta,
+            wholeCartDiscount,
+          }
+        } else if (uids.length) {
           const itemDiscounts = input.itemDiscounts ? input.itemDiscounts : []
           const itemsToProcess = input.calculateCartItems(uids)
           const totalAmount = sumBy(
@@ -40,23 +56,8 @@ export default class FixedPriceRule extends InCartRule {
             ...input.itemMeta,
             itemDiscounts,
           }
-        } else {
-          const subtotal = input.getCartSubtotal()
-          const discountWithoutShipping = input.getTotalDiscountWithoutShipping()
-          const total = subtotal - discountWithoutShipping
-          const wholeCartDiscount = input.wholeCartDiscount
-            ? input.wholeCartDiscount
-            : []
-          wholeCartDiscount.push({
-            discountedAmount: total < this.value ? subtotal : this.value,
-            setFree: false,
-            applicableRuleUid: this.uid,
-          })
-          return {
-            ...input.itemMeta,
-            wholeCartDiscount,
-          }
         }
+        return { ...input.itemMeta }
       },
     },
   ]

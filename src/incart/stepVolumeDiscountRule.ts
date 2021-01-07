@@ -42,7 +42,29 @@ export default class StepVolumeDiscountRule extends InCartRule {
           item => item.totalAmount
         )
         const step = this.processStep(itemsToProcess.totalQty)
-        if (uids !== 'all' && uids.length > 0) {
+        if (uids === 'all') {
+          const wholeCartDiscount = input.wholeCartDiscount
+            ? input.wholeCartDiscount
+            : []
+          if (step && step.type === 'percent') {
+            wholeCartDiscount.push({
+              discountedAmount: (totalAmount * step.discount) / 100,
+              setFree: false,
+              applicableRuleUid: this.uid,
+            })
+          } else if (step && step.type === 'fixed') {
+            wholeCartDiscount.push({
+              discountedAmount:
+                step.discount > totalAmount ? totalAmount : step.discount,
+              setFree: false,
+              applicableRuleUid: this.uid,
+            })
+          }
+          return {
+            ...input.itemMeta,
+            wholeCartDiscount,
+          }
+        } else if (uids.length > 0) {
           const itemDiscounts = input.itemDiscounts ? input.itemDiscounts : []
           itemsToProcess.items.forEach(item => {
             if (step) {
@@ -71,29 +93,8 @@ export default class StepVolumeDiscountRule extends InCartRule {
             ...input.itemMeta,
             itemDiscounts,
           }
-        } else {
-          const wholeCartDiscount = input.wholeCartDiscount
-            ? input.wholeCartDiscount
-            : []
-          if (step && step.type === 'percent') {
-            wholeCartDiscount.push({
-              discountedAmount: (totalAmount * step.discount) / 100,
-              setFree: false,
-              applicableRuleUid: this.uid,
-            })
-          } else if (step && step.type === 'fixed') {
-            wholeCartDiscount.push({
-              discountedAmount:
-                step.discount > totalAmount ? totalAmount : step.discount,
-              setFree: false,
-              applicableRuleUid: this.uid,
-            })
-          }
-          return {
-            ...input.itemMeta,
-            wholeCartDiscount,
-          }
         }
+        return { ...input.itemMeta }
       },
     },
   ]
