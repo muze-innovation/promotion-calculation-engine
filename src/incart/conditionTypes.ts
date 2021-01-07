@@ -1,4 +1,6 @@
 import isNil from 'lodash/isNil'
+import isEmpty from 'lodash/isEmpty'
+import keyBy from 'lodash/keyBy'
 import { Condition, UID } from 'index'
 import { CalculationBuffer } from '../buffer'
 
@@ -73,91 +75,164 @@ export class ConditionTypes {
             const subtotal = input.getCartSubtotal()
             const discountWithoutShipping = input.getTotalDiscountWithoutShipping()
             const total = subtotal - discountWithoutShipping
-            return total >= raw.value
+            const errors = []
+            if (total < raw.value) {
+              errors.push(
+                "Subtotal amount doesn't reach the minimum requirement."
+              )
+            }
+            return errors
           },
         }
       case 'quantity_at_least':
         return {
           check: async (input: CalculationBuffer) => {
             const cartItems = input.calculateCartItems(raw.uids)
-            return cartItems.totalQty >= raw.value
+            const errors = []
+            if (cartItems.totalQty < raw.value) {
+              errors.push(
+                "Item quantities doesn't reach the minimum requirement."
+              )
+            }
+            return errors
           },
         }
       case 'new_customer':
         return {
           check: async (input: CalculationBuffer) => {
-            return !!input?.customer?.isNewCustomer
+            const errors = []
+            if (!input?.customer?.isNewCustomer) {
+              errors.push('This promotion only apply to new customer.')
+            }
+            return errors
           },
         }
       case 'uids':
         return {
           check: async (input: CalculationBuffer) => {
-            if (!raw.uids || raw.uids.length <= 0) return false
-            return input.items.some(item => raw.uids.includes(item.uid))
+            const errors = []
+            if (isEmpty(raw.uids)) {
+              errors.push("This promotion doesn't apply to any product.")
+            } else {
+              const conditionUids = keyBy(raw.uids)
+              if (!input.items.some(item => conditionUids[item.uid])) {
+                errors.push(
+                  "This promotion doesn't apply to any product in this order."
+                )
+              }
+            }
+            return errors
           },
         }
       case 'category':
         return {
           check: async (input: CalculationBuffer) => {
-            if (!raw.value || !raw.value.values || raw.value.values.length <= 0)
-              return false
-            const found = input.filterApplicableCartItems([], {
-              categories: {
-                condition: raw.value.condition === 'and' ? 'AND' : 'OR',
-                exclusion: raw.value.condition === 'not',
-                values: raw.value.values.map(o => `${o}`),
-              },
-            })
-            return found && found.length > 0
+            const errors = []
+            if (
+              !raw.value ||
+              !raw.value.values ||
+              raw.value.values.length <= 0
+            ) {
+              errors.push('Something went wrong.')
+            } else {
+              const found = input.filterApplicableCartItems([], {
+                categories: {
+                  condition: raw.value.condition === 'and' ? 'AND' : 'OR',
+                  exclusion: raw.value.condition === 'not',
+                  values: raw.value.values.map(o => `${o}`),
+                },
+              })
+              if (isEmpty(found)) {
+                errors.push(
+                  "This promotion doesn't apply to any product in this order."
+                )
+              }
+            }
+            return errors
           },
         }
       case 'tag':
         return {
           check: async (input: CalculationBuffer) => {
-            if (!raw.value || !raw.value.values || raw.value.values.length <= 0)
-              return false
-            const found = input.filterApplicableCartItems([], {
-              tags: {
-                condition: raw.value.condition === 'and' ? 'AND' : 'OR',
-                exclusion: raw.value.condition === 'not',
-                values: raw.value.values,
-              },
-            })
-            return found && found.length > 0
+            const errors = []
+            if (
+              !raw.value ||
+              !raw.value.values ||
+              raw.value.values.length <= 0
+            ) {
+              errors.push('Something went wrong.')
+            } else {
+              const found = input.filterApplicableCartItems([], {
+                tags: {
+                  condition: raw.value.condition === 'and' ? 'AND' : 'OR',
+                  exclusion: raw.value.condition === 'not',
+                  values: raw.value.values,
+                },
+              })
+              if (isEmpty(found)) {
+                errors.push(
+                  "This promotion doesn't apply to any product in this order."
+                )
+              }
+            }
+            return errors
           },
         }
       case 'usage_limit':
         return {
           check: async (input: CalculationBuffer) => {
-            if (isNil(salesRuleId) || isNil(input.customer?.uniqueId))
-              return false
-
-            const salesRuleUsageCount = input.usageCounts?.find(
-              usageCount => usageCount.salesRuleId === salesRuleId
-            )
-            const totalCount = salesRuleUsageCount?.total
-            return !isNil(totalCount) ? totalCount < raw.value : false
+            const errors = []
+            if (isNil(salesRuleId)) {
+              errors.push('Something went wrong.')
+            } else {
+              const salesRuleUsageCount = input.usageCounts?.find(
+                usageCount => usageCount.salesRuleId === salesRuleId
+              )
+              const totalCount = salesRuleUsageCount?.total
+              if (isNil(totalCount) || isNil(input.customer?.uniqueId)) {
+                errors.push('This promotion is only apply to a member.')
+              } else if (totalCount >= raw.value) {
+                errors.push('This promotion usage limit has been exceeded.')
+              }
+            }
+            return errors
           },
         }
       case 'uses_per_customer':
         return {
           check: async (input: CalculationBuffer) => {
-            if (isNil(salesRuleId)) return false
-
-            const salesRuleUsageCount = input.usageCounts?.find(
-              usageCount => usageCount.salesRuleId === salesRuleId
-            )
-            const byCustomerCount = salesRuleUsageCount?.byCustomer
-            return !isNil(byCustomerCount) ? byCustomerCount < raw.value : false
+            const errors = []
+            if (isNil(salesRuleId)) {
+              errors.push('Something went wrong.')
+            } else {
+              const salesRuleUsageCount = input.usageCounts?.find(
+                usageCount => usageCount.salesRuleId === salesRuleId
+              )
+              const byCustomerCount = salesRuleUsageCount?.byCustomer
+              if (isNil(byCustomerCount) || isNil(input.customer?.uniqueId)) {
+                errors.push('This promotion is only apply to a member.')
+              } else if (byCustomerCount >= raw.value) {
+                errors.push(
+                  'Your usage limit for this promotion has been exceeded.'
+                )
+              }
+            }
+            return errors
           },
         }
       case 'customer_group':
         return {
           check: async (input: CalculationBuffer) => {
+            const errors = []
             const setCustomerGroups = new Set(input?.customer?.customerGroups)
-            return raw.value.every(customerGroup =>
-              setCustomerGroups.has(customerGroup)
-            )
+            if (
+              !raw.value.every(customerGroup =>
+                setCustomerGroups.has(customerGroup)
+              )
+            ) {
+              errors.push("This promotion doesn't apply to your customer group")
+            }
+            return errors
           },
         }
     }

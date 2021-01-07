@@ -25,22 +25,7 @@ export default class FixedPercentRule extends InCartRule {
     {
       perform: async (input: CalculationBuffer) => {
         const uids = this.getApplicableCartItemUids(input)
-        if (uids !== 'all' && uids.length) {
-          const itemDiscounts = input.itemDiscounts ? input.itemDiscounts : []
-          const cartItems = input.calculateCartItems(uids)
-          cartItems.items.forEach(item =>
-            itemDiscounts.push({
-              uid: item.uid,
-              perLineDiscountedAmount: (item.totalAmount * this.value) / 100,
-              setFree: false,
-              applicableRuleUid: this.uid,
-            })
-          )
-          return {
-            ...input.itemMeta,
-            itemDiscounts,
-          }
-        } else {
+        if (uids === 'all') {
           const subtotal = input.getCartSubtotal()
           const discountWithoutShipping = input.getTotalDiscountWithoutShipping()
           const total = subtotal - discountWithoutShipping
@@ -56,7 +41,23 @@ export default class FixedPercentRule extends InCartRule {
             ...input.itemMeta,
             wholeCartDiscount,
           }
+        } else if (uids.length) {
+          const itemDiscounts = input.itemDiscounts ? input.itemDiscounts : []
+          const cartItems = input.calculateCartItems(uids)
+          cartItems.items.forEach(item =>
+            itemDiscounts.push({
+              uid: item.uid,
+              perLineDiscountedAmount: (item.totalAmount * this.value) / 100,
+              setFree: false,
+              applicableRuleUid: this.uid,
+            })
+          )
+          return {
+            ...input.itemMeta,
+            itemDiscounts,
+          }
         }
+        return { ...input.itemMeta }
       },
     },
   ]
