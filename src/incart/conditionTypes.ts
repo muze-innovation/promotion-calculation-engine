@@ -28,7 +28,7 @@ export interface CategoryCondition {
   type: 'category'
   value: {
     condition: 'and' | 'or' | 'not'
-    values: UID[]
+    values: string[]
   }
 }
 

@@ -104,7 +104,8 @@ describe('Calculation Engine', () => {
     const buyXGetY_32 = new BuyXGetYRule(uid1, 0, 'buyXGetY_32', 
     [
       {
-        type: 'uids',
+        type: 'quantity_at_least',
+        value: 3,
         uids: ['TEST'],
       },
     ], 2, 1)

@@ -36,6 +36,8 @@ export abstract class InCartRule extends ARule {
     for (const cond of this.conditions) {
       if (cond.type === 'uids') {
         uids.push(...cond.uids)
+      } else if (cond.type === 'quantity_at_least' && cond.uids) {
+        uids.push(...cond.uids)
       } else if (cond.type === 'category') {
         catCondition = cond
       } else if (cond.type === 'tag') {
