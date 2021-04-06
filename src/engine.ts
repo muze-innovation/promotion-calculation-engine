@@ -8,8 +8,22 @@ import {
   CalculationEngineOutput,
   CalculationEngineOption,
   Condition,
+  UnapplicableRule,
+  UID,
 } from 'index'
 import { CalculationBuffer } from './buffer'
+
+const appendRuleErrors = (
+  previousUnapplicableRules: UnapplicableRule[] = [],
+  ruleUid: UID,
+  error: string[]
+): UnapplicableRule[] => [
+  ...previousUnapplicableRules,
+  {
+    uid: ruleUid,
+    errors: error,
+  },
+]
 
 export class CalculationEngine {
   async process(
@@ -29,8 +43,19 @@ export class CalculationEngine {
 
     // Perform reducing
     let buffer = new CalculationBuffer(input, meta)
-
+    let stopRulesProcessing = false
     for (const rule of sorted) {
+      // Add error to unprocessed rules.
+      const previousUnapplicableRules = buffer.unapplicableRules
+      if (stopRulesProcessing) {
+        buffer.setUnapplicableRules(
+          appendRuleErrors(previousUnapplicableRules, rule.uid, [
+            'This promotion cannot be applied.',
+          ])
+        )
+        continue
+      }
+
       const conditions = rule.getConditions()
       const actions = rule.getActions()
       const conditionResults = !input.ignoreCondition
@@ -38,14 +63,13 @@ export class CalculationEngine {
         : []
       const flattenConditionResults = uniq(flatten(conditionResults))
       if (!isEmpty(flattenConditionResults)) {
-        const previousUnapplicableRules = buffer.unapplicableRules || []
-        buffer.setUnapplicableRules([
-          ...previousUnapplicableRules,
-          {
-            uid: rule.uid,
-            errors: flattenConditionResults,
-          },
-        ])
+        buffer.setUnapplicableRules(
+          appendRuleErrors(
+            previousUnapplicableRules,
+            rule.uid,
+            flattenConditionResults
+          )
+        )
         continue
       }
       opt.verbose && opt.verbose(`Processing rule "${rule.name}"`)
@@ -57,6 +81,11 @@ export class CalculationEngine {
         opt.verbose &&
           opt.verbose(`Result of "${rule.name}" ... ${JSON.stringify(meta)}`)
         buffer = buffer.recreate(meta)
+      }
+
+      // Discard subsequence rules.
+      if (rule.stopRulesProcessing) {
+        stopRulesProcessing = true
       }
     }
 

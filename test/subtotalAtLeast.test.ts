@@ -13,7 +13,14 @@ describe('Calculation Engine', () => {
         value: 200,
       },
     ]
-    const rule = new FixedPriceRule(1, 0, 'fixedDiscountPrice', conditions, 100)
+    const rule = new FixedPriceRule(
+      1,
+      0,
+      'fixedDiscountPrice',
+      false,
+      conditions,
+      100
+    )
 
     const input = {
       items: [
@@ -51,7 +58,14 @@ describe('Calculation Engine', () => {
         value: 200,
       },
     ]
-    const rule = new FixedPriceRule(2, 0, 'fixedDiscountPrice', conditions, 100)
+    const rule = new FixedPriceRule(
+      2,
+      0,
+      'fixedDiscountPrice',
+      false,
+      conditions,
+      100
+    )
 
     const input = {
       items: [

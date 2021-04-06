@@ -15,10 +15,11 @@ export default class FixedPercentRule extends InCartRule {
     uid: UID,
     priority: number,
     name: string,
+    stopRulesProcessing: boolean,
     conditions: JsonConditionType[],
     private readonly value: number
   ) {
-    super(uid, priority, name, conditions)
+    super(uid, priority, name, stopRulesProcessing, conditions)
   }
 
   actions = [

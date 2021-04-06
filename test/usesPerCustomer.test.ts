@@ -17,6 +17,7 @@ describe('Calculation Engine', () => {
       '01',
       0,
       'fixedDiscountPrice',
+      false,
       conditions,
       100
     )
@@ -68,6 +69,7 @@ describe('Calculation Engine', () => {
       '02',
       0,
       'fixedDiscountPrice',
+      false,
       conditions,
       100
     )
@@ -99,7 +101,7 @@ describe('Calculation Engine', () => {
       unapplicableRules: [
         {
           uid: '02',
-          errors: ["Your usage limit for this promotion has been exceeded."],
+          errors: ['Your usage limit for this promotion has been exceeded.'],
         },
       ],
     }
@@ -117,6 +119,7 @@ describe('Calculation Engine', () => {
       '03',
       0,
       'fixedDiscountPrice',
+      false,
       conditions,
       100
     )

@@ -31,6 +31,7 @@ describe('Discount with fixed percent', () => {
       'fixed10perc',
       0,
       'fixedDiscountPercent',
+      false,
       [
         {
           type: 'uids',
@@ -66,6 +67,7 @@ describe('Discount with fixed percent', () => {
       'fixed10',
       0,
       'fixedDiscountPercent',
+      false,
       [],
       10
     )

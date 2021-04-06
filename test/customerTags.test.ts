@@ -17,6 +17,7 @@ describe('Calculation Engine', () => {
       'customerTag01',
       0,
       'fixedDiscountPrice',
+      false,
       conditions,
       100
     )
@@ -67,6 +68,7 @@ describe('Calculation Engine', () => {
       'customerTag02',
       0,
       'fixedDiscountPrice',
+      false,
       conditions,
       100
     )
@@ -122,6 +124,7 @@ describe('Calculation Engine', () => {
       1,
       0,
       'fixedDiscountPrice',
+      false,
       firstConditions,
       100
     )
@@ -130,6 +133,7 @@ describe('Calculation Engine', () => {
       2,
       0,
       'fixedDiscountPrice',
+      false,
       secondConditions,
       200
     )
@@ -194,6 +198,7 @@ describe('Calculation Engine', () => {
       1,
       0,
       'fixedDiscountPrice',
+      false,
       firstConditions,
       100
     )
@@ -202,6 +207,7 @@ describe('Calculation Engine', () => {
       2,
       0,
       'fixedDiscountPrice',
+      false,
       secondConditions,
       200
     )

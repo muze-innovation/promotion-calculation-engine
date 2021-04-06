@@ -16,6 +16,7 @@ describe('Calculation Engine', () => {
       'newCustomer01',
       0,
       'fixedDiscountPrice',
+      false,
       conditions,
       100
     )
@@ -65,6 +66,7 @@ describe('Calculation Engine', () => {
       'newCustomer02',
       0,
       'fixedDiscountPrice',
+      false,
       conditions,
       100
     )
