@@ -17,6 +17,7 @@ describe('Calculation Engine', () => {
       'quantity01',
       0,
       'fixedDiscountPrice',
+      false,
       conditions,
       100
     )
@@ -69,6 +70,7 @@ describe('Calculation Engine', () => {
       'quantity02',
       0,
       'fixedDiscountPrice',
+      false,
       conditions,
       100
     )

@@ -16,7 +16,7 @@ describe('Calculation Engine', () => {
     const uid = '0001'
     const x = 3
     const y = 2
-    const buyXGetY = new BuyXGetYRule(uid, 0, 'buyXGetY', [], x, y)
+    const buyXGetY = new BuyXGetYRule(uid, 0, 'buyXGetY', false, [], x, y)
 
     const input = {
       items: [
@@ -45,7 +45,7 @@ describe('Calculation Engine', () => {
     const uid = '0001'
     const x = 3
     const y = 2
-    const buyXGetY = new BuyXGetYRule(uid, 0, 'buyXGetY', [], x, y)
+    const buyXGetY = new BuyXGetYRule(uid, 0, 'buyXGetY', false, [], x, y)
 
     const input = {
       items: [
@@ -74,7 +74,7 @@ describe('Calculation Engine', () => {
     const uid = '0001'
     const x = 3
     const y = 2
-    const buyXGetY = new BuyXGetYRule(uid, 0, 'buyXGetY', [], x, y)
+    const buyXGetY = new BuyXGetYRule(uid, 0, 'buyXGetY', false, [], x, y)
 
     const input = {
       items: [
@@ -101,22 +101,36 @@ describe('Calculation Engine', () => {
 
   it('Can create pick-3-pay-2 rule for uid TEST AND buy-1-get-1 for UID TEST2 in Cart.', async () => {
     const uid1 = '0001'
-    const buyXGetY_32 = new BuyXGetYRule(uid1, 0, 'buyXGetY_32', 
-    [
-      {
-        type: 'quantity_at_least',
-        value: 3,
-        uids: ['TEST'],
-      },
-    ], 2, 1)
+    const buyXGetY_32 = new BuyXGetYRule(
+      uid1,
+      0,
+      'buyXGetY_32',
+      false,
+      [
+        {
+          type: 'quantity_at_least',
+          value: 3,
+          uids: ['TEST'],
+        },
+      ],
+      2,
+      1
+    )
     const uid2 = '0002'
-    const buyXGetY_11 = new BuyXGetYRule(uid2, 1, 'buyXGetY_11', 
-    [
-      {
-        type: 'uids',
-        uids: ['TEST2'],
-      },
-    ], 1, 1)
+    const buyXGetY_11 = new BuyXGetYRule(
+      uid2,
+      1,
+      'buyXGetY_11',
+      false,
+      [
+        {
+          type: 'uids',
+          uids: ['TEST2'],
+        },
+      ],
+      1,
+      1
+    )
 
     const input = {
       items: [
@@ -135,7 +149,7 @@ describe('Calculation Engine', () => {
           perItemPrice: 990,
           categories: ['Main'],
           tags: ['TAG#1'],
-        }
+        },
       ],
       rules: [buyXGetY_32, buyXGetY_11],
     }
@@ -174,7 +188,7 @@ describe('Calculation Engine', () => {
           perLineDiscountedAmount: 990,
           setFree: true,
           applicableRuleUid: '0002',
-        }
+        },
       ],
     }
     expect(result).toEqual({ input, meta })

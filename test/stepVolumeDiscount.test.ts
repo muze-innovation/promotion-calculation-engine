@@ -10,6 +10,7 @@ describe('Step Volume Discount', () => {
       'stepVolume01',
       0,
       'Can create step volume discount rule for uid TEST with 3 item in Cart.',
+      false,
       [],
       [
         {
@@ -67,6 +68,7 @@ describe('Step Volume Discount', () => {
       'stepVolume02',
       0,
       'Step volume Discount',
+      false,
       [
         {
           type: 'uids',
@@ -132,6 +134,7 @@ describe('Step Volume Discount', () => {
       'stepVolume03',
       0,
       'Can create step volume discount rule for uid TEST with 10 item in Cart',
+      false,
       [],
       [
         {
@@ -188,6 +191,7 @@ describe('Step Volume Discount', () => {
       'stepVolume04',
       0,
       'Cannot create step volume discount rule for not match Uid',
+      false,
       [
         {
           type: 'uids',
@@ -251,6 +255,7 @@ describe('Step Volume Discount', () => {
       'stepVolume05',
       0,
       'Can calculate step only product that match product condition',
+      false,
       [
         {
           type: 'uids',
@@ -315,6 +320,7 @@ describe('Step Volume Discount', () => {
       'stepVolume06',
       0,
       'Can calculate step only product that match product condition',
+      false,
       [
         {
           type: 'uids',
@@ -385,6 +391,7 @@ describe('Step Volume Discount', () => {
       'fixedStepVolume01',
       0,
       '5 items in cart get 200 discount.',
+      false,
       [],
       [
         {
@@ -442,6 +449,7 @@ describe('Step Volume Discount', () => {
       'fixedStepVolume02',
       0,
       '8 items in cart get 400 discount.',
+      false,
       [],
       [
         {
@@ -507,6 +515,7 @@ describe('Step Volume Discount', () => {
       'fixedStepVolume03',
       0,
       '1 of product uids matches salesrule uid condition',
+      false,
       [
         {
           type: 'uids',
@@ -571,6 +580,7 @@ describe('Step Volume Discount', () => {
       'fixedStepVolume04',
       0,
       'multiple product uids match salesrule uid condition',
+      false,
       [
         {
           type: 'uids',
@@ -641,6 +651,7 @@ describe('Step Volume Discount', () => {
       'fixedStepVolume04',
       0,
       'multiple product uids match salesrule uid condition',
+      false,
       [
         {
           type: 'uids',

@@ -9,6 +9,7 @@ describe('Calculation Engine', () => {
       'freeShipping01',
       0,
       'freeShipping',
+      false,
       []
     )
 
@@ -58,6 +59,7 @@ describe('Calculation Engine', () => {
       'freeShipping02',
       0,
       'freeShipping',
+      false,
       []
     )
 

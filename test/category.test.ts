@@ -81,6 +81,7 @@ describe('Category Conditions', () => {
       ruleIdThatMatch,
       0,
       '10 THB per item on selected item',
+      false,
       [
         {
           type: 'category',
@@ -141,6 +142,7 @@ describe('Category Conditions', () => {
       ruleIdThatMatch,
       0,
       '100 THB per item on selected item',
+      false,
       [
         {
           type: 'category',
@@ -180,6 +182,7 @@ describe('Category Conditions', () => {
       ruleIdThatMatch,
       0,
       '100 THB per item on selected item',
+      false,
       [
         {
           type: 'category',
@@ -217,6 +220,7 @@ describe('Category Conditions', () => {
       ruleIdThatMatch,
       0,
       '10% on selected item',
+      false,
       [
         {
           type: 'category',
@@ -245,6 +249,7 @@ describe('Category Conditions', () => {
       ruleIdThatMatch,
       0,
       '10% on selected item',
+      false,
       [
         {
           type: 'category',
@@ -280,6 +285,7 @@ describe('Category Conditions', () => {
       ruleIdThatMatch,
       0,
       '20% on selected >5 item',
+      false,
       [
         {
           type: 'category',
@@ -346,6 +352,7 @@ describe('Category Conditions', () => {
       ruleIdThatMatch,
       0,
       'Buy 2 get 3 (Cheapest of least UID)',
+      false,
       [
         {
           type: 'category',
@@ -395,6 +402,7 @@ describe('Category Conditions', () => {
       ruleIdThatMatch,
       0,
       'Buy 5 get 1 (Cheapest of least UID)',
+      false,
       [
         {
           type: 'category',
