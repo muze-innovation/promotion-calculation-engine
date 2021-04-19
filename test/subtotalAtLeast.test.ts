@@ -18,6 +18,7 @@ describe('Calculation Engine', () => {
       0,
       'fixedDiscountPrice',
       false,
+      false,
       conditions,
       100
     )
@@ -48,7 +49,7 @@ describe('Calculation Engine', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('no discount case: subtotal < at least', async () => {
@@ -62,6 +63,7 @@ describe('Calculation Engine', () => {
       2,
       0,
       'fixedDiscountPrice',
+      false,
       false,
       conditions,
       100
@@ -91,6 +93,6 @@ describe('Calculation Engine', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 })

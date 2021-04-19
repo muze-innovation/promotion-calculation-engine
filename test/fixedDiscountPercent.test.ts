@@ -32,6 +32,7 @@ describe('Discount with fixed percent', () => {
       0,
       'fixedDiscountPercent',
       false,
+      false,
       [
         {
           type: 'uids',
@@ -59,7 +60,7 @@ describe('Discount with fixed percent', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('can handle wholcart discount', async () => {
@@ -67,6 +68,7 @@ describe('Discount with fixed percent', () => {
       'fixed10',
       0,
       'fixedDiscountPercent',
+      false,
       false,
       [],
       10
@@ -89,6 +91,6 @@ describe('Discount with fixed percent', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 })

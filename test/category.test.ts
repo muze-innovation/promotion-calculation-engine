@@ -82,6 +82,7 @@ describe('Category Conditions', () => {
       0,
       '10 THB per item on selected item',
       false,
+      false,
       [
         {
           type: 'category',
@@ -102,7 +103,7 @@ describe('Category Conditions', () => {
       applicableRuleUids: [ruleIdThatMatch],
       itemDiscounts,
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('Can apply or condition', async () => {
@@ -143,6 +144,7 @@ describe('Category Conditions', () => {
       0,
       '100 THB per item on selected item',
       false,
+      false,
       [
         {
           type: 'category',
@@ -166,7 +168,7 @@ describe('Category Conditions', () => {
       applicableRuleUids: [ruleIdThatMatch],
       itemDiscounts,
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('Can apply and condition', async () => {
@@ -182,6 +184,7 @@ describe('Category Conditions', () => {
       ruleIdThatMatch,
       0,
       '100 THB per item on selected item',
+      false,
       false,
       [
         {
@@ -206,7 +209,7 @@ describe('Category Conditions', () => {
       applicableRuleUids: [ruleIdThatMatch],
       itemDiscounts,
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('Can apply category based selection for % discount.', async () => {
@@ -220,6 +223,7 @@ describe('Category Conditions', () => {
       ruleIdThatMatch,
       0,
       '10% on selected item',
+      false,
       false,
       [
         {
@@ -241,7 +245,7 @@ describe('Category Conditions', () => {
       applicableRuleUids: [ruleIdThatMatch],
       itemDiscounts: [discountItem],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('Can apply category based selection for amount discount.', async () => {
@@ -249,6 +253,7 @@ describe('Category Conditions', () => {
       ruleIdThatMatch,
       0,
       '10% on selected item',
+      false,
       false,
       [
         {
@@ -277,7 +282,7 @@ describe('Category Conditions', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('Can apply category based selection for % step discount.', async () => {
@@ -285,6 +290,7 @@ describe('Category Conditions', () => {
       ruleIdThatMatch,
       0,
       '20% on selected >5 item',
+      false,
       false,
       [
         {
@@ -344,7 +350,7 @@ describe('Category Conditions', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('Can be applied with buy x get y rule', async () => {
@@ -352,6 +358,7 @@ describe('Category Conditions', () => {
       ruleIdThatMatch,
       0,
       'Buy 2 get 3 (Cheapest of least UID)',
+      false,
       false,
       [
         {
@@ -393,8 +400,8 @@ describe('Category Conditions', () => {
         },
       ],
     }
-    expect(result.itemDiscounts?.length).toEqual(meta.itemDiscounts.length)
-    expect(result).toEqual({ input, meta })
+    expect(result.meta.itemDiscounts?.length).toEqual(meta.itemDiscounts.length)
+    expect(result.meta).toEqual(meta)
   })
 
   it('Can correct disable buy x get y condition, when category does not matched requirements', async () => {
@@ -402,6 +409,7 @@ describe('Category Conditions', () => {
       ruleIdThatMatch,
       0,
       'Buy 5 get 1 (Cheapest of least UID)',
+      false,
       false,
       [
         {
@@ -424,6 +432,6 @@ describe('Category Conditions', () => {
       applicableRuleUids: [ruleIdThatMatch],
       itemDiscounts: [],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 })

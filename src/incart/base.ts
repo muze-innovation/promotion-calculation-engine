@@ -15,9 +15,10 @@ export abstract class InCartRule extends ARule {
     priority: number,
     name: string,
     stopRulesProcessing: boolean,
+    notEligibleToPriceTier: boolean,
     protected readonly conditions: JsonConditionType[]
   ) {
-    super(uid, priority, name, stopRulesProcessing)
+    super(uid, priority, name, stopRulesProcessing, notEligibleToPriceTier)
 
     this.parsedConditions = this.conditions.map(condition =>
       ConditionTypes.parse(condition, uid)

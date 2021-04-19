@@ -18,6 +18,7 @@ describe('Calculation Engine', () => {
       0,
       'fixedDiscountPrice',
       false,
+      false,
       conditions,
       100
     )
@@ -55,7 +56,7 @@ describe('Calculation Engine', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('no discount case: usage count >= usage limit', async () => {
@@ -69,6 +70,7 @@ describe('Calculation Engine', () => {
       2,
       0,
       'fixedDiscountPrice',
+      false,
       false,
       conditions,
       100
@@ -105,7 +107,7 @@ describe('Calculation Engine', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('cause has ignoreCondition: usage count >= usage limit but has ignoreCondition', async () => {
@@ -119,6 +121,7 @@ describe('Calculation Engine', () => {
       1,
       0,
       'fixedDiscountPrice',
+      false,
       false,
       conditions,
       100
@@ -158,6 +161,6 @@ describe('Calculation Engine', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 })

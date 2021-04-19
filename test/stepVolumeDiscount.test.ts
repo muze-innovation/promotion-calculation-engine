@@ -11,6 +11,7 @@ describe('Step Volume Discount', () => {
       0,
       'Can create step volume discount rule for uid TEST with 3 item in Cart.',
       false,
+      false,
       [],
       [
         {
@@ -60,7 +61,7 @@ describe('Step Volume Discount', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('can match for uid TEST with 5 item in Cart.', async () => {
@@ -68,6 +69,7 @@ describe('Step Volume Discount', () => {
       'stepVolume02',
       0,
       'Step volume Discount',
+      false,
       false,
       [
         {
@@ -126,7 +128,7 @@ describe('Step Volume Discount', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('can match for uid TEST with 10 item in Cart.', async () => {
@@ -134,6 +136,7 @@ describe('Step Volume Discount', () => {
       'stepVolume03',
       0,
       'Can create step volume discount rule for uid TEST with 10 item in Cart',
+      false,
       false,
       [],
       [
@@ -183,7 +186,7 @@ describe('Step Volume Discount', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('can handle unmatched UID', async () => {
@@ -191,6 +194,7 @@ describe('Step Volume Discount', () => {
       'stepVolume04',
       0,
       'Cannot create step volume discount rule for not match Uid',
+      false,
       false,
       [
         {
@@ -247,7 +251,7 @@ describe('Step Volume Discount', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('can handle only matched UID products', async () => {
@@ -255,6 +259,7 @@ describe('Step Volume Discount', () => {
       'stepVolume05',
       0,
       'Can calculate step only product that match product condition',
+      false,
       false,
       [
         {
@@ -312,7 +317,7 @@ describe('Step Volume Discount', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('Can handle combined 2 items steps', async () => {
@@ -320,6 +325,7 @@ describe('Step Volume Discount', () => {
       'stepVolume06',
       0,
       'Can calculate step only product that match product condition',
+      false,
       false,
       [
         {
@@ -383,7 +389,7 @@ describe('Step Volume Discount', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('fixed discount case: 5 pieces of same item get 200 discount.', async () => {
@@ -391,6 +397,7 @@ describe('Step Volume Discount', () => {
       'fixedStepVolume01',
       0,
       '5 items in cart get 200 discount.',
+      false,
       false,
       [],
       [
@@ -441,7 +448,7 @@ describe('Step Volume Discount', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('fixed discount case: 2 item 10 pieces in total get 400 discount.', async () => {
@@ -449,6 +456,7 @@ describe('Step Volume Discount', () => {
       'fixedStepVolume02',
       0,
       '8 items in cart get 400 discount.',
+      false,
       false,
       [],
       [
@@ -507,7 +515,7 @@ describe('Step Volume Discount', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('fixed discount case: 1 of product uids matches salesrule uid condition', async () => {
@@ -515,6 +523,7 @@ describe('Step Volume Discount', () => {
       'fixedStepVolume03',
       0,
       '1 of product uids matches salesrule uid condition',
+      false,
       false,
       [
         {
@@ -572,7 +581,7 @@ describe('Step Volume Discount', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('fixed discount case: multiple product uids match salesrule uid condition', async () => {
@@ -580,6 +589,7 @@ describe('Step Volume Discount', () => {
       'fixedStepVolume04',
       0,
       'multiple product uids match salesrule uid condition',
+      false,
       false,
       [
         {
@@ -643,7 +653,7 @@ describe('Step Volume Discount', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('no fixed discount case: product uids not match salesrule uid condition', async () => {
@@ -651,6 +661,7 @@ describe('Step Volume Discount', () => {
       'fixedStepVolume04',
       0,
       'multiple product uids match salesrule uid condition',
+      false,
       false,
       [
         {
@@ -707,6 +718,6 @@ describe('Step Volume Discount', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 })

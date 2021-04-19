@@ -17,10 +17,18 @@ export default class StepVolumeDiscountRule extends InCartRule {
     priority: number,
     name: string,
     stopRulesProcessing: boolean,
+    notEligibleToPriceTier: boolean,
     conditions: JsonConditionType[],
     private readonly steps: Step[]
   ) {
-    super(uid, priority, name, stopRulesProcessing, conditions)
+    super(
+      uid,
+      priority,
+      name,
+      stopRulesProcessing,
+      notEligibleToPriceTier,
+      conditions
+    )
   }
 
   processStep = (totalQty: number) =>

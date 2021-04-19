@@ -5,26 +5,24 @@ import { FixedPriceRule } from '../src/incart'
 describe('Calculation Engine', () => {
   const engine = new CalculationEngine()
 
-  const inputNoRule = {
-    items: [
-      {
-        uid: 'ABC1',
-        cartItemIndexKey: '0',
-        qty: 2,
-        perItemPrice: 1000,
-        categories: ['Main'],
-        tags: ['TAG#1'],
-      },
-      {
-        uid: 'ABC2',
-        cartItemIndexKey: '0',
-        qty: 1,
-        perItemPrice: 500,
-        categories: ['Non-Main'],
-        tags: ['TAG#1'],
-      },
-    ],
-  }
+  const items = [
+    {
+      uid: 'ABC1',
+      cartItemIndexKey: '0',
+      qty: 2,
+      perItemPrice: 1000,
+      categories: ['Main'],
+      tags: ['TAG#1'],
+    },
+    {
+      uid: 'ABC2',
+      cartItemIndexKey: '0',
+      qty: 1,
+      perItemPrice: 500,
+      categories: ['Non-Main'],
+      tags: ['TAG#1'],
+    },
+  ]
 
   const createRulesAndResult = (rulesAmount: number, stopAtIndex: number) => {
     const { rules, result } = new Array(rulesAmount).fill(undefined).reduce(
@@ -36,6 +34,7 @@ describe('Calculation Engine', () => {
             index,
             'fixedPriceRule',
             stopAtIndex === index,
+            false,
             [],
             10
           ),
@@ -88,12 +87,12 @@ describe('Calculation Engine', () => {
     const [rules, expectedResult] = createRulesAndResult(rulesAmount, stopAt)
 
     const input = {
-      ...inputNoRule,
+      items,
       rules,
     }
 
     const result = await engine.process(input, {})
 
-    expect(result).toEqual({ input, meta: expectedResult })
+    expect(result.meta).toEqual(expectedResult)
   })
 })

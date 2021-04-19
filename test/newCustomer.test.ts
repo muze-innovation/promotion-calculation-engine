@@ -17,6 +17,7 @@ describe('Calculation Engine', () => {
       0,
       'fixedDiscountPrice',
       false,
+      false,
       conditions,
       100
     )
@@ -53,7 +54,7 @@ describe('Calculation Engine', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('old customer case', async () => {
@@ -66,6 +67,7 @@ describe('Calculation Engine', () => {
       'newCustomer02',
       0,
       'fixedDiscountPrice',
+      false,
       false,
       conditions,
       100
@@ -101,6 +103,6 @@ describe('Calculation Engine', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 })
