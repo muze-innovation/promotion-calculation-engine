@@ -6,19 +6,19 @@ import { JsonConditionType } from '../src/incart/conditionTypes'
 describe('Calculation Engine', () => {
   const engine = new CalculationEngine()
 
-  it('discount case: quantity >= at least', async () => {
+  it('discount case: subtotal > at least', async () => {
     const conditions: JsonConditionType[] = [
       {
-        type: 'quantity_at_least',
-        value: 3,
+        type: 'subtotal_at_least',
+        value: 200,
       },
     ]
     const rule = new FixedPriceRule(
-      'quantity01',
+      1,
       0,
       'fixedDiscountPrice',
       false,
-      false,
+      true,
       conditions,
       100
     )
@@ -29,14 +29,6 @@ describe('Calculation Engine', () => {
           uid: 'ABC',
           cartItemIndexKey: '0',
           qty: 1,
-          perItemPrice: 200,
-          categories: ['Main'],
-          tags: ['TAG#1'],
-        },
-        {
-          uid: 'DEF',
-          cartItemIndexKey: '0',
-          qty: 2,
           perItemPrice: 200,
           categories: ['Main'],
           tags: ['TAG#1'],
@@ -48,31 +40,31 @@ describe('Calculation Engine', () => {
     const result = await engine.process(input, {})
 
     const meta = {
-      applicableRuleUids: ['quantity01'],
+      applicableRuleUids: [1],
       wholeCartDiscount: [
         {
           discountedAmount: 100,
           setFree: false,
-          applicableRuleUid: 'quantity01',
+          applicableRuleUid: 1,
         },
       ],
     }
     expect(result.meta).toEqual(meta)
   })
 
-  it('no discount case: quantity < at least', async () => {
+  it('no discount case: subtotal < at least', async () => {
     const conditions: JsonConditionType[] = [
       {
-        type: 'quantity_at_least',
-        value: 3,
+        type: 'subtotal_at_least',
+        value: 200,
       },
     ]
     const rule = new FixedPriceRule(
-      'quantity02',
+      2,
       0,
       'fixedDiscountPrice',
       false,
-      false,
+      true,
       conditions,
       100
     )
@@ -83,17 +75,10 @@ describe('Calculation Engine', () => {
           uid: 'ABC',
           cartItemIndexKey: '0',
           qty: 1,
-          perItemPrice: 100,
+          perItemPrice: 500,
           categories: ['Main'],
           tags: ['TAG#1'],
-        },
-        {
-          uid: 'DEF',
-          cartItemIndexKey: '0',
-          qty: 1,
-          perItemPrice: 100,
-          categories: ['Main'],
-          tags: ['TAG#1'],
+          isPriceTier: true,
         },
       ],
       rules: [rule],
@@ -104,8 +89,8 @@ describe('Calculation Engine', () => {
     const meta = {
       unapplicableRules: [
         {
-          uid: 'quantity02',
-          errors: ["Item quantities doesn't reach the minimum requirement."],
+          uid: 2,
+          errors: ["Subtotal amount doesn't reach the minimum requirement."],
         },
       ],
     }

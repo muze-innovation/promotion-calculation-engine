@@ -18,6 +18,7 @@ describe('Calculation Engine', () => {
       0,
       'fixedDiscountPrice',
       false,
+      false,
       conditions,
       100
     )
@@ -54,7 +55,7 @@ describe('Calculation Engine', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('not match customerGroups', async () => {
@@ -68,6 +69,7 @@ describe('Calculation Engine', () => {
       'customerTag02',
       0,
       'fixedDiscountPrice',
+      false,
       false,
       conditions,
       100
@@ -102,7 +104,7 @@ describe('Calculation Engine', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('customerGroups match all combine many rules', async () => {
@@ -125,6 +127,7 @@ describe('Calculation Engine', () => {
       0,
       'fixedDiscountPrice',
       false,
+      false,
       firstConditions,
       100
     )
@@ -133,6 +136,7 @@ describe('Calculation Engine', () => {
       2,
       0,
       'fixedDiscountPrice',
+      false,
       false,
       secondConditions,
       200
@@ -176,7 +180,7 @@ describe('Calculation Engine', () => {
     }
 
     const result = await engine.process(input, {})
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('customerGroups match some combine many rules', async () => {
@@ -199,6 +203,7 @@ describe('Calculation Engine', () => {
       0,
       'fixedDiscountPrice',
       false,
+      false,
       firstConditions,
       100
     )
@@ -207,6 +212,7 @@ describe('Calculation Engine', () => {
       2,
       0,
       'fixedDiscountPrice',
+      false,
       false,
       secondConditions,
       200
@@ -251,6 +257,6 @@ describe('Calculation Engine', () => {
     }
 
     const result = await engine.process(input, {})
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 })

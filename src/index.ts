@@ -76,6 +76,8 @@ export interface CartItem {
    * Or calculate how much discount should this specific line get.
    */
   tags: string[]
+
+  isPriceTier?: Boolean
 }
 
 export interface Shipping {

@@ -6,7 +6,15 @@ describe('Calculation Engine', () => {
   const engine = new CalculationEngine()
 
   it('discount fixed price : discount < subtotal', async () => {
-    const rule = new FixedPriceRule(1, 0, 'fixedDiscountPrice', false, [], 100)
+    const rule = new FixedPriceRule(
+      1,
+      0,
+      'fixedDiscountPrice',
+      false,
+      false,
+      [],
+      100
+    )
 
     const input = {
       items: [
@@ -34,7 +42,7 @@ describe('Calculation Engine', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('discount fixed price : discount > subtotal', async () => {
@@ -42,6 +50,7 @@ describe('Calculation Engine', () => {
       'fixedDiscountPrice0001',
       0,
       'fixedDiscountPrice',
+      false,
       false,
       [],
       500
@@ -73,7 +82,7 @@ describe('Calculation Engine', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('discount fixed price : fixed price has uids', async () => {
@@ -81,6 +90,7 @@ describe('Calculation Engine', () => {
       '0001',
       0,
       'fixedDiscountPrice',
+      false,
       false,
       [
         {
@@ -131,7 +141,7 @@ describe('Calculation Engine', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('discount fixed price : fixed price has uids but got only one uid that match', async () => {
@@ -139,6 +149,7 @@ describe('Calculation Engine', () => {
       '0001',
       0,
       'fixedDiscountPrice',
+      false,
       false,
       [
         {
@@ -183,7 +194,7 @@ describe('Calculation Engine', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('discount fixed price : fixed price has uids but not match', async () => {
@@ -191,6 +202,7 @@ describe('Calculation Engine', () => {
       '0004',
       0,
       'fixedDiscountPrice',
+      false,
       false,
       [
         {
@@ -226,6 +238,6 @@ describe('Calculation Engine', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 })

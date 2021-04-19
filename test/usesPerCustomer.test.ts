@@ -18,6 +18,7 @@ describe('Calculation Engine', () => {
       0,
       'fixedDiscountPrice',
       false,
+      false,
       conditions,
       100
     )
@@ -55,7 +56,7 @@ describe('Calculation Engine', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('no discount case: customer usage count >= usage per customer limit', async () => {
@@ -69,6 +70,7 @@ describe('Calculation Engine', () => {
       '02',
       0,
       'fixedDiscountPrice',
+      false,
       false,
       conditions,
       100
@@ -105,7 +107,7 @@ describe('Calculation Engine', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('cause has ignoreCondition: customer usage count >= usage per customer limit', async () => {
@@ -119,6 +121,7 @@ describe('Calculation Engine', () => {
       '03',
       0,
       'fixedDiscountPrice',
+      false,
       false,
       conditions,
       100
@@ -156,6 +159,6 @@ describe('Calculation Engine', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 })

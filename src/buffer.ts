@@ -87,15 +87,29 @@ class TaxonomyQueryProcessor {
 }
 
 export class CalculationBuffer implements CalculationEngineOutput {
+  private excludePriceTierItems: CartItem[]
+
   constructor(
     public readonly input: CalculationEngineInput,
-    public readonly meta: CalculationEngineMeta
+    public readonly meta: CalculationEngineMeta,
+    public readonly excludePriceTier?: boolean,
+    excludePriceTierItems?: CartItem[]
   ) {
-    //
+    this.excludePriceTierItems =
+      excludePriceTierItems ??
+      input.items.filter(({ isPriceTier }) => !isPriceTier)
   }
 
-  recreate(meta: CalculationEngineMeta): CalculationBuffer {
-    return new CalculationBuffer(this.input, meta)
+  recreate(
+    meta?: CalculationEngineMeta,
+    excludePriceTier?: boolean
+  ): CalculationBuffer {
+    return new CalculationBuffer(
+      this.input,
+      meta ?? this.meta,
+      excludePriceTier ?? this.excludePriceTier,
+      this.excludePriceTierItems
+    )
   }
 
   get deliveryAddresses(): DeliveryAddress[] | undefined {
@@ -103,7 +117,7 @@ export class CalculationBuffer implements CalculationEngineOutput {
   }
 
   get items(): CartItem[] {
-    return this.input.items
+    return this.excludePriceTier ? this.excludePriceTierItems : this.input.items
   }
 
   get customer(): Customer | undefined {
@@ -158,7 +172,7 @@ export class CalculationBuffer implements CalculationEngineOutput {
     if (uids.size === 0 && !categories.isValid && !tags.isValid) {
       return 'all'
     }
-    return this.input.items.filter(item => {
+    return this.items.filter(item => {
       // Process UID whitelist
       const itemUid = `${item.uid}`
       if (uids.size > 0 && uids.has(itemUid)) {
@@ -240,7 +254,7 @@ export class CalculationBuffer implements CalculationEngineOutput {
   // TODO: Add extra methods there.
 
   calculateCartItems(uids?: UID[]): CalculatedCartItems {
-    return this.input.items.reduce(
+    return this.items.reduce(
       (acc: CalculatedCartItems, cur: CartItem) => {
         if (!isEmpty(uids) && !uids?.includes(cur.uid)) return { ...acc }
         const freeQty = this.getFreeQtyFor(cur.uid)
@@ -269,7 +283,7 @@ export class CalculationBuffer implements CalculationEngineOutput {
    * Utility method return cheapest of CartItem in uid group.
    */
   getCheapestItemFromGroupBySku(uid: string | number): CartItem | undefined {
-    const itemGroup = this.input.items.filter(item => item.uid === uid)
+    const itemGroup = this.items.filter(item => item.uid === uid)
     if (itemGroup) {
       return itemGroup.reduce(
         (minPriceItem: CartItem, item: CartItem) =>
@@ -281,7 +295,7 @@ export class CalculationBuffer implements CalculationEngineOutput {
   }
 
   getCartTotalQty(): number {
-    return this.input.items.reduce((acc: number, item: CartItem) => {
+    return this.items.reduce((acc: number, item: CartItem) => {
       return acc + item.qty
     }, 0)
   }

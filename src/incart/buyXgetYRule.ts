@@ -10,11 +10,19 @@ export default class BuyXGetYRule extends InCartRule {
     priority: number,
     name: string,
     stopRulesProcessing: boolean,
+    notEligibleToPriceTier: boolean,
     conditions: JsonConditionType[],
     private readonly x: number,
     private readonly y: number
   ) {
-    super(uid, priority, name, stopRulesProcessing, conditions)
+    super(
+      uid,
+      priority,
+      name,
+      stopRulesProcessing,
+      notEligibleToPriceTier,
+      conditions
+    )
   }
 
   private getFreeItems(

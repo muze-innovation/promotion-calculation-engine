@@ -10,6 +10,7 @@ describe('Calculation Engine', () => {
       0,
       'freeShipping',
       false,
+      false,
       []
     )
 
@@ -51,7 +52,7 @@ describe('Calculation Engine', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('Free shipping no shipping fee', async () => {
@@ -59,6 +60,7 @@ describe('Calculation Engine', () => {
       'freeShipping02',
       0,
       'freeShipping',
+      false,
       false,
       []
     )
@@ -95,6 +97,6 @@ describe('Calculation Engine', () => {
       applicableRuleUids: ['freeShipping02'],
       shippingDiscount: [],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 })

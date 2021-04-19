@@ -5,7 +5,6 @@ import uniq from 'lodash/uniq'
 import {
   CalculationEngineInput,
   CalculationEngineMeta,
-  CalculationEngineOutput,
   CalculationEngineOption,
   Condition,
   UnapplicableRule,
@@ -30,7 +29,7 @@ export class CalculationEngine {
     input: CalculationEngineInput,
     meta: CalculationEngineMeta,
     rawOptions?: CalculationEngineOption
-  ): Promise<CalculationEngineOutput> {
+  ): Promise<CalculationBuffer> {
     // Sort rules
     const sorted = orderBy(input.rules, ['priority', 'uid'], ['asc', 'desc'])
     const opt = {
@@ -45,6 +44,9 @@ export class CalculationEngine {
     let buffer = new CalculationBuffer(input, meta)
     let stopRulesProcessing = false
     for (const rule of sorted) {
+      const notEligibleToPriceTier = rule.notEligibleToPriceTier
+      buffer = buffer.recreate(undefined, notEligibleToPriceTier)
+
       // Add error to unprocessed rules.
       const previousUnapplicableRules = buffer.unapplicableRules
       if (stopRulesProcessing) {

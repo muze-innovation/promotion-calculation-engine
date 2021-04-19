@@ -16,7 +16,16 @@ describe('Calculation Engine', () => {
     const uid = '0001'
     const x = 3
     const y = 2
-    const buyXGetY = new BuyXGetYRule(uid, 0, 'buyXGetY', false, [], x, y)
+    const buyXGetY = new BuyXGetYRule(
+      uid,
+      0,
+      'buyXGetY',
+      false,
+      false,
+      [],
+      x,
+      y
+    )
 
     const input = {
       items: [
@@ -38,14 +47,23 @@ describe('Calculation Engine', () => {
       applicableRuleUids: ['0001'],
       itemDiscounts: Array(2).fill(discountItem),
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('Can create buy-3-get-2 rule for uid TEST with 4 item in Cart.', async () => {
     const uid = '0001'
     const x = 3
     const y = 2
-    const buyXGetY = new BuyXGetYRule(uid, 0, 'buyXGetY', false, [], x, y)
+    const buyXGetY = new BuyXGetYRule(
+      uid,
+      0,
+      'buyXGetY',
+      false,
+      false,
+      [],
+      x,
+      y
+    )
 
     const input = {
       items: [
@@ -67,14 +85,23 @@ describe('Calculation Engine', () => {
       applicableRuleUids: ['0001'],
       itemDiscounts: Array(1).fill(discountItem),
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('Can create buy-3-get-2 rule for uid TEST with 6 item in Cart.', async () => {
     const uid = '0001'
     const x = 3
     const y = 2
-    const buyXGetY = new BuyXGetYRule(uid, 0, 'buyXGetY', false, [], x, y)
+    const buyXGetY = new BuyXGetYRule(
+      uid,
+      0,
+      'buyXGetY',
+      false,
+      false,
+      [],
+      x,
+      y
+    )
 
     const input = {
       items: [
@@ -96,7 +123,7 @@ describe('Calculation Engine', () => {
       applicableRuleUids: ['0001'],
       itemDiscounts: Array(2).fill(discountItem),
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('Can create pick-3-pay-2 rule for uid TEST AND buy-1-get-1 for UID TEST2 in Cart.', async () => {
@@ -105,6 +132,7 @@ describe('Calculation Engine', () => {
       uid1,
       0,
       'buyXGetY_32',
+      false,
       false,
       [
         {
@@ -121,6 +149,7 @@ describe('Calculation Engine', () => {
       uid2,
       1,
       'buyXGetY_11',
+      false,
       false,
       [
         {
@@ -191,6 +220,6 @@ describe('Calculation Engine', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 })

@@ -13,6 +13,7 @@ describe('Calculation Engine', () => {
       1,
       'buyXGetY',
       false,
+      false,
       [],
       x,
       y
@@ -21,6 +22,7 @@ describe('Calculation Engine', () => {
       'StepUId01',
       0,
       'Step volume Discount',
+      false,
       false,
       [
         {
@@ -97,17 +99,18 @@ describe('Calculation Engine', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('Can create step volume discount for uid TEST with 5 item and then buy-3-get-2 rule with in Cart.', async () => {
     const x = 3
     const y = 2
-    const buyXGetY = new BuyXGetYRule(10, 0, 'buyXGetY', false, [], x, y)
+    const buyXGetY = new BuyXGetYRule(10, 0, 'buyXGetY', false, false, [], x, y)
     const stepVolumeDiscount = new StepVolumeDiscountRule(
       11,
       1,
       'Step volume Discount',
+      false,
       false,
       [],
       [
@@ -187,7 +190,7 @@ describe('Calculation Engine', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('Can create fixed amount step volume discount for uid TEST then buy-3-get-2 rule.', async () => {
@@ -195,6 +198,7 @@ describe('Calculation Engine', () => {
       'step01',
       0,
       'Step volume Discount',
+      false,
       false,
       [
         {
@@ -229,6 +233,7 @@ describe('Calculation Engine', () => {
       'buyXGetY01',
       1,
       'buyXGetY',
+      false,
       false,
       [],
       x,
@@ -282,7 +287,7 @@ describe('Calculation Engine', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 
   it('Can create buy-3-get-2 rule then fixed amount step volume discount.', async () => {
@@ -293,6 +298,7 @@ describe('Calculation Engine', () => {
       0,
       'buyXGetY',
       false,
+      false,
       [],
       x,
       y
@@ -301,6 +307,7 @@ describe('Calculation Engine', () => {
       'step02',
       1,
       'Step volume Discount',
+      false,
       false,
       [],
       [
@@ -380,6 +387,6 @@ describe('Calculation Engine', () => {
         },
       ],
     }
-    expect(result).toEqual({ input, meta })
+    expect(result.meta).toEqual(meta)
   })
 })
