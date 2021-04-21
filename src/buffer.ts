@@ -232,9 +232,10 @@ export class CalculationBuffer implements CalculationEngineOutput {
   }
 
   getTotalDiscountWithoutShipping(): number {
-    const totalItemDiscounts = sumBy(
-      this.meta.itemDiscounts,
-      item => item.perLineDiscountedAmount
+    const totalItemDiscounts = sumBy(this.meta.itemDiscounts, item =>
+      this.excludePriceTierItems && item.isPriceTier
+        ? 0
+        : item.perLineDiscountedAmount
     )
     const totalWholeCartDiscount = sumBy(
       this.meta.wholeCartDiscount,
