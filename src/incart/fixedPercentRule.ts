@@ -59,6 +59,7 @@ export default class FixedPercentRule extends InCartRule {
               perLineDiscountedAmount: (item.totalAmount * this.value) / 100,
               setFree: false,
               applicableRuleUid: this.uid,
+              isPriceTier: item.isPriceTier,
             })
           )
           return {

@@ -77,7 +77,7 @@ export interface CartItem {
    */
   tags: string[]
 
-  isPriceTier?: Boolean
+  isPriceTier?: boolean
 }
 
 export interface Shipping {
@@ -116,6 +116,7 @@ export interface ItemDiscount {
   perLineDiscountedAmount: number
   setFree: boolean
   applicableRuleUid: UID
+  isPriceTier?: boolean
 }
 
 export interface ShippingDiscount {

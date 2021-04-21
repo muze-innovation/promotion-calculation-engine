@@ -84,6 +84,7 @@ export default class StepVolumeDiscountRule extends InCartRule {
                   perLineDiscountedAmount:
                     (item.totalAmount * step.discount) / 100,
                   setFree: false,
+                  isPriceTier: item.isPriceTier,
                 })
               } else if (step.type === 'fixed') {
                 const discount =
@@ -94,6 +95,7 @@ export default class StepVolumeDiscountRule extends InCartRule {
                   perLineDiscountedAmount:
                     discount > item.totalAmount ? item.totalAmount : discount,
                   setFree: false,
+                  isPriceTier: item.isPriceTier,
                 })
               }
             }

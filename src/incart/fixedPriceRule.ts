@@ -59,6 +59,7 @@ export default class FixedPriceRule extends InCartRule {
               perLineDiscountedAmount:
                 discount > item.totalAmount ? item.totalAmount : discount,
               setFree: false,
+              isPriceTier: item.isPriceTier,
             })
           })
           return {

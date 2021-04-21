@@ -43,6 +43,7 @@ export default class BuyXGetYRule extends InCartRule {
             perLineDiscountedAmount: cheapestItem.totalPerItemPrice,
             setFree: true,
             applicableRuleUid: this.uid,
+            isPriceTier: cheapestItem.isPriceTier,
           })
           .concat(this.getFreeItems(newCartItems, freeQty - cheapestItem.qty))
       }
@@ -51,6 +52,7 @@ export default class BuyXGetYRule extends InCartRule {
         perLineDiscountedAmount: cheapestItem.totalPerItemPrice,
         setFree: true,
         applicableRuleUid: this.uid,
+        isPriceTier: cheapestItem.isPriceTier,
       })
     }
     return []
