@@ -1,5 +1,12 @@
 import sumBy from 'lodash/sumBy'
 import isEmpty from 'lodash/isEmpty'
+
+import { RuleUID } from '../typed'
+import {
+  IWholeCartDiscount,
+  IItemDiscount,
+  IShippingDiscount,
+} from '../discounts'
 import {
   CalculationEngineInput,
   CalculationEngineMeta,
@@ -7,15 +14,12 @@ import {
   DeliveryAddress,
   CartItem,
   Customer,
-  ShippingDiscount,
-  ItemDiscount,
-  WholeCartDiscount,
   CalculatedCartItems,
   UID,
   UsageCount,
   UnapplicableRule,
 } from 'index'
-import { ARule } from './rule'
+import { ARule } from '../rule'
 
 export interface TaxonomyQuery {
   /**
@@ -100,7 +104,7 @@ export class CalculationBuffer implements CalculationEngineOutput {
       input.items.filter(({ isPriceTier }) => !isPriceTier)
   }
 
-  recreate(
+  public recreate(
     meta?: CalculationEngineMeta,
     excludePriceTier?: boolean
   ): CalculationBuffer {
@@ -128,7 +132,7 @@ export class CalculationBuffer implements CalculationEngineOutput {
     return this.input.rules
   }
 
-  get shippingDiscount(): ShippingDiscount[] | undefined {
+  get shippingDiscount(): IShippingDiscount[] | undefined {
     return this.meta.shippingDiscount
   }
 
@@ -140,11 +144,11 @@ export class CalculationBuffer implements CalculationEngineOutput {
     return this.meta.unapplicableRules
   }
 
-  get itemDiscounts(): ItemDiscount[] | undefined {
+  get itemDiscounts(): IItemDiscount[] | undefined {
     return this.meta.itemDiscounts
   }
 
-  get wholeCartDiscount(): WholeCartDiscount[] | undefined {
+  get wholeCartDiscount(): IWholeCartDiscount[] | undefined {
     return this.meta.wholeCartDiscount
   }
 
@@ -194,12 +198,21 @@ export class CalculationBuffer implements CalculationEngineOutput {
     })
   }
 
-  getDiscountFor(uid: UID) {
-    return sumBy(this.itemDiscounts, (item: ItemDiscount) =>
+  /**
+   * Retrieve total value associated discount values for given UID
+   * @param uid
+   * @returns
+   */
+  getDiscountForAmount(uid: UID): number {
+    return sumBy(this.itemDiscounts, (item: IItemDiscount) =>
       item.uid === uid ? item.perLineDiscountedAmount : 0
     )
   }
 
+  /**
+   * Retrieve total discounts
+   * @returns
+   */
   getShippingDiscountAmount() {
     return sumBy(this.meta.shippingDiscount, item => item.discountedAmount)
   }
@@ -220,7 +233,8 @@ export class CalculationBuffer implements CalculationEngineOutput {
   getAllItemDiscounts(): number {
     if (this.itemDiscounts?.length) {
       return this.itemDiscounts.reduce(
-        (acc: number, item: ItemDiscount) => acc + item.perLineDiscountedAmount,
+        (acc: number, item: IItemDiscount) =>
+          acc + item.perLineDiscountedAmount,
         0
       )
     }
@@ -244,8 +258,9 @@ export class CalculationBuffer implements CalculationEngineOutput {
     return totalItemDiscounts + totalWholeCartDiscount
   }
 
-  setApplicableRuleUids(applicableRuleUids: UID[]): void {
-    this.meta.applicableRuleUids = applicableRuleUids
+  pushApplicableRuleUids(applicableRuleUid: RuleUID): void {
+    this.meta.applicableRuleUids = this.meta.applicableRuleUids || []
+    this.meta.applicableRuleUids.push(applicableRuleUid)
   }
 
   setUnapplicableRules(unapplicableRules: UnapplicableRule[]): void {
@@ -255,11 +270,12 @@ export class CalculationBuffer implements CalculationEngineOutput {
   // TODO: Add extra methods there.
 
   calculateCartItems(uids?: UID[]): CalculatedCartItems {
+    const loadAll = isEmpty(uids)
     return this.items.reduce(
       (acc: CalculatedCartItems, cur: CartItem) => {
-        if (!isEmpty(uids) && !uids?.includes(cur.uid)) return { ...acc }
+        if (!loadAll && !uids?.includes(cur.uid)) return { ...acc }
         const freeQty = this.getFreeQtyFor(cur.uid)
-        const totalDiscounted = this.getDiscountFor(cur.uid)
+        const totalDiscounted = this.getDiscountForAmount(cur.uid)
         const totalAmount = cur.perItemPrice * cur.qty - totalDiscounted
         const totalPerItemPrice = totalAmount / (cur.qty - freeQty)
         return {
@@ -281,7 +297,8 @@ export class CalculationBuffer implements CalculationEngineOutput {
   }
 
   /**
-   * Utility method return cheapest of CartItem in uid group.
+   * Find cheapest of CartItem in uid group.
+   * @param uid - UID of item
    */
   getCheapestItemFromGroupBySku(uid: string | number): CartItem | undefined {
     const itemGroup = this.items.filter(item => item.uid === uid)

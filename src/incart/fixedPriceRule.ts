@@ -3,6 +3,7 @@ import { Action, Condition, UID } from 'index'
 import { InCartRule } from './base'
 import { CalculationBuffer } from '../buffer'
 import { JsonConditionType } from './conditionTypes'
+import { ItemDiscount, WholeCartDiscount } from '../discounts'
 
 export default class FixedPriceRule extends InCartRule {
   constructor(
@@ -35,11 +36,13 @@ export default class FixedPriceRule extends InCartRule {
           const wholeCartDiscount = input.wholeCartDiscount
             ? input.wholeCartDiscount
             : []
-          wholeCartDiscount.push({
-            discountedAmount: total < this.value ? subtotal : this.value,
-            setFree: false,
-            applicableRuleUid: this.uid,
-          })
+          wholeCartDiscount.push(
+            WholeCartDiscount.make({
+              applicableRuleUid: this.uid,
+              uids: [],
+              discountedAmount: total < this.value ? subtotal : this.value,
+            })
+          )
           return {
             ...input.itemMeta,
             wholeCartDiscount,
@@ -53,14 +56,16 @@ export default class FixedPriceRule extends InCartRule {
           )
           itemsToProcess.items.forEach(item => {
             const discount = (item.totalAmount / totalAmount) * this.value
-            itemDiscounts.push({
-              applicableRuleUid: this.uid,
-              uid: item.uid,
-              perLineDiscountedAmount:
-                discount > item.totalAmount ? item.totalAmount : discount,
-              setFree: false,
-              isPriceTier: item.isPriceTier,
-            })
+            itemDiscounts.push(
+              ItemDiscount.make({
+                applicableRuleUid: this.uid,
+                uid: item.uid,
+                perLineDiscountedAmount:
+                  discount > item.totalAmount ? item.totalAmount : discount,
+                setFree: false,
+                isPriceTier: item.isPriceTier || false,
+              })
+            )
           })
           return {
             ...input.itemMeta,

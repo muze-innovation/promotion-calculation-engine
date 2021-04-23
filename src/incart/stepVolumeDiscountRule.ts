@@ -3,6 +3,7 @@ import { Action, UID } from 'index'
 import { InCartRule } from './base'
 import { JsonConditionType } from './conditionTypes'
 import { CalculationBuffer } from '../buffer'
+import { ItemDiscount, WholeCartDiscount } from '../discounts'
 
 interface Step {
   startQty: number
@@ -56,18 +57,24 @@ export default class StepVolumeDiscountRule extends InCartRule {
             ? input.wholeCartDiscount
             : []
           if (step && step.type === 'percent') {
-            wholeCartDiscount.push({
-              discountedAmount: (totalAmount * step.discount) / 100,
-              setFree: false,
-              applicableRuleUid: this.uid,
-            })
+            wholeCartDiscount.push(
+              WholeCartDiscount.make({
+                discountedAmount: (totalAmount * step.discount) / 100,
+                setFree: false,
+                applicableRuleUid: this.uid,
+                uids: [], // FIXME: Required distributed uid...
+              })
+            )
           } else if (step && step.type === 'fixed') {
-            wholeCartDiscount.push({
-              discountedAmount:
-                step.discount > totalAmount ? totalAmount : step.discount,
-              setFree: false,
-              applicableRuleUid: this.uid,
-            })
+            wholeCartDiscount.push(
+              WholeCartDiscount.make({
+                discountedAmount:
+                  step.discount > totalAmount ? totalAmount : step.discount,
+                setFree: false,
+                applicableRuleUid: this.uid,
+                uids: [],
+              })
+            )
           }
           return {
             ...input.itemMeta,
@@ -78,25 +85,29 @@ export default class StepVolumeDiscountRule extends InCartRule {
           itemsToProcess.items.forEach(item => {
             if (step) {
               if (step.type === 'percent') {
-                itemDiscounts.push({
-                  applicableRuleUid: this.uid,
-                  uid: item.uid,
-                  perLineDiscountedAmount:
-                    (item.totalAmount * step.discount) / 100,
-                  setFree: false,
-                  isPriceTier: item.isPriceTier,
-                })
+                itemDiscounts.push(
+                  ItemDiscount.make({
+                    applicableRuleUid: this.uid,
+                    uid: item.uid,
+                    perLineDiscountedAmount:
+                      (item.totalAmount * step.discount) / 100,
+                    setFree: false,
+                    isPriceTier: item.isPriceTier || false,
+                  })
+                )
               } else if (step.type === 'fixed') {
                 const discount =
                   (item.totalAmount / totalAmount) * step.discount
-                itemDiscounts.push({
-                  applicableRuleUid: this.uid,
-                  uid: item.uid,
-                  perLineDiscountedAmount:
-                    discount > item.totalAmount ? item.totalAmount : discount,
-                  setFree: false,
-                  isPriceTier: item.isPriceTier,
-                })
+                itemDiscounts.push(
+                  ItemDiscount.make({
+                    applicableRuleUid: this.uid,
+                    uid: item.uid,
+                    perLineDiscountedAmount:
+                      discount > item.totalAmount ? item.totalAmount : discount,
+                    setFree: false,
+                    isPriceTier: item.isPriceTier || false,
+                  })
+                )
               }
             }
           })

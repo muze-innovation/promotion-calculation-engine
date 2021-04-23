@@ -1,3 +1,4 @@
+import { WholeCartDiscount } from '../src'
 import { CalculationEngine } from '../src/engine'
 import { FixedPriceRule } from '../src/incart'
 import { JsonConditionType } from '../src/incart/conditionTypes'
@@ -48,11 +49,12 @@ describe('Calculation Engine', () => {
     const meta = {
       applicableRuleUids: ['customerTag01'],
       wholeCartDiscount: [
-        {
+        WholeCartDiscount.make({
           discountedAmount: 100,
           setFree: false,
           applicableRuleUid: 'customerTag01',
-        },
+          uids: [],
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)
@@ -166,16 +168,18 @@ describe('Calculation Engine', () => {
     const meta = {
       applicableRuleUids: [2, 1],
       wholeCartDiscount: [
-        {
+        WholeCartDiscount.make({
           discountedAmount: 200,
           setFree: false,
           applicableRuleUid: 2,
-        },
-        {
+          uids: [],
+        }),
+        WholeCartDiscount.make({
           discountedAmount: 100,
           setFree: false,
           applicableRuleUid: 1,
-        },
+          uids: [],
+        }),
       ],
     }
 
@@ -248,11 +252,12 @@ describe('Calculation Engine', () => {
         },
       ],
       wholeCartDiscount: [
-        {
+        WholeCartDiscount.make({
           discountedAmount: 100,
           setFree: false,
           applicableRuleUid: 1,
-        },
+          uids: [],
+        }),
       ],
     }
 

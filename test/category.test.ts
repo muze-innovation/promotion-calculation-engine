@@ -1,3 +1,4 @@
+import { ItemDiscount } from '../src'
 import { CalculationEngine } from '../src/engine'
 import {
   BuyXGetYRule,
@@ -62,20 +63,20 @@ describe('Category Conditions', () => {
   it('Can apply not condition', async () => {
     const totalValueApplicabelToDiscount = 500 * 5 + 3 * 200
     const itemDiscounts = [
-      {
+      ItemDiscount.make({
         uid: 'TEST',
         perLineDiscountedAmount:
           10 * ((500 * 5) / totalValueApplicabelToDiscount), // 10 THB - split by value
         setFree: false,
         applicableRuleUid: ruleIdThatMatch,
-      },
-      {
+      }),
+      ItemDiscount.make({
         uid: 'TEST2',
         perLineDiscountedAmount:
           10 * ((3 * 200) / totalValueApplicabelToDiscount), // 10 THB - split by value
         setFree: false,
         applicableRuleUid: ruleIdThatMatch,
-      },
+      }),
     ]
     const discountAmount = new FixedPriceRule(
       ruleIdThatMatch,
@@ -110,34 +111,38 @@ describe('Category Conditions', () => {
     const totalValueApplicabelToDiscount =
       500 * 5 + 2 * 500 + 1 * 1000 + 2 * 1000
     const itemDiscounts = [
-      {
+      ItemDiscount.make({
         uid: 'TEST',
         perLineDiscountedAmount:
           100 * ((500 * 5) / totalValueApplicabelToDiscount), // 100 THB - split by value
         setFree: false,
         applicableRuleUid: ruleIdThatMatch,
-      },
-      {
+        isPriceTier: false,
+      }),
+      ItemDiscount.make({
         uid: 'TEST3',
         perLineDiscountedAmount:
           100 * ((2 * 500) / totalValueApplicabelToDiscount), // 100 THB - split by value
         setFree: false,
         applicableRuleUid: ruleIdThatMatch,
-      },
-      {
+        isPriceTier: false,
+      }),
+      ItemDiscount.make({
         uid: 'TEST4',
         perLineDiscountedAmount:
           100 * ((1 * 1000) / totalValueApplicabelToDiscount), // 100 THB - split by value
         setFree: false,
         applicableRuleUid: ruleIdThatMatch,
-      },
-      {
+        isPriceTier: false,
+      }),
+      ItemDiscount.make({
         uid: 'TEST5',
         perLineDiscountedAmount:
           100 * ((2 * 1000) / totalValueApplicabelToDiscount), // 100 THB - split by value
         setFree: false,
         applicableRuleUid: ruleIdThatMatch,
-      },
+        isPriceTier: false,
+      }),
     ]
     const discountAmount = new FixedPriceRule(
       ruleIdThatMatch,
@@ -173,12 +178,13 @@ describe('Category Conditions', () => {
 
   it('Can apply and condition', async () => {
     const itemDiscounts = [
-      {
+      ItemDiscount.make({
         uid: 'TEST3',
         perLineDiscountedAmount: 200, // 200 THB - split by value (but noting to split)
         setFree: false,
         applicableRuleUid: ruleIdThatMatch,
-      },
+        isPriceTier: false,
+      }),
     ]
     const discountAmount = new FixedPriceRule(
       ruleIdThatMatch,
@@ -213,12 +219,12 @@ describe('Category Conditions', () => {
   })
 
   it('Can apply category based selection for % discount.', async () => {
-    const discountItem = {
+    const discountItem = ItemDiscount.make({
       uid: 'TEST',
       perLineDiscountedAmount: 250, // 50 * 5
       setFree: false,
       applicableRuleUid: ruleIdThatMatch,
-    }
+    })
     const discountPercent = new FixedPercentRule(
       ruleIdThatMatch,
       0,
@@ -274,12 +280,12 @@ describe('Category Conditions', () => {
     const meta = {
       applicableRuleUids: [ruleIdThatMatch],
       itemDiscounts: [
-        {
+        ItemDiscount.make({
           uid: 'TEST',
           perLineDiscountedAmount: 100, // (Fixed)
           setFree: false,
           applicableRuleUid: ruleIdThatMatch,
-        },
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)
@@ -330,24 +336,27 @@ describe('Category Conditions', () => {
     const meta = {
       applicableRuleUids: [ruleIdThatMatch],
       itemDiscounts: [
-        {
+        ItemDiscount.make({
           uid: 'TEST3',
           perLineDiscountedAmount: 200, // 500 * 20% * 2
           setFree: false,
           applicableRuleUid: ruleIdThatMatch,
-        },
-        {
+          isPriceTier: false,
+        }),
+        ItemDiscount.make({
           uid: 'TEST4',
           perLineDiscountedAmount: 200, // 1000 * 20% * 1
           setFree: false,
           applicableRuleUid: ruleIdThatMatch,
-        },
-        {
+          isPriceTier: false,
+        }),
+        ItemDiscount.make({
           uid: 'TEST5',
           perLineDiscountedAmount: 400, // 1000 * 20% * 2
           setFree: false,
           applicableRuleUid: ruleIdThatMatch,
-        },
+          isPriceTier: false,
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)
@@ -380,24 +389,24 @@ describe('Category Conditions', () => {
     const meta = {
       applicableRuleUids: [ruleIdThatMatch],
       itemDiscounts: [
-        {
+        ItemDiscount.make({
           uid: 'TEST3',
           perLineDiscountedAmount: 500, // 500
           setFree: true,
           applicableRuleUid: ruleIdThatMatch,
-        },
-        {
+        }),
+        ItemDiscount.make({
           uid: 'TEST3',
           perLineDiscountedAmount: 500, // 500
           setFree: true,
           applicableRuleUid: ruleIdThatMatch,
-        },
-        {
+        }),
+        ItemDiscount.make({
           uid: 'TEST4',
           perLineDiscountedAmount: 1000, // 1000
           setFree: true,
           applicableRuleUid: ruleIdThatMatch,
-        },
+        }),
       ],
     }
     expect(result.meta.itemDiscounts?.length).toEqual(meta.itemDiscounts.length)

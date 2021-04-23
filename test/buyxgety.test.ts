@@ -1,3 +1,4 @@
+import { ItemDiscount } from '../src'
 import { CalculationEngine } from '../src/engine'
 import { BuyXGetYRule } from '../src/incart'
 // TEST CASE
@@ -5,12 +6,13 @@ import { BuyXGetYRule } from '../src/incart'
 describe('Calculation Engine', () => {
   const engine = new CalculationEngine()
 
-  const discountItem = {
+  const discountItem = ItemDiscount.make({
     uid: 'TEST',
     perLineDiscountedAmount: 500,
     setFree: true,
     applicableRuleUid: '0001',
-  }
+    isPriceTier: false,
+  })
 
   it('Can create buy-3-get-2 rule for uid TEST with 5 item in Cart.', async () => {
     const uid = '0001'
@@ -47,7 +49,7 @@ describe('Calculation Engine', () => {
       applicableRuleUids: ['0001'],
       itemDiscounts: Array(2).fill(discountItem),
     }
-    expect(result.meta).toEqual(meta)
+    expect(result.meta).toEqual(expect.objectContaining(meta))
   })
 
   it('Can create buy-3-get-2 rule for uid TEST with 4 item in Cart.', async () => {
@@ -85,7 +87,7 @@ describe('Calculation Engine', () => {
       applicableRuleUids: ['0001'],
       itemDiscounts: Array(1).fill(discountItem),
     }
-    expect(result.meta).toEqual(meta)
+    expect(result.meta).toEqual(expect.objectContaining(meta))
   })
 
   it('Can create buy-3-get-2 rule for uid TEST with 6 item in Cart.', async () => {
@@ -123,7 +125,7 @@ describe('Calculation Engine', () => {
       applicableRuleUids: ['0001'],
       itemDiscounts: Array(2).fill(discountItem),
     }
-    expect(result.meta).toEqual(meta)
+    expect(result.meta).toEqual(expect.objectContaining(meta))
   })
 
   it('Can create pick-3-pay-2 rule for uid TEST AND buy-1-get-1 for UID TEST2 in Cart.', async () => {
@@ -188,38 +190,43 @@ describe('Calculation Engine', () => {
     const meta = {
       applicableRuleUids: [uid1, uid2],
       itemDiscounts: [
-        {
+        ItemDiscount.make({
           uid: 'TEST',
           perLineDiscountedAmount: 145,
           setFree: true,
           applicableRuleUid: '0001',
-        },
-        {
+          isPriceTier: false,
+        }),
+        ItemDiscount.make({
           uid: 'TEST',
           perLineDiscountedAmount: 145,
           setFree: true,
           applicableRuleUid: '0001',
-        },
-        {
+          isPriceTier: false,
+        }),
+        ItemDiscount.make({
           uid: 'TEST2',
           perLineDiscountedAmount: 990,
           setFree: true,
           applicableRuleUid: '0002',
-        },
-        {
+          isPriceTier: false,
+        }),
+        ItemDiscount.make({
           uid: 'TEST2',
           perLineDiscountedAmount: 990,
           setFree: true,
           applicableRuleUid: '0002',
-        },
-        {
+          isPriceTier: false,
+        }),
+        ItemDiscount.make({
           uid: 'TEST2',
           perLineDiscountedAmount: 990,
           setFree: true,
           applicableRuleUid: '0002',
-        },
+          isPriceTier: false,
+        }),
       ],
     }
-    expect(result.meta).toEqual(meta)
+    expect(result.meta).toEqual(expect.objectContaining(meta))
   })
 })

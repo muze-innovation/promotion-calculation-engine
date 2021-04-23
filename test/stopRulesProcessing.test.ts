@@ -1,3 +1,4 @@
+import { WholeCartDiscount } from '../src'
 import { CalculationEngine } from '../src/engine'
 import { FixedPriceRule } from '../src/incart'
 
@@ -48,11 +49,12 @@ describe('Calculation Engine', () => {
             ...acc.result.wholeCartDiscount,
             ...(index <= stopAtIndex
               ? [
-                  {
+                  WholeCartDiscount.make({
                     applicableRuleUid: `fixed10baht${index}`,
                     discountedAmount: 10,
                     setFree: false,
-                  },
+                    uids: [],
+                  }),
                 ]
               : []),
           ],

@@ -1,3 +1,4 @@
+import { ItemDiscount, WholeCartDiscount } from '../src'
 import { CalculationEngine } from '../src/engine'
 import { FixedPercentRule } from '../src/incart'
 // TEST CASE
@@ -52,12 +53,13 @@ describe('Discount with fixed percent', () => {
     const meta = {
       applicableRuleUids: ['fixed10perc'],
       itemDiscounts: [
-        {
+        ItemDiscount.make({
           perLineDiscountedAmount: 1.1,
           setFree: false,
           applicableRuleUid: 'fixed10perc',
           uid: 'ABC2',
-        },
+          isPriceTier: false,
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)
@@ -84,11 +86,12 @@ describe('Discount with fixed percent', () => {
     const meta = {
       applicableRuleUids: ['fixed10'],
       wholeCartDiscount: [
-        {
+        WholeCartDiscount.make({
           discountedAmount: 21.1, // (200 + 11) * 10%
           setFree: false,
           applicableRuleUid: 'fixed10',
-        },
+          uids: [],
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)

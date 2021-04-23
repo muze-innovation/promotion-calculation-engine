@@ -1,3 +1,4 @@
+import { ItemDiscount, WholeCartDiscount } from '../src'
 import { CalculationEngine } from '../src/engine'
 import { BuyXGetYRule, StepVolumeDiscountRule } from '../src/incart'
 
@@ -79,24 +80,27 @@ describe('Calculation Engine', () => {
     const meta = {
       applicableRuleUids: ['StepUId01', 'BuyXGetYUId01'],
       itemDiscounts: [
-        {
+        ItemDiscount.make({
           uid: 'TEST',
           perLineDiscountedAmount: 300,
           setFree: false,
           applicableRuleUid: 'StepUId01',
-        },
-        {
+          isPriceTier: false,
+        }),
+        ItemDiscount.make({
           uid: 'TEST',
           perLineDiscountedAmount: 450,
           setFree: true,
           applicableRuleUid: 'BuyXGetYUId01',
-        },
-        {
+          isPriceTier: false,
+        }),
+        ItemDiscount.make({
           uid: 'TEST',
           perLineDiscountedAmount: 450,
           setFree: true,
           applicableRuleUid: 'BuyXGetYUId01',
-        },
+          isPriceTier: false,
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)
@@ -169,25 +173,28 @@ describe('Calculation Engine', () => {
     const meta = {
       applicableRuleUids: [10, 11],
       itemDiscounts: [
-        {
+        ItemDiscount.make({
           uid: 'TEST2',
           perLineDiscountedAmount: 150,
           setFree: true,
           applicableRuleUid: 10,
-        },
-        {
+          isPriceTier: false,
+        }),
+        ItemDiscount.make({
           uid: 'TEST3',
           perLineDiscountedAmount: 400,
           setFree: true,
           applicableRuleUid: 10,
-        },
+          isPriceTier: false,
+        }),
       ],
       wholeCartDiscount: [
-        {
+        WholeCartDiscount.make({
           discountedAmount: 75,
           setFree: false,
           applicableRuleUid: 11,
-        },
+          uids: [],
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)
@@ -267,24 +274,27 @@ describe('Calculation Engine', () => {
     const meta = {
       applicableRuleUids: ['step01', 'buyXGetY01'],
       itemDiscounts: [
-        {
+        ItemDiscount.make({
           uid: 'TEST',
           perLineDiscountedAmount: 300,
           setFree: false,
           applicableRuleUid: 'step01',
-        },
-        {
+          isPriceTier: false,
+        }),
+        ItemDiscount.make({
           uid: 'TEST',
           perLineDiscountedAmount: 450,
           setFree: true,
           applicableRuleUid: 'buyXGetY01',
-        },
-        {
+          isPriceTier: false,
+        }),
+        ItemDiscount.make({
           uid: 'TEST',
           perLineDiscountedAmount: 450,
           setFree: true,
           applicableRuleUid: 'buyXGetY01',
-        },
+          isPriceTier: false,
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)
@@ -366,25 +376,28 @@ describe('Calculation Engine', () => {
     const meta = {
       applicableRuleUids: ['buyXGetY02', 'step02'],
       itemDiscounts: [
-        {
+        ItemDiscount.make({
           uid: 'TEST2',
           perLineDiscountedAmount: 150,
           setFree: true,
           applicableRuleUid: 'buyXGetY02',
-        },
-        {
+          isPriceTier: false,
+        }),
+        ItemDiscount.make({
           uid: 'TEST3',
           perLineDiscountedAmount: 400,
           setFree: true,
           applicableRuleUid: 'buyXGetY02',
-        },
+          isPriceTier: false,
+        }),
       ],
       wholeCartDiscount: [
-        {
+        WholeCartDiscount.make({
           discountedAmount: 100,
           setFree: false,
           applicableRuleUid: 'step02',
-        },
+          uids: [],
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)

@@ -2,6 +2,7 @@ import { Action, UID } from 'index'
 import { InCartRule } from './base'
 import { CalculationBuffer } from '../buffer'
 import { JsonConditionType } from './conditionTypes'
+import { ItemDiscount, WholeCartDiscount } from '../discounts'
 
 export default class FixedPercentRule extends InCartRule {
   /**
@@ -41,11 +42,14 @@ export default class FixedPercentRule extends InCartRule {
           const wholeCartDiscount = input.wholeCartDiscount
             ? input.wholeCartDiscount
             : []
-          wholeCartDiscount.push({
-            discountedAmount: (total * this.value) / 100,
-            setFree: false,
-            applicableRuleUid: this.uid,
-          })
+          wholeCartDiscount.push(
+            WholeCartDiscount.make({
+              uids: [],
+              discountedAmount: (total * this.value) / 100,
+              setFree: false,
+              applicableRuleUid: this.uid,
+            })
+          )
           return {
             ...input.itemMeta,
             wholeCartDiscount,
@@ -54,13 +58,15 @@ export default class FixedPercentRule extends InCartRule {
           const itemDiscounts = input.itemDiscounts ? input.itemDiscounts : []
           const cartItems = input.calculateCartItems(uids)
           cartItems.items.forEach(item =>
-            itemDiscounts.push({
-              uid: item.uid,
-              perLineDiscountedAmount: (item.totalAmount * this.value) / 100,
-              setFree: false,
-              applicableRuleUid: this.uid,
-              isPriceTier: item.isPriceTier,
-            })
+            itemDiscounts.push(
+              ItemDiscount.make({
+                uid: item.uid,
+                perLineDiscountedAmount: (item.totalAmount * this.value) / 100,
+                setFree: false,
+                applicableRuleUid: this.uid,
+                isPriceTier: item.isPriceTier || false,
+              })
+            )
           )
           return {
             ...input.itemMeta,

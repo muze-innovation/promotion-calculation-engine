@@ -75,9 +75,7 @@ export class CalculationEngine {
         continue
       }
       opt.verbose && opt.verbose(`Processing rule "${rule.name}"`)
-      const applicableRuleUids = buffer.applicableRuleUids || []
-      applicableRuleUids.push(rule.uid)
-      buffer.setApplicableRuleUids(applicableRuleUids)
+      buffer.pushApplicableRuleUids(rule.uid)
       for (const action of actions) {
         const meta = await action.perform(buffer)
         opt.verbose &&

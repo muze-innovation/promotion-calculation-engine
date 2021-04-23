@@ -1,3 +1,4 @@
+import { ItemDiscount, WholeCartDiscount } from '../src'
 import { CalculationEngine } from '../src/engine'
 import { FixedPriceRule } from '../src/incart'
 // TEST CASE
@@ -35,11 +36,12 @@ describe('Calculation Engine', () => {
     const meta = {
       applicableRuleUids: [1],
       wholeCartDiscount: [
-        {
+        WholeCartDiscount.make({
           discountedAmount: 100,
           setFree: false,
           applicableRuleUid: 1,
-        },
+          uids: [],
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)
@@ -75,11 +77,12 @@ describe('Calculation Engine', () => {
     const meta = {
       applicableRuleUids: ['fixedDiscountPrice0001'],
       wholeCartDiscount: [
-        {
+        WholeCartDiscount.make({
           discountedAmount: 400,
           setFree: false,
           applicableRuleUid: 'fixedDiscountPrice0001',
-        },
+          uids: [],
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)
@@ -127,18 +130,18 @@ describe('Calculation Engine', () => {
     const meta = {
       applicableRuleUids: ['0001'],
       itemDiscounts: [
-        {
+        ItemDiscount.make({
           uid: 'ABC',
           perLineDiscountedAmount: 100,
           setFree: false,
           applicableRuleUid: '0001',
-        },
-        {
+        }),
+        ItemDiscount.make({
           uid: 'EFG',
           perLineDiscountedAmount: 100,
           setFree: false,
           applicableRuleUid: '0001',
-        },
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)
@@ -186,12 +189,12 @@ describe('Calculation Engine', () => {
     const meta = {
       applicableRuleUids: ['0001'],
       itemDiscounts: [
-        {
+        ItemDiscount.make({
           uid: 'ABC',
           perLineDiscountedAmount: 200,
           setFree: false,
           applicableRuleUid: '0001',
-        },
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)
