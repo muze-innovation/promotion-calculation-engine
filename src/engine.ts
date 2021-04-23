@@ -60,8 +60,9 @@ export class CalculationEngine {
 
       const conditions = rule.getConditions()
       const actions = rule.getActions()
+      const _bff = buffer
       const conditionResults = !input.ignoreCondition
-        ? await Promise.all(conditions.map((o: Condition) => o.check(buffer)))
+        ? await Promise.all(conditions.map((o: Condition) => o.check(_bff)))
         : []
       const flattenConditionResults = uniq(flatten(conditionResults))
       if (!isEmpty(flattenConditionResults)) {
