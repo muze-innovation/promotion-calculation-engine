@@ -67,7 +67,11 @@ export type JsonConditionType =
   | TagCondition
 
 export class ConditionTypes {
-  static parse(raw: JsonConditionType, salesRuleId?: UID): Condition {
+  static parse(
+    raw: JsonConditionType,
+    salesRuleId: UID,
+    removePriceTierItemsBeforeApply: boolean
+  ): Condition {
     switch (raw.type) {
       case 'subtotal_at_least':
         return {
@@ -135,13 +139,17 @@ export class ConditionTypes {
             ) {
               errors.push('Something went wrong.')
             } else {
-              const found = input.filterApplicableCartItems([], {
-                categories: {
-                  condition: raw.value.condition === 'and' ? 'AND' : 'OR',
-                  exclusion: raw.value.condition === 'not',
-                  values: raw.value.values.map(o => `${o}`),
-                },
-              })
+              const found = input.filterApplicableCartItems(
+                [],
+                removePriceTierItemsBeforeApply ? 'exclude' : 'include',
+                {
+                  categories: {
+                    condition: raw.value.condition === 'and' ? 'AND' : 'OR',
+                    exclusion: raw.value.condition === 'not',
+                    values: raw.value.values.map(o => `${o}`),
+                  },
+                }
+              )
               if (isEmpty(found)) {
                 errors.push(
                   "This promotion doesn't apply to any product in this order."
@@ -162,13 +170,17 @@ export class ConditionTypes {
             ) {
               errors.push('Something went wrong.')
             } else {
-              const found = input.filterApplicableCartItems([], {
-                tags: {
-                  condition: raw.value.condition === 'and' ? 'AND' : 'OR',
-                  exclusion: raw.value.condition === 'not',
-                  values: raw.value.values,
-                },
-              })
+              const found = input.filterApplicableCartItems(
+                [],
+                removePriceTierItemsBeforeApply ? 'exclude' : 'include',
+                {
+                  tags: {
+                    condition: raw.value.condition === 'and' ? 'AND' : 'OR',
+                    exclusion: raw.value.condition === 'not',
+                    values: raw.value.values,
+                  },
+                }
+              )
               if (isEmpty(found)) {
                 errors.push(
                   "This promotion doesn't apply to any product in this order."

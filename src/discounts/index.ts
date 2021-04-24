@@ -1,5 +1,20 @@
 import { RuleUID, CartItemUID } from '../typed'
 
+export interface IDistribution {
+  /**
+   * Compute distributed factor max value = 1, smallest value = 0
+   * TODO: Consider change this to fraction.js
+   * @param cartItemUID
+   */
+  getDistributedFactor(cartItemUID: string): number
+
+  /**
+   * Check if distribution included specific cartItem or not?
+   * @param cartItemUID
+   */
+  included(cartItemUID: string): boolean
+}
+
 export interface BaseDiscount {
   applicableRuleUid: RuleUID
   setFree: boolean

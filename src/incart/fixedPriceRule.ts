@@ -4,6 +4,7 @@ import { InCartRule } from './base'
 import { CalculationBuffer } from '../buffer'
 import { JsonConditionType } from './conditionTypes'
 import { ItemDiscount, WholeCartDiscount } from '../discounts'
+import { WeightDistribution } from '../discounts/WeightDistribution'
 
 export default class FixedPriceRule extends InCartRule {
   constructor(
@@ -28,18 +29,20 @@ export default class FixedPriceRule extends InCartRule {
   actions = [
     {
       perform: async (input: CalculationBuffer) => {
-        const uids = this.getApplicableCartItemUids(input)
-        if (uids === 'all') {
+        const { uids, isAllItems } = this.getApplicableCartItemUids(input)
+        const calculatedItems = input.calculateCartItems(uids)
+        if (isAllItems) {
           const subtotal = input.getCartSubtotal()
           const discountWithoutShipping = input.getTotalDiscountWithoutShipping()
           const total = subtotal - discountWithoutShipping
-          const wholeCartDiscount = input.wholeCartDiscount
-            ? input.wholeCartDiscount
-            : []
+          const wholeCartDiscount = input.wholeCartDiscount || []
+          const dist = WeightDistribution.make(
+            calculatedItems.items.map(item => [`${item.uid}`, item.totalAmount])
+          )
           wholeCartDiscount.push(
             WholeCartDiscount.make({
               applicableRuleUid: this.uid,
-              uids: [],
+              dist,
               discountedAmount: total < this.value ? subtotal : this.value,
             })
           )
@@ -48,13 +51,12 @@ export default class FixedPriceRule extends InCartRule {
             wholeCartDiscount,
           }
         } else if (uids.length) {
-          const itemDiscounts = input.itemDiscounts ? input.itemDiscounts : []
-          const itemsToProcess = input.calculateCartItems(uids)
+          const itemDiscounts = input.itemDiscounts || []
           const totalAmount = sumBy(
-            itemsToProcess.items,
+            calculatedItems.items,
             item => item.totalAmount
           )
-          itemsToProcess.items.forEach(item => {
+          calculatedItems.items.forEach(item => {
             const discount = (item.totalAmount / totalAmount) * this.value
             itemDiscounts.push(
               ItemDiscount.make({

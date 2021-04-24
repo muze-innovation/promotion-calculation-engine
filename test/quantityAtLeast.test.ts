@@ -1,4 +1,5 @@
-import { WholeCartDiscount } from '../src'
+import { CalculationEngineInput, WholeCartDiscount } from '../src'
+import { WeightDistribution } from '../src/discounts/WeightDistribution'
 import { CalculationEngine } from '../src/engine'
 import { FixedPriceRule } from '../src/incart'
 import { JsonConditionType } from '../src/incart/conditionTypes'
@@ -8,23 +9,22 @@ describe('Calculation Engine', () => {
   const engine = new CalculationEngine()
 
   it('discount case: quantity >= at least', async () => {
-    const conditions: JsonConditionType[] = [
-      {
-        type: 'quantity_at_least',
-        value: 3,
-      },
-    ]
     const rule = new FixedPriceRule(
       'quantity01',
       0,
       'fixedDiscountPrice',
       false,
       false,
-      conditions,
+      [
+        {
+          type: 'quantity_at_least',
+          value: 3,
+        },
+      ],
       100
     )
 
-    const input = {
+    const input: CalculationEngineInput = {
       items: [
         {
           uid: 'ABC',
@@ -55,7 +55,10 @@ describe('Calculation Engine', () => {
           discountedAmount: 100,
           setFree: false,
           applicableRuleUid: 'quantity01',
-          uids: [],
+          dist: WeightDistribution.make([
+            ['ABC', 200],
+            ['DEF', 400],
+          ]),
         }),
       ],
     }

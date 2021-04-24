@@ -1,4 +1,5 @@
 import { ItemDiscount, WholeCartDiscount } from '../src'
+import { WeightDistribution } from '../src/discounts/WeightDistribution'
 import { CalculationEngine } from '../src/engine'
 import { BuyXGetYRule, StepVolumeDiscountRule } from '../src/incart'
 
@@ -193,7 +194,11 @@ describe('Calculation Engine', () => {
           discountedAmount: 75,
           setFree: false,
           applicableRuleUid: 11,
-          uids: [],
+          dist: WeightDistribution.make([
+            ['TEST', 1500],
+            ['TEST3', 0],
+            ['TEST2', 0],
+          ]),
         }),
       ],
     }
@@ -396,7 +401,11 @@ describe('Calculation Engine', () => {
           discountedAmount: 100,
           setFree: false,
           applicableRuleUid: 'step02',
-          uids: [],
+          dist: WeightDistribution.make([
+            ['TEST', 2000],
+            ['TEST3', 0],
+            ['TEST2', 0],
+          ]),
         }),
       ],
     }

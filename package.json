@@ -20,7 +20,8 @@
     "test": "tsdx test",
     "lint": "tsdx lint ./src",
     "prepare": "tsdx build",
-    "lint:fix": "tsdx lint --fix"
+    "lint:fix": "tsdx lint --fix",
+    "jest": "node ./node_modules/jest/bin/jest.js"
   },
   "peerDependencies": {},
   "husky": {

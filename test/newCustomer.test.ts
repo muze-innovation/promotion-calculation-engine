@@ -2,6 +2,7 @@ import { WholeCartDiscount } from '../src'
 import { CalculationEngine } from '../src/engine'
 import { FixedPriceRule } from '../src/incart'
 import { JsonConditionType } from '../src/incart/conditionTypes'
+import { WeightDistribution } from '../src/discounts/WeightDistribution'
 
 // TEST CASE
 describe('Calculation Engine', () => {
@@ -52,7 +53,7 @@ describe('Calculation Engine', () => {
           applicableRuleUid: 'newCustomer01',
           discountedAmount: 100,
           setFree: false,
-          uids: [],
+          dist: WeightDistribution.make([['ABC', 100]]),
         }),
       ],
     }

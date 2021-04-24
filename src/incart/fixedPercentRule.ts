@@ -3,6 +3,7 @@ import { InCartRule } from './base'
 import { CalculationBuffer } from '../buffer'
 import { JsonConditionType } from './conditionTypes'
 import { ItemDiscount, WholeCartDiscount } from '../discounts'
+import { WeightDistribution } from '../discounts/WeightDistribution'
 
 export default class FixedPercentRule extends InCartRule {
   /**
@@ -34,17 +35,19 @@ export default class FixedPercentRule extends InCartRule {
   actions = [
     {
       perform: async (input: CalculationBuffer) => {
-        const uids = this.getApplicableCartItemUids(input)
-        if (uids === 'all') {
+        const { uids, isAllItems } = this.getApplicableCartItemUids(input)
+        if (isAllItems) {
           const subtotal = input.getCartSubtotal()
           const discountWithoutShipping = input.getTotalDiscountWithoutShipping()
           const total = subtotal - discountWithoutShipping
-          const wholeCartDiscount = input.wholeCartDiscount
-            ? input.wholeCartDiscount
-            : []
+          const wholeCartDiscount = input.wholeCartDiscount || []
+          const calculatedItems = input.calculateCartItems(uids)
+          const dist = WeightDistribution.make(
+            calculatedItems.items.map(item => [`${item.uid}`, item.totalAmount])
+          )
           wholeCartDiscount.push(
             WholeCartDiscount.make({
-              uids: [],
+              dist,
               discountedAmount: (total * this.value) / 100,
               setFree: false,
               applicableRuleUid: this.uid,
@@ -55,7 +58,7 @@ export default class FixedPercentRule extends InCartRule {
             wholeCartDiscount,
           }
         } else if (uids.length) {
-          const itemDiscounts = input.itemDiscounts ? input.itemDiscounts : []
+          const itemDiscounts = input.itemDiscounts || []
           const cartItems = input.calculateCartItems(uids)
           cartItems.items.forEach(item =>
             itemDiscounts.push(

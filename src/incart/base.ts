@@ -21,16 +21,23 @@ export abstract class InCartRule extends ARule {
     super(uid, priority, name, stopRulesProcessing, notEligibleToPriceTier)
 
     this.parsedConditions = this.conditions.map(condition =>
-      ConditionTypes.parse(condition, uid)
+      ConditionTypes.parse(condition, uid, notEligibleToPriceTier)
     )
   }
 
-  public getApplicableCartItemUids(buffer: CalculationBuffer): UID[] | 'all' {
+  public getApplicableCartItemUids(
+    buffer: CalculationBuffer
+  ): { uids: UID[]; isAllItems: boolean } {
     const o = this.getApplicableCartItems(buffer)
-    return o === 'all' ? 'all' : o.map(u => u.uid)
+    return {
+      uids: o.items.map(o => o.uid),
+      isAllItems: o.isAllItems,
+    }
   }
 
-  public getApplicableCartItems(buffer: CalculationBuffer): CartItem[] | 'all' {
+  public getApplicableCartItems(
+    buffer: CalculationBuffer
+  ): { items: CartItem[]; isAllItems: boolean } {
     const uids: UID[] = []
     // Accept only one condition per each taxnomy types.
     let catCondition: CategoryCondition | undefined
@@ -46,18 +53,23 @@ export abstract class InCartRule extends ARule {
         tagCondition = cond
       }
     }
-    return buffer.filterApplicableCartItems(uids, {
-      categories: catCondition?.value && {
-        condition: catCondition.value.condition === 'and' ? 'AND' : 'OR',
-        exclusion: catCondition.value.condition === 'not',
-        values: catCondition.value.values,
-      },
-      tags: tagCondition?.value && {
-        condition: tagCondition.value.condition === 'and' ? 'AND' : 'OR',
-        exclusion: tagCondition.value.condition === 'not',
-        values: tagCondition.value.values,
-      },
-    })
+    const result = buffer.filterApplicableCartItems(
+      uids,
+      this.notEligibleToPriceTier ? 'exclude' : 'include',
+      {
+        categories: catCondition?.value && {
+          condition: catCondition.value.condition === 'and' ? 'AND' : 'OR',
+          exclusion: catCondition.value.condition === 'not',
+          values: catCondition.value.values,
+        },
+        tags: tagCondition?.value && {
+          condition: tagCondition.value.condition === 'and' ? 'AND' : 'OR',
+          exclusion: tagCondition.value.condition === 'not',
+          values: tagCondition.value.values,
+        },
+      }
+    )
+    return result
   }
 
   public getConditions(): Condition[] {

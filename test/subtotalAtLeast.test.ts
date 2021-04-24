@@ -1,4 +1,5 @@
-import { WholeCartDiscount } from '../src'
+import { CalculationEngineInput, WholeCartDiscount } from '../src'
+import { WeightDistribution } from '../src/discounts/WeightDistribution'
 import { CalculationEngine } from '../src/engine'
 import { FixedPriceRule } from '../src/incart'
 import { JsonConditionType } from '../src/incart/conditionTypes'
@@ -8,23 +9,7 @@ describe('Calculation Engine', () => {
   const engine = new CalculationEngine()
 
   it('discount case: subtotal > at least', async () => {
-    const conditions: JsonConditionType[] = [
-      {
-        type: 'subtotal_at_least',
-        value: 200,
-      },
-    ]
-    const rule = new FixedPriceRule(
-      1,
-      0,
-      'fixedDiscountPrice',
-      false,
-      false,
-      conditions,
-      100
-    )
-
-    const input = {
+    const input: CalculationEngineInput = {
       items: [
         {
           uid: 'ABC',
@@ -35,19 +20,34 @@ describe('Calculation Engine', () => {
           tags: ['TAG#1'],
         },
       ],
-      rules: [rule],
+      rules: [
+        new FixedPriceRule(
+          'ruleA',
+          0,
+          'fixedDiscountPrice',
+          false,
+          false,
+          [
+            {
+              type: 'subtotal_at_least',
+              value: 200,
+            },
+          ],
+          100
+        ),
+      ],
     }
 
     const result = await engine.process(input, {})
 
     const meta = {
-      applicableRuleUids: [1],
+      applicableRuleUids: ['ruleA'],
       wholeCartDiscount: [
         WholeCartDiscount.make({
           discountedAmount: 100,
           setFree: false,
-          applicableRuleUid: 1,
-          uids: [],
+          applicableRuleUid: 'ruleA',
+          dist: WeightDistribution.make([['ABC', 200]]),
         }),
       ],
     }

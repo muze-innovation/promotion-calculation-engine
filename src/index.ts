@@ -84,6 +84,9 @@ export interface CartItem {
    */
   tags: string[]
 
+  /**
+   * Is item effected by PriceTier?
+   */
   isPriceTier?: boolean
 }
 

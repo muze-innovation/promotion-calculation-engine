@@ -1,4 +1,5 @@
 import { ItemDiscount, WholeCartDiscount } from '../src'
+import { WeightDistribution } from '../src/discounts/WeightDistribution'
 import { CalculationEngine } from '../src/engine'
 import { StepVolumeDiscountRule } from '../src/incart'
 
@@ -59,7 +60,7 @@ describe('Step Volume Discount', () => {
           applicableRuleUid: 'stepVolume01',
           discountedAmount: 0,
           setFree: false,
-          uids: [],
+          dist: WeightDistribution.make([['TEST', 1500]]),
         }),
       ],
     }
@@ -186,7 +187,7 @@ describe('Step Volume Discount', () => {
           discountedAmount: 750,
           setFree: false,
           applicableRuleUid: 'stepVolume03',
-          uids: [],
+          dist: WeightDistribution.make([['TEST', 5000]]),
         }),
       ],
     }
@@ -449,7 +450,7 @@ describe('Step Volume Discount', () => {
           applicableRuleUid: 'fixedStepVolume01',
           discountedAmount: 200,
           setFree: false,
-          uids: [],
+          dist: WeightDistribution.make([['TEST', 2500]]),
         }),
       ],
     }
@@ -517,7 +518,10 @@ describe('Step Volume Discount', () => {
           applicableRuleUid: 'fixedStepVolume02',
           discountedAmount: 400,
           setFree: false,
-          uids: [],
+          dist: WeightDistribution.make([
+            ['TEST1', 2500],
+            ['TEST2', 2500],
+          ]),
         }),
       ],
     }

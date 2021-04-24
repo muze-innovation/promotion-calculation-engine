@@ -1,4 +1,5 @@
 import { ItemDiscount, WholeCartDiscount } from '../src'
+import { WeightDistribution } from '../src/discounts/WeightDistribution'
 import { CalculationEngine } from '../src/engine'
 import { FixedPriceRule } from '../src/incart'
 // TEST CASE
@@ -40,7 +41,7 @@ describe('Calculation Engine', () => {
           discountedAmount: 100,
           setFree: false,
           applicableRuleUid: 1,
-          uids: [],
+          dist: WeightDistribution.make([['ABC', 400]]),
         }),
       ],
     }
@@ -81,7 +82,7 @@ describe('Calculation Engine', () => {
           discountedAmount: 400,
           setFree: false,
           applicableRuleUid: 'fixedDiscountPrice0001',
-          uids: [],
+          dist: WeightDistribution.make([['ABC', 400]]),
         }),
       ],
     }

@@ -67,8 +67,8 @@ export default class BuyXGetYRule extends InCartRule {
   actions = [
     {
       perform: async (input: CalculationBuffer) => {
-        let uids = this.getApplicableCartItemUids(input)
-        const cartItems = input.calculateCartItems(uids === 'all' ? [] : uids)
+        let { isAllItems, uids } = this.getApplicableCartItemUids(input)
+        const cartItems = input.calculateCartItems(isAllItems ? [] : uids)
         const itemDiscounts = input.itemDiscounts ? input.itemDiscounts : []
         const remainder = cartItems.totalQty % (this.x + this.y)
         const freeQty =

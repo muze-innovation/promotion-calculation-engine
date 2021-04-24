@@ -162,21 +162,49 @@ export class CalculationBuffer implements CalculationEngineOutput {
 
   /**
    * Filter list of items based on UID, categories, tags,
+   *
+   * Condition supported:
+   *
+   * One of:
+   *    1. selectedUids
+   *    1. taxonomies.categories
+   *    1. taxonomies.tags
+   *
+   * In combination with
+   *    1. price tier
+   *        1. Use 'only' to filter only price tier items.
+   *        1. Use 'exclude' to remove all price tier items.
+   *        1. Use 'include' (default) to ignore price tier condition.
+   *
+   * @returns list of CartItems those applicable to certain condition.
    */
-  filterApplicableCartItems(
-    rawUids: UID[],
+  public filterApplicableCartItems(
+    selectedUids: UID[],
+    priceTier: 'only' | 'exclude' | 'include',
     taxonomies?: { categories?: TaxonomyQuery; tags?: TaxonomyQuery }
-  ): CartItem[] | 'all' {
+  ): { items: CartItem[]; isAllItems: boolean } {
     const categories = TaxonomyQueryProcessor.make(
       'category',
       taxonomies?.categories
     )
     const tags = TaxonomyQueryProcessor.make('tag', taxonomies?.tags)
-    const uids = new Set<string>((rawUids && rawUids.map(String)) || [])
-    if (uids.size === 0 && !categories.isValid && !tags.isValid) {
-      return 'all'
+    const uids = new Set<string>(
+      (selectedUids && selectedUids.map(String)) || []
+    )
+    // No conditions applied
+    const isWholeCartDiscount =
+      uids.size === 0 && !categories.isValid && !tags.isValid
+    // Return true if such object should be included in the result
+    const filterPriceTier = (item: CartItem): boolean => {
+      return (
+        priceTier === 'include' ||
+        (Boolean(item.isPriceTier)
+          ? priceTier === 'only' // item is price-tier, include when mode === 'only'
+          : priceTier === 'exclude') // item is not price-tier, include when mode === 'exclude'
+      )
     }
-    return this.items.filter(item => {
+
+    const items = this.items.filter(filterPriceTier).filter(item => {
       // Process UID whitelist
       const itemUid = `${item.uid}`
       if (uids.size > 0 && uids.has(itemUid)) {
@@ -194,8 +222,12 @@ export class CalculationBuffer implements CalculationEngineOutput {
           return r === 'include'
         }
       }
-      return false
+      return isWholeCartDiscount
     })
+    return {
+      items,
+      isAllItems: isWholeCartDiscount,
+    }
   }
 
   /**
