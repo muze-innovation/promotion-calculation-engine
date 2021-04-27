@@ -3,6 +3,8 @@ import isEmpty from 'lodash/isEmpty'
 import keyBy from 'lodash/keyBy'
 import { Condition, UID } from 'index'
 import { CalculationBuffer } from '../buffer'
+import { ARule } from 'rule'
+import { CERuleContext } from 'buffer/CERuleContext'
 
 export interface SubTotalAtLeastCondition {
   type: 'subtotal_at_least'
@@ -68,6 +70,7 @@ export type JsonConditionType =
 
 export class ConditionTypes {
   static parse(
+    context: CERuleContext,
     raw: JsonConditionType,
     salesRuleId: UID,
     removePriceTierItemsBeforeApply: boolean
