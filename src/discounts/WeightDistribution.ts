@@ -22,7 +22,7 @@ export class WeightDistribution implements IDistribution {
     if (this.totalWeight === 0) {
       return 0
     }
-    const weight = this.cartItemUidToWeight[`${cartItemUID}`]
+    const weight = this.cartItemUidToWeight[`${cartItemUID}`] || 0
     return weight / this.totalWeight
   }
 
