@@ -1,56 +1,10 @@
-import { UID } from '..'
+import { CartItem, UID } from '..'
 import { CalculationBuffer, TaxonomyQuery } from './CEBuffer'
 
 export type PriceTierFilterOption = 'only' | 'exclude' | 'include'
-export type TaxonomyConditions =  { categories?: TaxonomyQuery; tags?: TaxonomyQuery }
-
-
-/**
- * Interface represent one cart item.
- */
-export interface CartItem {
-  /**
-   * A unique key identifier
-   *
-   * Engine will use this key to associated the discount to given item basis.
-   */
-  uid: UID
-
-  /**
-   * CartItem index key
-   */
-  cartItemIndexKey?: string
-
-  /**
-   * Quantity of same `uniqueKey` in purchased.
-   */
-  qty: number
-
-  /**
-   * Item price per pieces.
-   */
-  perItemPrice: number
-
-  /**
-   * Meta information of given CartItem.
-   *
-   * Engine might use these fields to calculate whether or not to apply the promotion.
-   * Or calculate how much discount should this specific line get.
-   */
-  categories: (string | number)[]
-
-  /**
-   * Meta information of given CartItem.
-   *
-   * Engine might use these fields to calculate whether or not to apply the promotion.
-   * Or calculate how much discount should this specific line get.
-   */
-  tags: string[]
-
-  /**
-   * Is item effected by PriceTier?
-   */
-  isPriceTier?: boolean
+export type TaxonomyConditions = {
+  categories?: TaxonomyQuery
+  tags?: TaxonomyQuery
 }
 
 export interface CalculatedCartItem extends CartItem {
@@ -69,29 +23,38 @@ export class CERuleContext {
   constructor(
     public readonly uids: UID[],
     public readonly excludePriceTier: PriceTierFilterOption,
-    public readonly taxonomyConditions: TaxonomyConditions) {
-  }
+    public readonly taxonomyConditions: TaxonomyConditions
+  ) {}
 
   getCartSubtotal(buffer: CalculationBuffer): number {
     // TODO: Implement this
+    const { items } = this.getApplicableCartItems(buffer)
+    return buffer.getCartSubtotal(items)
   }
 
   getTotalDiscountWithoutShipping(buffer: CalculationBuffer): number {
     // TODO: Implement this
+    const { uids } = this.getApplicableCartItems(buffer)
+    return buffer.getTotalDiscountWithoutShipping(uids)
   }
 
-  calculateCartItems(buffer: CalculationBuffer, uids?: UID[]): CalculatedCartItems {
+  calculateCartItems(buffer: CalculationBuffer): CalculatedCartItems {
     // TODO: Implement this
+    const { items } = this.getApplicableCartItems(buffer)
+    return buffer.calculateCartItems(items)
   }
 
   public getApplicableCartItems(
     buffer: CalculationBuffer
-  ): { items: CartItem[]; isAllItems: boolean } {
-    const result = buffer.filterApplicableCartItems(
+  ): { items: CartItem[]; uids: UID[]; isWholeCartDiscount: boolean } {
+    const filteredItems = buffer.filterApplicableCartItems(
       this.uids,
       this.excludePriceTier,
-      this.taxonomyConditions,
+      this.taxonomyConditions
     )
-    return result
+    return {
+      ...filteredItems,
+      uids: filteredItems.items.map(item => item.uid),
+    }
   }
 }

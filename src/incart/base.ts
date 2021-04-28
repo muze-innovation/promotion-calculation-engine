@@ -1,10 +1,14 @@
+import { Condition, UID, CartItem } from '..'
+import { JsonConditionType } from './conditionTypes'
+import {
+  CalculationBuffer,
+  TaxonomyQuery,
+  PriceTierFilterOption,
+} from '../buffer'
+
 import { ARule } from '../rule'
-import { Condition, UID } from '..'
-import ConditionTypes, {
-  JsonConditionType,
-} from './conditionTypes'
-import { CalculationBuffer, TaxonomyQuery } from '../buffer'
-import { CERuleContext, PriceTierFilterOption } from 'buffer/CERuleContext'
+import ConditionTypes from './conditionTypes'
+import { CERuleContext } from '../buffer'
 
 export abstract class InCartRule extends ARule {
   protected parsedConditions: Condition[]
@@ -21,7 +25,9 @@ export abstract class InCartRule extends ARule {
     super(uid, priority, name, stopRulesProcessing, notEligibleToPriceTier)
 
     const uids: UID[] = []
-    let priceTier: PriceTierFilterOption = this.notEligibleToPriceTier ? 'exclude' : 'include'
+    let priceTier: PriceTierFilterOption = this.notEligibleToPriceTier
+      ? 'exclude'
+      : 'include'
     let categories: TaxonomyQuery | undefined = undefined
     let tags: TaxonomyQuery | undefined = undefined
     for (const cond of this.conditions) {
@@ -49,18 +55,14 @@ export abstract class InCartRule extends ARule {
     })
 
     this.parsedConditions = this.conditions.map(condition =>
-      ConditionTypes.parse(this.context, condition, uid, notEligibleToPriceTier)
+      ConditionTypes.parse(this.context, condition, uid)
     )
   }
 
-  public getApplicableCartItemUids(
+  public getApplicableCartItems(
     buffer: CalculationBuffer
-  ): { uids: UID[]; isAllItems: boolean } {
-    const o = this.context.getApplicableCartItems(buffer)
-    return {
-      uids: o.items.map(o => o.uid),
-      isAllItems: o.isAllItems,
-    }
+  ): { items: CartItem[]; uids: UID[]; isWholeCartDiscount: boolean } {
+    return this.context.getApplicableCartItems(buffer)
   }
 
   public getConditions(): Condition[] {

@@ -175,7 +175,7 @@ describe('Calculation Engine', () => {
           discountedAmount: 100,
           setFree: false,
           applicableRuleUid: 1,
-          dist: WeightDistribution.make([['uid01', 500]]),
+          dist: WeightDistribution.make([['uid01', 300]]),
         }),
       ],
     }

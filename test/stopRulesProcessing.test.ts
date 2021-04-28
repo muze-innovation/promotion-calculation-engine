@@ -55,8 +55,8 @@ describe('Calculation Engine', () => {
                     discountedAmount: 10,
                     setFree: false,
                     dist: WeightDistribution.make([
-                      ['ABC1', 2000],
-                      ['ABC2', 500],
+                      ['ABC1', 2000 - 8 * index],
+                      ['ABC2', 500 - 2 * index],
                     ]),
                   }),
                 ]

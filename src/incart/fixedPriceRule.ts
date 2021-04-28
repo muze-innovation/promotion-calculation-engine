@@ -29,11 +29,17 @@ export default class FixedPriceRule extends InCartRule {
   actions = [
     {
       perform: async (input: CalculationBuffer) => {
-        const { uids, isAllItems } = this.getApplicableCartItemUids(input)
-        const calculatedItems = input.calculateCartItems(uids)
-        if (isAllItems) {
-          const subtotal = input.getCartSubtotal()
-          const discountWithoutShipping = input.getTotalDiscountWithoutShipping()
+        const {
+          items,
+          uids,
+          isWholeCartDiscount,
+        } = this.getApplicableCartItems(input)
+        const calculatedItems = input.calculateCartItems(items)
+        if (isWholeCartDiscount) {
+          const subtotal = input.getCartSubtotal(items)
+          const discountWithoutShipping = input.getTotalDiscountWithoutShipping(
+            uids
+          )
           const total = subtotal - discountWithoutShipping
           const wholeCartDiscount = input.wholeCartDiscount || []
           const dist = WeightDistribution.make(
@@ -65,7 +71,6 @@ export default class FixedPriceRule extends InCartRule {
                 perLineDiscountedAmount:
                   discount > item.totalAmount ? item.totalAmount : discount,
                 setFree: false,
-                isPriceTier: item.isPriceTier || false,
               })
             )
           })

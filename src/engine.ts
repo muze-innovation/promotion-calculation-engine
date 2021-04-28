@@ -44,9 +44,6 @@ export class CalculationEngine {
     let buffer = new CalculationBuffer(input, meta)
     let stopRulesProcessing = false
     for (const rule of sorted) {
-      const notEligibleToPriceTier = rule.notEligibleToPriceTier
-      buffer = buffer.recreate(undefined, notEligibleToPriceTier)
-
       // Add error to unprocessed rules.
       const previousUnapplicableRules = buffer.unapplicableRules
       if (stopRulesProcessing) {

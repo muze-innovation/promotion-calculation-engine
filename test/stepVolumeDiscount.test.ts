@@ -128,7 +128,6 @@ describe('Step Volume Discount', () => {
           perLineDiscountedAmount: 75,
           setFree: false,
           applicableRuleUid: 'stepVolume02',
-          isPriceTier: false,
         }),
       ],
     }

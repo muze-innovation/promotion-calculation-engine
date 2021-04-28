@@ -86,21 +86,18 @@ describe('Calculation Engine', () => {
           perLineDiscountedAmount: 300,
           setFree: false,
           applicableRuleUid: 'StepUId01',
-          isPriceTier: false,
         }),
         ItemDiscount.make({
           uid: 'TEST',
           perLineDiscountedAmount: 450,
           setFree: true,
           applicableRuleUid: 'BuyXGetYUId01',
-          isPriceTier: false,
         }),
         ItemDiscount.make({
           uid: 'TEST',
           perLineDiscountedAmount: 450,
           setFree: true,
           applicableRuleUid: 'BuyXGetYUId01',
-          isPriceTier: false,
         }),
       ],
     }
@@ -179,14 +176,12 @@ describe('Calculation Engine', () => {
           perLineDiscountedAmount: 150,
           setFree: true,
           applicableRuleUid: 10,
-          isPriceTier: false,
         }),
         ItemDiscount.make({
           uid: 'TEST3',
           perLineDiscountedAmount: 400,
           setFree: true,
           applicableRuleUid: 10,
-          isPriceTier: false,
         }),
       ],
       wholeCartDiscount: [
@@ -284,21 +279,18 @@ describe('Calculation Engine', () => {
           perLineDiscountedAmount: 300,
           setFree: false,
           applicableRuleUid: 'step01',
-          isPriceTier: false,
         }),
         ItemDiscount.make({
           uid: 'TEST',
           perLineDiscountedAmount: 450,
           setFree: true,
           applicableRuleUid: 'buyXGetY01',
-          isPriceTier: false,
         }),
         ItemDiscount.make({
           uid: 'TEST',
           perLineDiscountedAmount: 450,
           setFree: true,
           applicableRuleUid: 'buyXGetY01',
-          isPriceTier: false,
         }),
       ],
     }
@@ -386,14 +378,12 @@ describe('Calculation Engine', () => {
           perLineDiscountedAmount: 150,
           setFree: true,
           applicableRuleUid: 'buyXGetY02',
-          isPriceTier: false,
         }),
         ItemDiscount.make({
           uid: 'TEST3',
           perLineDiscountedAmount: 400,
           setFree: true,
           applicableRuleUid: 'buyXGetY02',
-          isPriceTier: false,
         }),
       ],
       wholeCartDiscount: [

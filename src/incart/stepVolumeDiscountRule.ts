@@ -50,14 +50,18 @@ export default class StepVolumeDiscountRule extends InCartRule {
   actions = [
     {
       perform: async (input: CalculationBuffer) => {
-        let { isAllItems, uids } = this.getApplicableCartItemUids(input)
-        const calculatedItems = input.calculateCartItems(uids)
+        const {
+          items,
+          isWholeCartDiscount,
+          uids,
+        } = this.getApplicableCartItems(input)
+        const calculatedItems = input.calculateCartItems(items)
         const totalAmount = sumBy(
           calculatedItems.items,
           item => item.totalAmount
         )
         const step = this.processStep(calculatedItems.totalQty)
-        if (isAllItems) {
+        if (isWholeCartDiscount) {
           const wholeCartDiscount = input.wholeCartDiscount || []
           const dist = WeightDistribution.make(
             calculatedItems.items.map(item => [`${item.uid}`, item.totalAmount])
@@ -100,7 +104,6 @@ export default class StepVolumeDiscountRule extends InCartRule {
                   perLineDiscountedAmount:
                     (item.totalAmount * step.discount) / 100,
                   setFree: false,
-                  isPriceTier: item.isPriceTier || false,
                 })
               )
             } else if (step.type === 'fixed') {
@@ -112,7 +115,6 @@ export default class StepVolumeDiscountRule extends InCartRule {
                   perLineDiscountedAmount:
                     discount > item.totalAmount ? item.totalAmount : discount,
                   setFree: false,
-                  isPriceTier: item.isPriceTier || false,
                 })
               )
             }

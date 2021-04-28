@@ -11,7 +11,6 @@ describe('Calculation Engine', () => {
     perLineDiscountedAmount: 500,
     setFree: true,
     applicableRuleUid: '0001',
-    isPriceTier: false,
   })
 
   it('Can create buy-3-get-2 rule for uid TEST with 5 item in Cart.', async () => {
@@ -195,35 +194,30 @@ describe('Calculation Engine', () => {
           perLineDiscountedAmount: 145,
           setFree: true,
           applicableRuleUid: '0001',
-          isPriceTier: false,
         }),
         ItemDiscount.make({
           uid: 'TEST',
           perLineDiscountedAmount: 145,
           setFree: true,
           applicableRuleUid: '0001',
-          isPriceTier: false,
         }),
         ItemDiscount.make({
           uid: 'TEST2',
           perLineDiscountedAmount: 990,
           setFree: true,
           applicableRuleUid: '0002',
-          isPriceTier: false,
         }),
         ItemDiscount.make({
           uid: 'TEST2',
           perLineDiscountedAmount: 990,
           setFree: true,
           applicableRuleUid: '0002',
-          isPriceTier: false,
         }),
         ItemDiscount.make({
           uid: 'TEST2',
           perLineDiscountedAmount: 990,
           setFree: true,
           applicableRuleUid: '0002',
-          isPriceTier: false,
         }),
       ],
     }

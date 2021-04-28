@@ -97,4 +97,119 @@ describe('Calculation Engine', () => {
     }
     expect(result.meta).toEqual(meta)
   })
+
+  it('discount case: subtotal(selected uid) > at least', async () => {
+    const conditions: JsonConditionType[] = [
+      {
+        type: 'subtotal_at_least',
+        value: 200,
+      },
+      {
+        type: 'uids',
+        uids: ['ABC'],
+      },
+    ]
+    const rule = new FixedPriceRule(
+      2,
+      0,
+      'fixedDiscountPrice',
+      false,
+      false,
+      conditions,
+      100
+    )
+
+    const input = {
+      items: [
+        {
+          uid: 'ABC',
+          cartItemIndexKey: '0',
+          qty: 5,
+          perItemPrice: 100,
+          categories: ['Main'],
+          tags: ['TAG#1'],
+        },
+        {
+          uid: 'DEF',
+          cartItemIndexKey: '0',
+          qty: 5,
+          perItemPrice: 100,
+          categories: ['Main'],
+          tags: ['TAG#1'],
+        },
+      ],
+      rules: [rule],
+    }
+
+    const result = await engine.process(input, {})
+
+    const meta = {
+      applicableRuleUids: [2],
+      itemDiscounts: [
+        {
+          applicableRuleUid: 2,
+          perLineDiscountedAmount: 100,
+          setFree: false,
+          uid: 'ABC',
+        },
+      ],
+    }
+    expect(result.meta).toEqual(meta)
+  })
+
+  it('no discount case: subtotal(selected uid) < at least', async () => {
+    const conditions: JsonConditionType[] = [
+      {
+        type: 'subtotal_at_least',
+        value: 200,
+      },
+      {
+        type: 'uids',
+        uids: ['ABC'],
+      },
+    ]
+    const rule = new FixedPriceRule(
+      2,
+      0,
+      'fixedDiscountPrice',
+      false,
+      false,
+      conditions,
+      100
+    )
+
+    const input = {
+      items: [
+        {
+          uid: 'ABC',
+          cartItemIndexKey: '0',
+          qty: 1,
+          perItemPrice: 100,
+          categories: ['Main'],
+          tags: ['TAG#1'],
+        },
+        {
+          uid: 'DEF',
+          cartItemIndexKey: '0',
+          qty: 5,
+          perItemPrice: 100,
+          categories: ['Main'],
+          tags: ['TAG#1'],
+        },
+      ],
+      rules: [rule],
+    }
+
+    const result = await engine.process(input, {})
+
+    const meta = {
+      unapplicableRules: [
+        {
+          uid: 2,
+          errors: ["Subtotal amount doesn't reach the minimum requirement."],
+        },
+      ],
+    }
+    expect(result.meta).toEqual(meta)
+  })
 })

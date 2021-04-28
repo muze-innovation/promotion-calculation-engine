@@ -7,8 +7,7 @@ export class ItemDiscount implements IItemDiscount {
     public readonly applicableRuleUid: RuleUID,
     public readonly uid: CartItemUID,
     public readonly perLineDiscountedAmount: number,
-    public readonly setFree: boolean = false,
-    public readonly isPriceTier?: boolean
+    public readonly setFree: boolean = false
   ) {}
 
   static make(args: {
@@ -16,14 +15,12 @@ export class ItemDiscount implements IItemDiscount {
     uid: CartItemUID
     perLineDiscountedAmount: number
     setFree: boolean
-    isPriceTier?: boolean
   }): ItemDiscount {
     return new ItemDiscount(
       args.applicableRuleUid,
       args.uid,
       args.perLineDiscountedAmount,
-      args.setFree,
-      args.isPriceTier || false
+      args.setFree
     )
   }
 
@@ -41,8 +38,7 @@ export class ItemDiscount implements IItemDiscount {
       'applicableRuleUid',
       'uid',
       'perLineDiscountedAmount',
-      'setFree',
-      'isPriceTier'
+      'setFree'
     )
   }
 }

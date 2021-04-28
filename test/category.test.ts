@@ -117,7 +117,6 @@ describe('Category Conditions', () => {
           100 * ((500 * 5) / totalValueApplicabelToDiscount), // 100 THB - split by value
         setFree: false,
         applicableRuleUid: ruleIdThatMatch,
-        isPriceTier: false,
       }),
       ItemDiscount.make({
         uid: 'TEST3',
@@ -125,7 +124,6 @@ describe('Category Conditions', () => {
           100 * ((2 * 500) / totalValueApplicabelToDiscount), // 100 THB - split by value
         setFree: false,
         applicableRuleUid: ruleIdThatMatch,
-        isPriceTier: false,
       }),
       ItemDiscount.make({
         uid: 'TEST4',
@@ -133,7 +131,6 @@ describe('Category Conditions', () => {
           100 * ((1 * 1000) / totalValueApplicabelToDiscount), // 100 THB - split by value
         setFree: false,
         applicableRuleUid: ruleIdThatMatch,
-        isPriceTier: false,
       }),
       ItemDiscount.make({
         uid: 'TEST5',
@@ -141,7 +138,6 @@ describe('Category Conditions', () => {
           100 * ((2 * 1000) / totalValueApplicabelToDiscount), // 100 THB - split by value
         setFree: false,
         applicableRuleUid: ruleIdThatMatch,
-        isPriceTier: false,
       }),
     ]
     const discountAmount = new FixedPriceRule(
@@ -183,7 +179,6 @@ describe('Category Conditions', () => {
         perLineDiscountedAmount: 200, // 200 THB - split by value (but noting to split)
         setFree: false,
         applicableRuleUid: ruleIdThatMatch,
-        isPriceTier: false,
       }),
     ]
     const discountAmount = new FixedPriceRule(
@@ -341,21 +336,18 @@ describe('Category Conditions', () => {
           perLineDiscountedAmount: 200, // 500 * 20% * 2
           setFree: false,
           applicableRuleUid: ruleIdThatMatch,
-          isPriceTier: false,
         }),
         ItemDiscount.make({
           uid: 'TEST4',
           perLineDiscountedAmount: 200, // 1000 * 20% * 1
           setFree: false,
           applicableRuleUid: ruleIdThatMatch,
-          isPriceTier: false,
         }),
         ItemDiscount.make({
           uid: 'TEST5',
           perLineDiscountedAmount: 400, // 1000 * 20% * 2
           setFree: false,
           applicableRuleUid: ruleIdThatMatch,
-          isPriceTier: false,
         }),
       ],
     }

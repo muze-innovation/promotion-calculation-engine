@@ -71,7 +71,6 @@ describe('Calculation Engine', () => {
       itemDiscounts: [
         {
           applicableRuleUid: '_PRICE_TIER',
-          isPriceTier: true,
           perLineDiscountedAmount: 250,
           setFree: false,
           uid: 'price_tier_product',
@@ -153,7 +152,6 @@ describe('Calculation Engine', () => {
       itemDiscounts: [
         ItemDiscount.make({
           applicableRuleUid: '_PRICE_TIER',
-          isPriceTier: true,
           perLineDiscountedAmount: 250,
           setFree: false,
           uid: 'price_tier_product',

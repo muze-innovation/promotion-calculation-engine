@@ -46,7 +46,6 @@ export default class BuyXGetYRule extends InCartRule {
               perLineDiscountedAmount: cheapestItem.totalPerItemPrice,
               setFree: true,
               applicableRuleUid: this.uid,
-              isPriceTier: cheapestItem.isPriceTier || false,
             })
           )
           .concat(this.getFreeItems(newCartItems, freeQty - cheapestItem.qty))
@@ -57,7 +56,6 @@ export default class BuyXGetYRule extends InCartRule {
           perLineDiscountedAmount: cheapestItem.totalPerItemPrice,
           setFree: true,
           applicableRuleUid: this.uid,
-          isPriceTier: cheapestItem.isPriceTier || false,
         })
       )
     }
@@ -67,8 +65,8 @@ export default class BuyXGetYRule extends InCartRule {
   actions = [
     {
       perform: async (input: CalculationBuffer) => {
-        let { isAllItems, uids } = this.getApplicableCartItemUids(input)
-        const cartItems = input.calculateCartItems(isAllItems ? [] : uids)
+        const { items } = this.getApplicableCartItems(input)
+        const cartItems = input.calculateCartItems(items)
         const itemDiscounts = input.itemDiscounts ? input.itemDiscounts : []
         const remainder = cartItems.totalQty % (this.x + this.y)
         const freeQty =

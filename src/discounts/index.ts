@@ -42,7 +42,6 @@ export interface BaseDiscount {
 export interface IItemDiscount extends BaseDiscount {
   uid: CartItemUID
   perLineDiscountedAmount: number
-  isPriceTier?: boolean
 }
 
 export interface IShippingDiscount extends BaseDiscount {

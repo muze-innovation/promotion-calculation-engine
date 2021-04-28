@@ -35,13 +35,19 @@ export default class FixedPercentRule extends InCartRule {
   actions = [
     {
       perform: async (input: CalculationBuffer) => {
-        const { uids, isAllItems } = this.getApplicableCartItemUids(input)
-        if (isAllItems) {
-          const subtotal = input.getCartSubtotal()
-          const discountWithoutShipping = input.getTotalDiscountWithoutShipping()
+        const {
+          items,
+          uids,
+          isWholeCartDiscount,
+        } = this.getApplicableCartItems(input)
+        const calculatedItems = input.calculateCartItems(items)
+        if (isWholeCartDiscount) {
+          const subtotal = input.getCartSubtotal(items)
+          const discountWithoutShipping = input.getTotalDiscountWithoutShipping(
+            uids
+          )
           const total = subtotal - discountWithoutShipping
           const wholeCartDiscount = input.wholeCartDiscount || []
-          const calculatedItems = input.calculateCartItems(uids)
           const dist = WeightDistribution.make(
             calculatedItems.items.map(item => [`${item.uid}`, item.totalAmount])
           )
@@ -59,15 +65,13 @@ export default class FixedPercentRule extends InCartRule {
           }
         } else if (uids.length) {
           const itemDiscounts = input.itemDiscounts || []
-          const cartItems = input.calculateCartItems(uids)
-          cartItems.items.forEach(item =>
+          calculatedItems.items.forEach(item =>
             itemDiscounts.push(
               ItemDiscount.make({
                 uid: item.uid,
                 perLineDiscountedAmount: (item.totalAmount * this.value) / 100,
                 setFree: false,
                 applicableRuleUid: this.uid,
-                isPriceTier: item.isPriceTier || false,
               })
             )
           )

@@ -64,7 +64,6 @@ describe('Discount with fixed percent', () => {
           setFree: false,
           applicableRuleUid: 'fixed10perc',
           uid: 'ABC2',
-          isPriceTier: false,
         }),
       ],
     }

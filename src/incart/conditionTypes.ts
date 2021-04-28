@@ -1,10 +1,8 @@
+import { Condition, UID } from 'index'
+import { CalculationBuffer, CERuleContext } from '../buffer'
+
 import isNil from 'lodash/isNil'
 import isEmpty from 'lodash/isEmpty'
-import keyBy from 'lodash/keyBy'
-import { Condition, UID } from 'index'
-import { CalculationBuffer } from '../buffer'
-import { ARule } from 'rule'
-import { CERuleContext } from 'buffer/CERuleContext'
 
 export interface SubTotalAtLeastCondition {
   type: 'subtotal_at_least'
@@ -72,15 +70,17 @@ export class ConditionTypes {
   static parse(
     context: CERuleContext,
     raw: JsonConditionType,
-    salesRuleId: UID,
-    removePriceTierItemsBeforeApply: boolean
+    salesRuleId: UID
   ): Condition {
     switch (raw.type) {
       case 'subtotal_at_least':
         return {
           check: async (input: CalculationBuffer) => {
-            const subtotal = input.getCartSubtotal()
-            const discountWithoutShipping = input.getTotalDiscountWithoutShipping()
+            const { items, uids } = context.getApplicableCartItems(input)
+            const subtotal = input.getCartSubtotal(items)
+            const discountWithoutShipping = input.getTotalDiscountWithoutShipping(
+              uids
+            )
             const total = subtotal - discountWithoutShipping
             const errors = []
             if (total < raw.value) {
@@ -94,7 +94,7 @@ export class ConditionTypes {
       case 'quantity_at_least':
         return {
           check: async (input: CalculationBuffer) => {
-            const cartItems = input.calculateCartItems(raw.uids)
+            const cartItems = context.calculateCartItems(input)
             const errors = []
             if (cartItems.totalQty < raw.value) {
               errors.push(
@@ -121,8 +121,8 @@ export class ConditionTypes {
             if (isEmpty(raw.uids)) {
               errors.push("This promotion doesn't apply to any product.")
             } else {
-              const conditionUids = keyBy(raw.uids)
-              if (!input.items.some(item => conditionUids[item.uid])) {
+              const { items } = context.getApplicableCartItems(input)
+              if (isEmpty(items)) {
                 errors.push(
                   "This promotion doesn't apply to any product in this order."
                 )
@@ -132,36 +132,6 @@ export class ConditionTypes {
           },
         }
       case 'category':
-        return {
-          check: async (input: CalculationBuffer) => {
-            const errors = []
-            if (
-              !raw.value ||
-              !raw.value.values ||
-              raw.value.values.length <= 0
-            ) {
-              errors.push('Something went wrong.')
-            } else {
-              const found = input.filterApplicableCartItems(
-                [],
-                removePriceTierItemsBeforeApply ? 'exclude' : 'include',
-                {
-                  categories: {
-                    condition: raw.value.condition === 'and' ? 'AND' : 'OR',
-                    exclusion: raw.value.condition === 'not',
-                    values: raw.value.values.map(o => `${o}`),
-                  },
-                }
-              )
-              if (isEmpty(found)) {
-                errors.push(
-                  "This promotion doesn't apply to any product in this order."
-                )
-              }
-            }
-            return errors
-          },
-        }
       case 'tag':
         return {
           check: async (input: CalculationBuffer) => {
@@ -173,18 +143,8 @@ export class ConditionTypes {
             ) {
               errors.push('Something went wrong.')
             } else {
-              const found = input.filterApplicableCartItems(
-                [],
-                removePriceTierItemsBeforeApply ? 'exclude' : 'include',
-                {
-                  tags: {
-                    condition: raw.value.condition === 'and' ? 'AND' : 'OR',
-                    exclusion: raw.value.condition === 'not',
-                    values: raw.value.values,
-                  },
-                }
-              )
-              if (isEmpty(found)) {
+              const { items } = context.getApplicableCartItems(input)
+              if (isEmpty(items)) {
                 errors.push(
                   "This promotion doesn't apply to any product in this order."
                 )
