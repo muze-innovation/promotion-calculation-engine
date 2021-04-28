@@ -1,3 +1,5 @@
+import { WholeCartDiscount } from '../src'
+import { WeightDistribution } from '../src/discounts/WeightDistribution'
 import { CalculationEngine } from '../src/engine'
 import { FixedPriceRule } from '../src/incart'
 
@@ -48,11 +50,15 @@ describe('Calculation Engine', () => {
             ...acc.result.wholeCartDiscount,
             ...(index <= stopAtIndex
               ? [
-                  {
+                  WholeCartDiscount.make({
                     applicableRuleUid: `fixed10baht${index}`,
                     discountedAmount: 10,
                     setFree: false,
-                  },
+                    dist: WeightDistribution.make([
+                      ['ABC1', 2000 - 8 * index],
+                      ['ABC2', 500 - 2 * index],
+                    ]),
+                  }),
                 ]
               : []),
           ],

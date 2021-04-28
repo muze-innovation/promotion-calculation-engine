@@ -1,5 +1,9 @@
-import sumBy from 'lodash/sumBy'
-import isEmpty from 'lodash/isEmpty'
+import { RuleUID } from '../typed'
+import {
+  IWholeCartDiscount,
+  IItemDiscount,
+  IShippingDiscount,
+} from '../discounts'
 import {
   CalculationEngineInput,
   CalculationEngineMeta,
@@ -7,15 +11,15 @@ import {
   DeliveryAddress,
   CartItem,
   Customer,
-  ShippingDiscount,
-  ItemDiscount,
-  WholeCartDiscount,
   CalculatedCartItems,
   UID,
   UsageCount,
   UnapplicableRule,
 } from 'index'
-import { ARule } from './rule'
+import { ARule } from '../rule'
+
+import sumBy from 'lodash/sumBy'
+import sum from 'lodash/sum'
 
 export interface TaxonomyQuery {
   /**
@@ -87,29 +91,14 @@ class TaxonomyQueryProcessor {
 }
 
 export class CalculationBuffer implements CalculationEngineOutput {
-  private excludePriceTierItems: CartItem[]
-
   constructor(
     public readonly input: CalculationEngineInput,
     public readonly meta: CalculationEngineMeta,
-    public readonly excludePriceTier?: boolean,
-    excludePriceTierItems?: CartItem[]
-  ) {
-    this.excludePriceTierItems =
-      excludePriceTierItems ??
-      input.items.filter(({ isPriceTier }) => !isPriceTier)
-  }
+    public readonly excludePriceTier?: boolean
+  ) {}
 
-  recreate(
-    meta?: CalculationEngineMeta,
-    excludePriceTier?: boolean
-  ): CalculationBuffer {
-    return new CalculationBuffer(
-      this.input,
-      meta ?? this.meta,
-      excludePriceTier ?? this.excludePriceTier,
-      this.excludePriceTierItems
-    )
+  public recreate(meta?: CalculationEngineMeta): CalculationBuffer {
+    return new CalculationBuffer(this.input, meta ?? this.meta)
   }
 
   get deliveryAddresses(): DeliveryAddress[] | undefined {
@@ -117,7 +106,7 @@ export class CalculationBuffer implements CalculationEngineOutput {
   }
 
   get items(): CartItem[] {
-    return this.excludePriceTier ? this.excludePriceTierItems : this.input.items
+    return this.input.items
   }
 
   get customer(): Customer | undefined {
@@ -128,7 +117,7 @@ export class CalculationBuffer implements CalculationEngineOutput {
     return this.input.rules
   }
 
-  get shippingDiscount(): ShippingDiscount[] | undefined {
+  get shippingDiscount(): IShippingDiscount[] | undefined {
     return this.meta.shippingDiscount
   }
 
@@ -140,11 +129,11 @@ export class CalculationBuffer implements CalculationEngineOutput {
     return this.meta.unapplicableRules
   }
 
-  get itemDiscounts(): ItemDiscount[] | undefined {
+  get itemDiscounts(): IItemDiscount[] | undefined {
     return this.meta.itemDiscounts
   }
 
-  get wholeCartDiscount(): WholeCartDiscount[] | undefined {
+  get wholeCartDiscount(): IWholeCartDiscount[] | undefined {
     return this.meta.wholeCartDiscount
   }
 
@@ -158,21 +147,49 @@ export class CalculationBuffer implements CalculationEngineOutput {
 
   /**
    * Filter list of items based on UID, categories, tags,
+   *
+   * Condition supported:
+   *
+   * One of:
+   *    1. selectedUids
+   *    1. taxonomies.categories
+   *    1. taxonomies.tags
+   *
+   * In combination with
+   *    1. price tier
+   *        1. Use 'only' to filter only price tier items.
+   *        1. Use 'exclude' to remove all price tier items.
+   *        1. Use 'include' (default) to ignore price tier condition.
+   *
+   * @returns list of CartItems those applicable to certain condition.
    */
-  filterApplicableCartItems(
-    rawUids: UID[],
+  public filterApplicableCartItems(
+    selectedUids: UID[],
+    priceTier: 'only' | 'exclude' | 'include',
     taxonomies?: { categories?: TaxonomyQuery; tags?: TaxonomyQuery }
-  ): CartItem[] | 'all' {
+  ): { items: CartItem[]; isWholeCartDiscount: boolean } {
     const categories = TaxonomyQueryProcessor.make(
       'category',
       taxonomies?.categories
     )
     const tags = TaxonomyQueryProcessor.make('tag', taxonomies?.tags)
-    const uids = new Set<string>((rawUids && rawUids.map(String)) || [])
-    if (uids.size === 0 && !categories.isValid && !tags.isValid) {
-      return 'all'
+    const uids = new Set<string>(
+      (selectedUids && selectedUids.map(String)) || []
+    )
+    // No conditions applied
+    const isWholeCartDiscount =
+      uids.size === 0 && !categories.isValid && !tags.isValid
+    // Return true if such object should be included in the result
+    const filterPriceTier = (item: CartItem): boolean => {
+      return (
+        priceTier === 'include' ||
+        (Boolean(item.isPriceTier)
+          ? priceTier === 'only' // item is price-tier, include when mode === 'only'
+          : priceTier === 'exclude') // item is not price-tier, include when mode === 'exclude'
+      )
     }
-    return this.items.filter(item => {
+
+    const items = this.items.filter(filterPriceTier).filter(item => {
       // Process UID whitelist
       const itemUid = `${item.uid}`
       if (uids.size > 0 && uids.has(itemUid)) {
@@ -190,16 +207,33 @@ export class CalculationBuffer implements CalculationEngineOutput {
           return r === 'include'
         }
       }
-      return false
+      return isWholeCartDiscount
     })
+    return {
+      items,
+      isWholeCartDiscount,
+    }
   }
 
-  getDiscountFor(uid: UID) {
-    return sumBy(this.itemDiscounts, (item: ItemDiscount) =>
-      item.uid === uid ? item.perLineDiscountedAmount : 0
+  /**
+   * Retrieve total value associated discount values for given UID
+   * @param uid
+   * @returns
+   */
+  getItemDiscountAmount(uid: UID): number {
+    const wholeCartDiscountAmount = sumBy(this.wholeCartDiscount, discount =>
+      discount.getDiscountedAmount(uid)
     )
+    const itemDiscountsAmount = sumBy(this.itemDiscounts, discount =>
+      discount.isAppliedWith(uid) ? discount.getDiscountedAmount(uid) : 0
+    )
+    return wholeCartDiscountAmount + itemDiscountsAmount
   }
 
+  /**
+   * Retrieve total discounts
+   * @returns
+   */
   getShippingDiscountAmount() {
     return sumBy(this.meta.shippingDiscount, item => item.discountedAmount)
   }
@@ -220,32 +254,41 @@ export class CalculationBuffer implements CalculationEngineOutput {
   getAllItemDiscounts(): number {
     if (this.itemDiscounts?.length) {
       return this.itemDiscounts.reduce(
-        (acc: number, item: ItemDiscount) => acc + item.perLineDiscountedAmount,
+        (acc: number, item: IItemDiscount) =>
+          acc + item.perLineDiscountedAmount,
         0
       )
     }
     return 0
   }
 
-  getCartSubtotal(): number {
-    return sumBy(this.items, ({ perItemPrice, qty }) => perItemPrice * qty)
+  getCartSubtotal(items?: CartItem[]): number {
+    return sumBy(
+      items || this.items,
+      ({ perItemPrice, qty }) => perItemPrice * qty
+    )
   }
 
-  getTotalDiscountWithoutShipping(): number {
-    const totalItemDiscounts = sumBy(this.meta.itemDiscounts, item =>
-      this.excludePriceTierItems && item.isPriceTier
-        ? 0
-        : item.perLineDiscountedAmount
-    )
-    const totalWholeCartDiscount = sumBy(
-      this.meta.wholeCartDiscount,
-      item => item.discountedAmount
-    )
-    return totalItemDiscounts + totalWholeCartDiscount
+  getTotalDiscountWithoutShipping(uids?: UID[]): number {
+    if (!uids) {
+      const totalWholeCartDiscount = sumBy(
+        this.wholeCartDiscount,
+        'discountedAmount'
+      )
+      const totalItemDiscounts = sumBy(
+        this.itemDiscounts,
+        'perLineDiscountedAmount'
+      )
+      return totalWholeCartDiscount + totalItemDiscounts
+    } else {
+      const eachItemDiscounts = uids.map(uid => this.getItemDiscountAmount(uid))
+      return sum(eachItemDiscounts)
+    }
   }
 
-  setApplicableRuleUids(applicableRuleUids: UID[]): void {
-    this.meta.applicableRuleUids = applicableRuleUids
+  pushApplicableRuleUids(applicableRuleUid: RuleUID): void {
+    this.meta.applicableRuleUids = this.meta.applicableRuleUids || []
+    this.meta.applicableRuleUids.push(applicableRuleUid)
   }
 
   setUnapplicableRules(unapplicableRules: UnapplicableRule[]): void {
@@ -254,12 +297,12 @@ export class CalculationBuffer implements CalculationEngineOutput {
 
   // TODO: Add extra methods there.
 
-  calculateCartItems(uids?: UID[]): CalculatedCartItems {
-    return this.items.reduce(
+  calculateCartItems(items?: CartItem[]): CalculatedCartItems {
+    const applicableCartItems = items || this.items
+    return applicableCartItems.reduce(
       (acc: CalculatedCartItems, cur: CartItem) => {
-        if (!isEmpty(uids) && !uids?.includes(cur.uid)) return { ...acc }
         const freeQty = this.getFreeQtyFor(cur.uid)
-        const totalDiscounted = this.getDiscountFor(cur.uid)
+        const totalDiscounted = this.getItemDiscountAmount(cur.uid)
         const totalAmount = cur.perItemPrice * cur.qty - totalDiscounted
         const totalPerItemPrice = totalAmount / (cur.qty - freeQty)
         return {
@@ -281,7 +324,8 @@ export class CalculationBuffer implements CalculationEngineOutput {
   }
 
   /**
-   * Utility method return cheapest of CartItem in uid group.
+   * Find cheapest of CartItem in uid group.
+   * @param uid - UID of item
    */
   getCheapestItemFromGroupBySku(uid: string | number): CartItem | undefined {
     const itemGroup = this.items.filter(item => item.uid === uid)

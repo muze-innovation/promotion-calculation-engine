@@ -1,3 +1,5 @@
+import { ItemDiscount, WholeCartDiscount } from '../src'
+import { WeightDistribution } from '../src/discounts/WeightDistribution'
 import { CalculationEngine } from '../src/engine'
 import { FixedPriceRule, FixedPercentRule } from '../src/incart'
 
@@ -69,18 +71,18 @@ describe('Calculation Engine', () => {
       itemDiscounts: [
         {
           applicableRuleUid: '_PRICE_TIER',
-          isPriceTier: true,
           perLineDiscountedAmount: 250,
           setFree: false,
           uid: 'price_tier_product',
         },
       ],
       wholeCartDiscount: [
-        {
+        WholeCartDiscount.make({
+          dist: WeightDistribution.make([['ABC', 1000]]),
           discountedAmount: 100,
           setFree: false,
           applicableRuleUid: 2,
-        },
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)
@@ -148,13 +150,12 @@ describe('Calculation Engine', () => {
     const meta = {
       applicableRuleUids: ['_PRICE_TIER'],
       itemDiscounts: [
-        {
+        ItemDiscount.make({
           applicableRuleUid: '_PRICE_TIER',
-          isPriceTier: true,
           perLineDiscountedAmount: 250,
           setFree: false,
           uid: 'price_tier_product',
-        },
+        }),
       ],
       unapplicableRules: [
         {

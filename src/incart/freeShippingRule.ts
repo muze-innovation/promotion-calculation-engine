@@ -1,6 +1,7 @@
 import { Action } from 'index'
 import { InCartRule } from './base'
 import { CalculationBuffer } from '../buffer'
+import { ShippingDiscount } from '../discounts'
 
 export default class FreeShippingRule extends InCartRule {
   actions = [
@@ -15,12 +16,14 @@ export default class FreeShippingRule extends InCartRule {
           allShippingFees.forEach(shippingFee => {
             const discount = shippingFee.shippingFee - discountAmount
             if (discount) {
-              shippingDiscount.push({
-                uid: shippingFee.uid,
-                discountedAmount: discount,
-                setFree: true,
-                applicableRuleUid: this.uid,
-              })
+              shippingDiscount.push(
+                ShippingDiscount.make({
+                  uid: shippingFee.uid,
+                  discountedAmount: discount,
+                  setFree: true,
+                  applicableRuleUid: this.uid,
+                })
+              )
             }
           })
         }

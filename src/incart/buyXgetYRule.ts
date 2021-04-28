@@ -1,5 +1,7 @@
 import minBy from 'lodash/minBy'
-import { Action, CalculatedCartItems, ItemDiscount, UID } from 'index'
+
+import { Action, CalculatedCartItems, ItemDiscount, UID } from '..'
+
 import { InCartRule } from './base'
 import { CalculationBuffer } from '../buffer'
 import { JsonConditionType } from './conditionTypes'
@@ -38,22 +40,24 @@ export default class BuyXGetYRule extends InCartRule {
           items: cartItems.items.filter(({ uid }) => cheapestItem.uid !== uid),
         }
         return Array(leftQty)
-          .fill({
-            uid: cheapestItem.uid,
-            perLineDiscountedAmount: cheapestItem.totalPerItemPrice,
-            setFree: true,
-            applicableRuleUid: this.uid,
-            isPriceTier: cheapestItem.isPriceTier,
-          })
+          .fill(
+            ItemDiscount.make({
+              uid: cheapestItem.uid,
+              perLineDiscountedAmount: cheapestItem.totalPerItemPrice,
+              setFree: true,
+              applicableRuleUid: this.uid,
+            })
+          )
           .concat(this.getFreeItems(newCartItems, freeQty - cheapestItem.qty))
       }
-      return Array(freeQty).fill({
-        uid: cheapestItem.uid,
-        perLineDiscountedAmount: cheapestItem.totalPerItemPrice,
-        setFree: true,
-        applicableRuleUid: this.uid,
-        isPriceTier: cheapestItem.isPriceTier,
-      })
+      return Array(freeQty).fill(
+        ItemDiscount.make({
+          uid: cheapestItem.uid,
+          perLineDiscountedAmount: cheapestItem.totalPerItemPrice,
+          setFree: true,
+          applicableRuleUid: this.uid,
+        })
+      )
     }
     return []
   }
@@ -61,8 +65,8 @@ export default class BuyXGetYRule extends InCartRule {
   actions = [
     {
       perform: async (input: CalculationBuffer) => {
-        let uids = this.getApplicableCartItemUids(input)
-        const cartItems = input.calculateCartItems(uids === 'all' ? [] : uids)
+        const { items } = this.getApplicableCartItems(input)
+        const cartItems = input.calculateCartItems(items)
         const itemDiscounts = input.itemDiscounts ? input.itemDiscounts : []
         const remainder = cartItems.totalQty % (this.x + this.y)
         const freeQty =

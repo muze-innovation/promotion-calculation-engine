@@ -3,6 +3,8 @@ import { Action, Condition, UID } from 'index'
 import { InCartRule } from './base'
 import { CalculationBuffer } from '../buffer'
 import { JsonConditionType } from './conditionTypes'
+import { ItemDiscount, WholeCartDiscount } from '../discounts'
+import { WeightDistribution } from '../discounts/WeightDistribution'
 
 export default class FixedPriceRule extends InCartRule {
   constructor(
@@ -27,40 +29,50 @@ export default class FixedPriceRule extends InCartRule {
   actions = [
     {
       perform: async (input: CalculationBuffer) => {
-        const uids = this.getApplicableCartItemUids(input)
-        if (uids === 'all') {
-          const subtotal = input.getCartSubtotal()
-          const discountWithoutShipping = input.getTotalDiscountWithoutShipping()
+        const {
+          items,
+          uids,
+          isWholeCartDiscount,
+        } = this.getApplicableCartItems(input)
+        const calculatedItems = input.calculateCartItems(items)
+        if (isWholeCartDiscount) {
+          const subtotal = input.getCartSubtotal(items)
+          const discountWithoutShipping = input.getTotalDiscountWithoutShipping(
+            uids
+          )
           const total = subtotal - discountWithoutShipping
-          const wholeCartDiscount = input.wholeCartDiscount
-            ? input.wholeCartDiscount
-            : []
-          wholeCartDiscount.push({
-            discountedAmount: total < this.value ? subtotal : this.value,
-            setFree: false,
-            applicableRuleUid: this.uid,
-          })
+          const wholeCartDiscount = input.wholeCartDiscount || []
+          const dist = WeightDistribution.make(
+            calculatedItems.items.map(item => [`${item.uid}`, item.totalAmount])
+          )
+          wholeCartDiscount.push(
+            WholeCartDiscount.make({
+              applicableRuleUid: this.uid,
+              dist,
+              discountedAmount: total < this.value ? subtotal : this.value,
+            })
+          )
           return {
             ...input.itemMeta,
             wholeCartDiscount,
           }
         } else if (uids.length) {
-          const itemDiscounts = input.itemDiscounts ? input.itemDiscounts : []
-          const itemsToProcess = input.calculateCartItems(uids)
+          const itemDiscounts = input.itemDiscounts || []
           const totalAmount = sumBy(
-            itemsToProcess.items,
+            calculatedItems.items,
             item => item.totalAmount
           )
-          itemsToProcess.items.forEach(item => {
+          calculatedItems.items.forEach(item => {
             const discount = (item.totalAmount / totalAmount) * this.value
-            itemDiscounts.push({
-              applicableRuleUid: this.uid,
-              uid: item.uid,
-              perLineDiscountedAmount:
-                discount > item.totalAmount ? item.totalAmount : discount,
-              setFree: false,
-              isPriceTier: item.isPriceTier,
-            })
+            itemDiscounts.push(
+              ItemDiscount.make({
+                applicableRuleUid: this.uid,
+                uid: item.uid,
+                perLineDiscountedAmount:
+                  discount > item.totalAmount ? item.totalAmount : discount,
+                setFree: false,
+              })
+            )
           })
           return {
             ...input.itemMeta,

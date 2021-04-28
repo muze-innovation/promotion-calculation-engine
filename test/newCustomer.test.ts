@@ -1,6 +1,8 @@
+import { WholeCartDiscount } from '../src'
 import { CalculationEngine } from '../src/engine'
 import { FixedPriceRule } from '../src/incart'
 import { JsonConditionType } from '../src/incart/conditionTypes'
+import { WeightDistribution } from '../src/discounts/WeightDistribution'
 
 // TEST CASE
 describe('Calculation Engine', () => {
@@ -47,11 +49,12 @@ describe('Calculation Engine', () => {
     const meta = {
       applicableRuleUids: ['newCustomer01'],
       wholeCartDiscount: [
-        {
+        WholeCartDiscount.make({
           applicableRuleUid: 'newCustomer01',
           discountedAmount: 100,
           setFree: false,
-        },
+          dist: WeightDistribution.make([['ABC', 100]]),
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)

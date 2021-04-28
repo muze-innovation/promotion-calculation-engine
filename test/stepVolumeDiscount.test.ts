@@ -1,3 +1,5 @@
+import { ItemDiscount, WholeCartDiscount } from '../src'
+import { WeightDistribution } from '../src/discounts/WeightDistribution'
 import { CalculationEngine } from '../src/engine'
 import { StepVolumeDiscountRule } from '../src/incart'
 
@@ -54,11 +56,12 @@ describe('Step Volume Discount', () => {
     const meta = {
       applicableRuleUids: ['stepVolume01'],
       wholeCartDiscount: [
-        {
+        WholeCartDiscount.make({
           applicableRuleUid: 'stepVolume01',
           discountedAmount: 0,
           setFree: false,
-        },
+          dist: WeightDistribution.make([['TEST', 1500]]),
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)
@@ -120,12 +123,12 @@ describe('Step Volume Discount', () => {
     const meta = {
       applicableRuleUids: ['stepVolume02'],
       itemDiscounts: [
-        {
+        ItemDiscount.make({
           uid: 'TEST_MATCH_3',
           perLineDiscountedAmount: 75,
           setFree: false,
           applicableRuleUid: 'stepVolume02',
-        },
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)
@@ -179,11 +182,12 @@ describe('Step Volume Discount', () => {
     const meta = {
       applicableRuleUids: ['stepVolume03'],
       wholeCartDiscount: [
-        {
+        WholeCartDiscount.make({
           discountedAmount: 750,
           setFree: false,
           applicableRuleUid: 'stepVolume03',
-        },
+          dist: WeightDistribution.make([['TEST', 5000]]),
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)
@@ -309,12 +313,12 @@ describe('Step Volume Discount', () => {
     const meta = {
       applicableRuleUids: ['stepVolume05'],
       itemDiscounts: [
-        {
+        ItemDiscount.make({
           uid: 'TEST1',
           perLineDiscountedAmount: 200,
           setFree: false,
           applicableRuleUid: 'stepVolume05',
-        },
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)
@@ -375,18 +379,18 @@ describe('Step Volume Discount', () => {
     const meta = {
       applicableRuleUids: ['stepVolume06'],
       itemDiscounts: [
-        {
+        ItemDiscount.make({
           uid: 'TEST',
           perLineDiscountedAmount: 80,
           setFree: false,
           applicableRuleUid: 'stepVolume06',
-        },
-        {
+        }),
+        ItemDiscount.make({
           uid: 'TEST1',
           perLineDiscountedAmount: 20,
           setFree: false,
           applicableRuleUid: 'stepVolume06',
-        },
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)
@@ -441,11 +445,12 @@ describe('Step Volume Discount', () => {
     const meta = {
       applicableRuleUids: ['fixedStepVolume01'],
       wholeCartDiscount: [
-        {
+        WholeCartDiscount.make({
           applicableRuleUid: 'fixedStepVolume01',
           discountedAmount: 200,
           setFree: false,
-        },
+          dist: WeightDistribution.make([['TEST', 2500]]),
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)
@@ -508,11 +513,15 @@ describe('Step Volume Discount', () => {
     const meta = {
       applicableRuleUids: ['fixedStepVolume02'],
       wholeCartDiscount: [
-        {
+        WholeCartDiscount.make({
           applicableRuleUid: 'fixedStepVolume02',
           discountedAmount: 400,
           setFree: false,
-        },
+          dist: WeightDistribution.make([
+            ['TEST1', 2500],
+            ['TEST2', 2500],
+          ]),
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)
@@ -573,12 +582,12 @@ describe('Step Volume Discount', () => {
     const meta = {
       applicableRuleUids: ['fixedStepVolume03'],
       itemDiscounts: [
-        {
+        ItemDiscount.make({
           uid: 'TEST1',
           perLineDiscountedAmount: 200,
           setFree: false,
           applicableRuleUid: 'fixedStepVolume03',
-        },
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)
@@ -639,18 +648,18 @@ describe('Step Volume Discount', () => {
     const meta = {
       applicableRuleUids: ['fixedStepVolume04'],
       itemDiscounts: [
-        {
+        ItemDiscount.make({
           uid: 'TEST1',
           perLineDiscountedAmount: 300,
           setFree: false,
           applicableRuleUid: 'fixedStepVolume04',
-        },
-        {
+        }),
+        ItemDiscount.make({
           uid: 'TEST2',
           perLineDiscountedAmount: 200,
           setFree: false,
           applicableRuleUid: 'fixedStepVolume04',
-        },
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)

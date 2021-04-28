@@ -44,9 +44,6 @@ export class CalculationEngine {
     let buffer = new CalculationBuffer(input, meta)
     let stopRulesProcessing = false
     for (const rule of sorted) {
-      const notEligibleToPriceTier = rule.notEligibleToPriceTier
-      buffer = buffer.recreate(undefined, notEligibleToPriceTier)
-
       // Add error to unprocessed rules.
       const previousUnapplicableRules = buffer.unapplicableRules
       if (stopRulesProcessing) {
@@ -60,8 +57,9 @@ export class CalculationEngine {
 
       const conditions = rule.getConditions()
       const actions = rule.getActions()
+      const _bff = buffer
       const conditionResults = !input.ignoreCondition
-        ? await Promise.all(conditions.map((o: Condition) => o.check(buffer)))
+        ? await Promise.all(conditions.map((o: Condition) => o.check(_bff)))
         : []
       const flattenConditionResults = uniq(flatten(conditionResults))
       if (!isEmpty(flattenConditionResults)) {
@@ -75,9 +73,7 @@ export class CalculationEngine {
         continue
       }
       opt.verbose && opt.verbose(`Processing rule "${rule.name}"`)
-      const applicableRuleUids = buffer.applicableRuleUids || []
-      applicableRuleUids.push(rule.uid)
-      buffer.setApplicableRuleUids(applicableRuleUids)
+      buffer.pushApplicableRuleUids(rule.uid)
       for (const action of actions) {
         const meta = await action.perform(buffer)
         opt.verbose &&

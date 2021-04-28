@@ -1,5 +1,12 @@
 import { CalculationBuffer } from './buffer'
 import { ARule } from 'rule'
+import {
+  IItemDiscount,
+  IShippingDiscount,
+  IWholeCartDiscount,
+} from './discounts'
+
+export * from './discounts'
 
 /**
  * Represent single customer meta data to processes through our engine.
@@ -77,6 +84,9 @@ export interface CartItem {
    */
   tags: string[]
 
+  /**
+   * Is item effected by PriceTier?
+   */
   isPriceTier?: boolean
 }
 
@@ -111,27 +121,6 @@ export interface CalculationEngineInput {
   ignoreCondition?: boolean
 }
 
-export interface ItemDiscount {
-  uid: UID
-  perLineDiscountedAmount: number
-  setFree: boolean
-  applicableRuleUid: UID
-  isPriceTier?: boolean
-}
-
-export interface ShippingDiscount {
-  uid: UID
-  discountedAmount: number
-  setFree: boolean
-  applicableRuleUid: UID
-}
-
-export interface WholeCartDiscount {
-  discountedAmount: number
-  setFree: boolean
-  applicableRuleUid: UID
-}
-
 export interface UnapplicableRule {
   uid: UID
   errors: string[]
@@ -148,23 +137,24 @@ export interface CalculationEngineMeta {
 
   /**
    * all rules id and error that can't apply to cart
+   * along with its errors
    */
   unapplicableRules?: UnapplicableRule[]
 
   /**
    * Discount calculated per items.
    */
-  itemDiscounts?: ItemDiscount[]
+  itemDiscounts?: IItemDiscount[]
 
   /**
    * Discount per shipping information given
    */
-  shippingDiscount?: ShippingDiscount[]
+  shippingDiscount?: IShippingDiscount[]
 
   /**
    * Discount per whole cart.
    */
-  wholeCartDiscount?: WholeCartDiscount[]
+  wholeCartDiscount?: IWholeCartDiscount[]
 }
 
 export interface CalculationEngineOption {

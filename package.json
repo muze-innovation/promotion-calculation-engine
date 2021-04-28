@@ -2,7 +2,7 @@
   "name": "promotion-calculation-engine",
   "author": "Muze Innovation CO., LTD.",
   "description": "inCart open source package for E-Commerce Platform Promotion Calculation.",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -20,7 +20,8 @@
     "test": "tsdx test",
     "lint": "tsdx lint ./src",
     "prepare": "tsdx build",
-    "lint:fix": "tsdx lint --fix"
+    "lint:fix": "tsdx lint --fix",
+    "jest": "node ./node_modules/jest/bin/jest.js"
   },
   "peerDependencies": {},
   "husky": {
@@ -38,7 +39,7 @@
     "@types/lodash": "^4.14.162",
     "husky": "^4.2.5",
     "tsdx": "^0.14.1",
-    "tslib": "^2.0.1",
+    "tslib": "^2.2.0",
     "typescript": "^3.9.7"
   },
   "dependencies": {

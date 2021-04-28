@@ -1,6 +1,8 @@
+import { WholeCartDiscount } from '../src'
 import { CalculationEngine } from '../src/engine'
 import { FixedPriceRule } from '../src/incart'
 import { JsonConditionType } from '../src/incart/conditionTypes'
+import { WeightDistribution } from '../src/discounts/WeightDistribution'
 
 // Test Case
 describe('Calculation Engine', () => {
@@ -48,11 +50,12 @@ describe('Calculation Engine', () => {
     const meta = {
       applicableRuleUids: ['customerTag01'],
       wholeCartDiscount: [
-        {
+        WholeCartDiscount.make({
           discountedAmount: 100,
           setFree: false,
           applicableRuleUid: 'customerTag01',
-        },
+          dist: WeightDistribution.make([['uid01', 200]]),
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)
@@ -108,27 +111,18 @@ describe('Calculation Engine', () => {
   })
 
   it('customerGroups match all combine many rules', async () => {
-    const firstConditions: JsonConditionType[] = [
-      {
-        type: 'customer_group',
-        value: ['tagA'],
-      },
-    ]
-
-    const secondConditions: JsonConditionType[] = [
-      {
-        type: 'customer_group',
-        value: ['tagB'],
-      },
-    ]
-
     const firstRule = new FixedPriceRule(
       1,
       0,
       'fixedDiscountPrice',
       false,
       false,
-      firstConditions,
+      [
+        {
+          type: 'customer_group',
+          value: ['tagA'],
+        },
+      ],
       100
     )
 
@@ -138,7 +132,12 @@ describe('Calculation Engine', () => {
       'fixedDiscountPrice',
       false,
       false,
-      secondConditions,
+      [
+        {
+          type: 'customer_group',
+          value: ['tagB'],
+        },
+      ],
       200
     )
 
@@ -166,16 +165,18 @@ describe('Calculation Engine', () => {
     const meta = {
       applicableRuleUids: [2, 1],
       wholeCartDiscount: [
-        {
+        WholeCartDiscount.make({
           discountedAmount: 200,
           setFree: false,
           applicableRuleUid: 2,
-        },
-        {
+          dist: WeightDistribution.make([['uid01', 500]]),
+        }),
+        WholeCartDiscount.make({
           discountedAmount: 100,
           setFree: false,
           applicableRuleUid: 1,
-        },
+          dist: WeightDistribution.make([['uid01', 300]]),
+        }),
       ],
     }
 
@@ -184,27 +185,18 @@ describe('Calculation Engine', () => {
   })
 
   it('customerGroups match some combine many rules', async () => {
-    const firstConditions: JsonConditionType[] = [
-      {
-        type: 'customer_group',
-        value: ['tagA'],
-      },
-    ]
-
-    const secondConditions: JsonConditionType[] = [
-      {
-        type: 'customer_group',
-        value: ['tagC'],
-      },
-    ]
-
     const firstRule = new FixedPriceRule(
       1,
       0,
       'fixedDiscountPrice',
       false,
       false,
-      firstConditions,
+      [
+        {
+          type: 'customer_group',
+          value: ['tagA'],
+        },
+      ],
       100
     )
 
@@ -214,7 +206,12 @@ describe('Calculation Engine', () => {
       'fixedDiscountPrice',
       false,
       false,
-      secondConditions,
+      [
+        {
+          type: 'customer_group',
+          value: ['tagC'],
+        },
+      ],
       200
     )
 
@@ -248,11 +245,12 @@ describe('Calculation Engine', () => {
         },
       ],
       wholeCartDiscount: [
-        {
+        WholeCartDiscount.make({
           discountedAmount: 100,
           setFree: false,
           applicableRuleUid: 1,
-        },
+          dist: WeightDistribution.make([['uid01', 500]]),
+        }),
       ],
     }
 

@@ -1,3 +1,5 @@
+import { ItemDiscount, WholeCartDiscount } from '../src'
+import { WeightDistribution } from '../src/discounts/WeightDistribution'
 import { CalculationEngine } from '../src/engine'
 import { FixedPercentRule } from '../src/incart'
 // TEST CASE
@@ -26,6 +28,11 @@ describe('Discount with fixed percent', () => {
     ],
   }
 
+  const inputNoRuleDistAll = WeightDistribution.make([
+    ['ABC1', 200],
+    ['ABC2', 11],
+  ])
+
   it('can handle perItem discount', async () => {
     const rule = new FixedPercentRule(
       'fixed10perc',
@@ -52,18 +59,18 @@ describe('Discount with fixed percent', () => {
     const meta = {
       applicableRuleUids: ['fixed10perc'],
       itemDiscounts: [
-        {
+        ItemDiscount.make({
           perLineDiscountedAmount: 1.1,
           setFree: false,
           applicableRuleUid: 'fixed10perc',
           uid: 'ABC2',
-        },
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)
   })
 
-  it('can handle wholcart discount', async () => {
+  it('can handle wholecart discount', async () => {
     const rule = new FixedPercentRule(
       'fixed10',
       0,
@@ -84,11 +91,12 @@ describe('Discount with fixed percent', () => {
     const meta = {
       applicableRuleUids: ['fixed10'],
       wholeCartDiscount: [
-        {
+        WholeCartDiscount.make({
           discountedAmount: 21.1, // (200 + 11) * 10%
           setFree: false,
           applicableRuleUid: 'fixed10',
-        },
+          dist: inputNoRuleDistAll,
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)
