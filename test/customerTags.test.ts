@@ -20,6 +20,7 @@ describe('Calculation Engine', () => {
       0,
       'fixedDiscountPrice',
       false,
+      'auto',
       false,
       conditions,
       100
@@ -73,6 +74,7 @@ describe('Calculation Engine', () => {
       0,
       'fixedDiscountPrice',
       false,
+      'auto',
       false,
       conditions,
       100
@@ -103,7 +105,7 @@ describe('Calculation Engine', () => {
       unapplicableRules: [
         {
           uid: 'customerTag02',
-          errors: ["This promotion doesn't apply to your customer group"],
+          errors: ["This promotion doesn't apply to your customer group."],
         },
       ],
     }
@@ -116,6 +118,7 @@ describe('Calculation Engine', () => {
       0,
       'fixedDiscountPrice',
       false,
+      'auto',
       false,
       [
         {
@@ -131,6 +134,7 @@ describe('Calculation Engine', () => {
       0,
       'fixedDiscountPrice',
       false,
+      'auto',
       false,
       [
         {
@@ -190,6 +194,7 @@ describe('Calculation Engine', () => {
       0,
       'fixedDiscountPrice',
       false,
+      'auto',
       false,
       [
         {
@@ -205,6 +210,7 @@ describe('Calculation Engine', () => {
       0,
       'fixedDiscountPrice',
       false,
+      'auto',
       false,
       [
         {
@@ -241,7 +247,7 @@ describe('Calculation Engine', () => {
       unapplicableRules: [
         {
           uid: 2,
-          errors: ["This promotion doesn't apply to your customer group"],
+          errors: ["This promotion doesn't apply to your customer group."],
         },
       ],
       wholeCartDiscount: [

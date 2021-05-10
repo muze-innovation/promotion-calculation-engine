@@ -10,6 +10,7 @@ describe('Calculation Engine', () => {
       0,
       'freeShipping',
       false,
+      'auto',
       false,
       []
     )
@@ -61,6 +62,7 @@ describe('Calculation Engine', () => {
       0,
       'freeShipping',
       false,
+      'auto',
       false,
       []
     )

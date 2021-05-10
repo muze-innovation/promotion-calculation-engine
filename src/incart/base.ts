@@ -6,7 +6,7 @@ import {
   PriceTierFilterOption,
 } from '../buffer'
 
-import { ARule } from '../rule'
+import { ARule, DiscountType } from '../rule'
 import ConditionTypes from './conditionTypes'
 import { CERuleContext } from '../buffer'
 
@@ -19,10 +19,11 @@ export abstract class InCartRule extends ARule {
     priority: number,
     name: string,
     stopRulesProcessing: boolean,
-    notEligibleToPriceTier: boolean,
+    discountType: DiscountType,
+    protected readonly notEligibleToPriceTier: boolean,
     protected readonly conditions: JsonConditionType[]
   ) {
-    super(uid, priority, name, stopRulesProcessing, notEligibleToPriceTier)
+    super(uid, priority, name, stopRulesProcessing, discountType)
 
     const uids: UID[] = []
     let priceTier: PriceTierFilterOption = this.notEligibleToPriceTier

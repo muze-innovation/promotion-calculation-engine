@@ -22,6 +22,7 @@ describe('Calculation Engine', () => {
       0,
       'buyXGetY',
       false,
+      'auto',
       false,
       [],
       x,
@@ -60,6 +61,7 @@ describe('Calculation Engine', () => {
       0,
       'buyXGetY',
       false,
+      'auto',
       false,
       [],
       x,
@@ -98,6 +100,7 @@ describe('Calculation Engine', () => {
       0,
       'buyXGetY',
       false,
+      'auto',
       false,
       [],
       x,
@@ -134,6 +137,7 @@ describe('Calculation Engine', () => {
       0,
       'buyXGetY_32',
       false,
+      'auto',
       false,
       [
         {
@@ -151,6 +155,7 @@ describe('Calculation Engine', () => {
       1,
       'buyXGetY_11',
       false,
+      'auto',
       false,
       [
         {
@@ -219,6 +224,49 @@ describe('Calculation Engine', () => {
           setFree: true,
           applicableRuleUid: '0002',
         }),
+      ],
+    }
+    expect(result.meta).toEqual(expect.objectContaining(meta))
+  })
+
+  it('no discount case: quantity < x', async () => {
+    const uid = '0001'
+    const x = 3
+    const y = 2
+    const buyXGetY = new BuyXGetYRule(
+      uid,
+      0,
+      'buyXGetY',
+      false,
+      'auto',
+      false,
+      [],
+      x,
+      y
+    )
+
+    const input = {
+      items: [
+        {
+          uid: 'TEST',
+          cartItemIndexKey: '0',
+          qty: 3,
+          perItemPrice: 500,
+          categories: ['Main'],
+          tags: ['TAG#1'],
+        },
+      ],
+      rules: [buyXGetY],
+    }
+
+    const result = await engine.process(input, {})
+
+    const meta = {
+      unapplicableRules: [
+        {
+          uid: '0001',
+          errors: ["Item quantities doesn't reach the minimum requirement."],
+        },
       ],
     }
     expect(result.meta).toEqual(expect.objectContaining(meta))

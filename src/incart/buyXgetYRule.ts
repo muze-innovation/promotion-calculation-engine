@@ -5,6 +5,7 @@ import { Action, CalculatedCartItems, ItemDiscount, UID } from '..'
 import { InCartRule } from './base'
 import { CalculationBuffer } from '../buffer'
 import { JsonConditionType } from './conditionTypes'
+import { DiscountType } from 'rule'
 
 export default class BuyXGetYRule extends InCartRule {
   constructor(
@@ -12,6 +13,7 @@ export default class BuyXGetYRule extends InCartRule {
     priority: number,
     name: string,
     stopRulesProcessing: boolean,
+    discountType: DiscountType,
     notEligibleToPriceTier: boolean,
     conditions: JsonConditionType[],
     private readonly x: number,
@@ -22,9 +24,13 @@ export default class BuyXGetYRule extends InCartRule {
       priority,
       name,
       stopRulesProcessing,
+      discountType,
       notEligibleToPriceTier,
-      conditions
+      [...conditions, { type: 'quantity_at_least', value: x + 1 }]
     )
+    if (discountType === 'wholeCart') {
+      throw new Error(`unsupported discountType for buyXgetY: ${discountType}`)
+    }
   }
 
   private getFreeItems(

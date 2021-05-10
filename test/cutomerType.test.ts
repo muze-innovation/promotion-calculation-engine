@@ -8,175 +8,8 @@ import { JsonConditionType } from '../src/incart/conditionTypes'
 describe('Calculation Engine', () => {
   const engine = new CalculationEngine()
 
-  it('discount case: usage count < usage limit', async () => {
+  it('Logged in case: applicable to all type of customer', async () => {
     const conditions: JsonConditionType[] = [
-      {
-        type: 'usage_limit',
-        value: 200,
-      },
-    ]
-    const rule = new FixedPriceRule(
-      1,
-      0,
-      'fixedDiscountPrice',
-      false,
-      'auto',
-      false,
-      conditions,
-      100
-    )
-
-    const input = {
-      items: [
-        {
-          uid: 'ABC',
-          cartItemIndexKey: '0',
-          qty: 1,
-          perItemPrice: 200,
-          categories: ['Main'],
-          tags: ['TAG#1'],
-        },
-      ],
-      rules: [rule],
-      customer: {
-        uniqueId: 1,
-        email: 'xx@xxxx.com',
-        msisdn: 'x',
-        isNewCustomer: false,
-      },
-      usageCounts: [{ salesRuleId: 1, total: 199 }],
-    }
-
-    const result = await engine.process(input, {})
-
-    const meta = {
-      applicableRuleUids: [1],
-      wholeCartDiscount: [
-        WholeCartDiscount.make({
-          discountedAmount: 100,
-          setFree: false,
-          applicableRuleUid: 1,
-          dist: WeightDistribution.make([['ABC', 200]]),
-        }),
-      ],
-    }
-    expect(result.meta).toEqual(meta)
-  })
-
-  it('no discount case: usage count >= usage limit', async () => {
-    const conditions: JsonConditionType[] = [
-      {
-        type: 'usage_limit',
-        value: 200,
-      },
-    ]
-    const rule = new FixedPriceRule(
-      2,
-      0,
-      'fixedDiscountPrice',
-      false,
-      'auto',
-      false,
-      conditions,
-      100
-    )
-
-    const input = {
-      items: [
-        {
-          uid: 'ABC',
-          cartItemIndexKey: '0',
-          qty: 1,
-          perItemPrice: 100,
-          categories: ['Main'],
-          tags: ['TAG#1'],
-        },
-      ],
-      rules: [rule],
-      customer: {
-        uniqueId: 1,
-        email: 'xx@xxxx.com',
-        msisdn: 'x',
-        isNewCustomer: false,
-      },
-      usageCounts: [{ salesRuleId: 2, total: 200 }],
-    }
-
-    const result = await engine.process(input, {})
-
-    const meta = {
-      unapplicableRules: [
-        {
-          uid: 2,
-          errors: ['This promotion usage limit has been exceeded.'],
-        },
-      ],
-    }
-    expect(result.meta).toEqual(meta)
-  })
-
-  it('cause has ignoreCondition: usage count >= usage limit but has ignoreCondition', async () => {
-    const conditions: JsonConditionType[] = [
-      {
-        type: 'usage_limit',
-        value: 100,
-      },
-    ]
-    const rule = new FixedPriceRule(
-      1,
-      0,
-      'fixedDiscountPrice',
-      false,
-      'auto',
-      false,
-      conditions,
-      100
-    )
-
-    const input = {
-      items: [
-        {
-          uid: 'ABC',
-          cartItemIndexKey: '0',
-          qty: 1,
-          perItemPrice: 200,
-          categories: ['Main'],
-          tags: ['TAG#1'],
-        },
-      ],
-      rules: [rule],
-      customer: {
-        uniqueId: 1,
-        email: 'xx@xxxx.com',
-        msisdn: 'x',
-        isNewCustomer: false,
-      },
-      usageCounts: [{ salesRuleId: 1, total: 100 }],
-      ignoreCondition: true,
-    }
-
-    const result = await engine.process(input, {})
-
-    const meta = {
-      applicableRuleUids: [1],
-      wholeCartDiscount: [
-        WholeCartDiscount.make({
-          discountedAmount: 100,
-          setFree: false,
-          applicableRuleUid: 1,
-          dist: WeightDistribution.make([['ABC', 200]]),
-        }),
-      ],
-    }
-    expect(result.meta).toEqual(meta)
-  })
-
-  it('discount case: usage count < usage limit (guest)', async () => {
-    const conditions: JsonConditionType[] = [
-      {
-        type: 'usage_limit',
-        value: 200,
-      },
       {
         type: 'customer_type',
         value: 'all',
@@ -205,7 +38,12 @@ describe('Calculation Engine', () => {
         },
       ],
       rules: [rule],
-      usageCounts: [{ salesRuleId: 1, total: 199 }],
+      customer: {
+        uniqueId: 1,
+        email: 'xx@xxxx.com',
+        msisdn: 'x',
+        isNewCustomer: false,
+      },
     }
 
     const result = await engine.process(input, {})
@@ -224,15 +62,11 @@ describe('Calculation Engine', () => {
     expect(result.meta).toEqual(meta)
   })
 
-  it('discount case: usage count >= usage limit (guest)', async () => {
+  it('Logged in case: applicable to logged in customer only', async () => {
     const conditions: JsonConditionType[] = [
       {
-        type: 'usage_limit',
-        value: 200,
-      },
-      {
         type: 'customer_type',
-        value: 'all',
+        value: 'customer',
       },
     ]
     const rule = new FixedPriceRule(
@@ -258,7 +92,66 @@ describe('Calculation Engine', () => {
         },
       ],
       rules: [rule],
-      usageCounts: [{ salesRuleId: 1, total: 200 }],
+      customer: {
+        uniqueId: 1,
+        email: 'xx@xxxx.com',
+        msisdn: 'x',
+        isNewCustomer: false,
+      },
+    }
+
+    const result = await engine.process(input, {})
+
+    const meta = {
+      applicableRuleUids: [1],
+      wholeCartDiscount: [
+        WholeCartDiscount.make({
+          discountedAmount: 100,
+          setFree: false,
+          applicableRuleUid: 1,
+          dist: WeightDistribution.make([['ABC', 200]]),
+        }),
+      ],
+    }
+    expect(result.meta).toEqual(meta)
+  })
+
+  it('Logged in case: applicable to guest only)', async () => {
+    const conditions: JsonConditionType[] = [
+      {
+        type: 'customer_type',
+        value: 'guest',
+      },
+    ]
+    const rule = new FixedPriceRule(
+      1,
+      0,
+      'fixedDiscountPrice',
+      false,
+      'auto',
+      false,
+      conditions,
+      100
+    )
+
+    const input = {
+      items: [
+        {
+          uid: 'ABC',
+          cartItemIndexKey: '0',
+          qty: 1,
+          perItemPrice: 200,
+          categories: ['Main'],
+          tags: ['TAG#1'],
+        },
+      ],
+      rules: [rule],
+      customer: {
+        uniqueId: 1,
+        email: 'xx@xxxx.com',
+        msisdn: 'x',
+        isNewCustomer: false,
+      },
     }
 
     const result = await engine.process(input, {})
@@ -267,8 +160,149 @@ describe('Calculation Engine', () => {
       unapplicableRules: [
         {
           uid: 1,
-          errors: ['This promotion usage limit has been exceeded.'],
+          errors: ['This promotion is only apply to guest.'],
         },
+      ],
+    }
+    expect(result.meta).toEqual(meta)
+  })
+
+  it('Guest case: applicable to all type of customer', async () => {
+    const conditions: JsonConditionType[] = [
+      {
+        type: 'customer_type',
+        value: 'all',
+      },
+    ]
+    const rule = new FixedPriceRule(
+      1,
+      0,
+      'fixedDiscountPrice',
+      false,
+      'auto',
+      false,
+      conditions,
+      100
+    )
+
+    const input = {
+      items: [
+        {
+          uid: 'ABC',
+          cartItemIndexKey: '0',
+          qty: 1,
+          perItemPrice: 200,
+          categories: ['Main'],
+          tags: ['TAG#1'],
+        },
+      ],
+      rules: [rule],
+    }
+
+    const result = await engine.process(input, {})
+
+    const meta = {
+      applicableRuleUids: [1],
+      wholeCartDiscount: [
+        WholeCartDiscount.make({
+          discountedAmount: 100,
+          setFree: false,
+          applicableRuleUid: 1,
+          dist: WeightDistribution.make([['ABC', 200]]),
+        }),
+      ],
+    }
+    expect(result.meta).toEqual(meta)
+  })
+
+  it('Guest case: applicable to logged in customer only', async () => {
+    const conditions: JsonConditionType[] = [
+      {
+        type: 'customer_type',
+        value: 'customer',
+      },
+    ]
+    const rule = new FixedPriceRule(
+      1,
+      0,
+      'fixedDiscountPrice',
+      false,
+      'auto',
+      false,
+      conditions,
+      100
+    )
+
+    const input = {
+      items: [
+        {
+          uid: 'ABC',
+          cartItemIndexKey: '0',
+          qty: 1,
+          perItemPrice: 200,
+          categories: ['Main'],
+          tags: ['TAG#1'],
+        },
+      ],
+      rules: [rule],
+    }
+
+    const result = await engine.process(input, {})
+
+    const meta = {
+      unapplicableRules: [
+        {
+          uid: 1,
+          errors: ['This promotion is only apply to logged in customer.'],
+        },
+      ],
+    }
+    expect(result.meta).toEqual(meta)
+  })
+
+  it('Guest case: applicable to guest only)', async () => {
+    const conditions: JsonConditionType[] = [
+      {
+        type: 'customer_type',
+        value: 'guest',
+      },
+    ]
+    const rule = new FixedPriceRule(
+      1,
+      0,
+      'fixedDiscountPrice',
+      false,
+      'auto',
+      false,
+      conditions,
+      100
+    )
+
+    const input = {
+      items: [
+        {
+          uid: 'ABC',
+          cartItemIndexKey: '0',
+          qty: 1,
+          perItemPrice: 200,
+          categories: ['Main'],
+          tags: ['TAG#1'],
+        },
+      ],
+      rules: [rule],
+    }
+
+    const result = await engine.process(input, {})
+
+    const meta = {
+      applicableRuleUids: [1],
+      wholeCartDiscount: [
+        WholeCartDiscount.make({
+          discountedAmount: 100,
+          setFree: false,
+          applicableRuleUid: 1,
+          dist: WeightDistribution.make([['ABC', 200]]),
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)

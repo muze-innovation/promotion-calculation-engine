@@ -15,6 +15,7 @@ describe('Calculation Engine', () => {
         0,
         'fixedDiscountPrice',
         false,
+        'auto',
         false,
         [
           {
@@ -30,6 +31,7 @@ describe('Calculation Engine', () => {
         0,
         'fixedPercentPrice',
         false,
+        'auto',
         true,
         [
           {
@@ -96,6 +98,7 @@ describe('Calculation Engine', () => {
         0,
         'fixedDiscountPrice',
         false,
+        'auto',
         false,
         [
           {
@@ -111,6 +114,7 @@ describe('Calculation Engine', () => {
         0,
         'fixedPercentPrice',
         false,
+        'auto',
         true,
         [
           {

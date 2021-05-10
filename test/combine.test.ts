@@ -15,6 +15,7 @@ describe('Calculation Engine', () => {
       1,
       'buyXGetY',
       false,
+      'auto',
       false,
       [],
       x,
@@ -25,6 +26,7 @@ describe('Calculation Engine', () => {
       0,
       'Step volume Discount',
       false,
+      'auto',
       false,
       [
         {
@@ -107,12 +109,23 @@ describe('Calculation Engine', () => {
   it('Can create step volume discount for uid TEST with 5 item and then buy-3-get-2 rule with in Cart.', async () => {
     const x = 3
     const y = 2
-    const buyXGetY = new BuyXGetYRule(10, 0, 'buyXGetY', false, false, [], x, y)
+    const buyXGetY = new BuyXGetYRule(
+      10,
+      0,
+      'buyXGetY',
+      false,
+      'auto',
+      false,
+      [],
+      x,
+      y
+    )
     const stepVolumeDiscount = new StepVolumeDiscountRule(
       11,
       1,
       'Step volume Discount',
       false,
+      'auto',
       false,
       [],
       [
@@ -206,6 +219,7 @@ describe('Calculation Engine', () => {
       0,
       'Step volume Discount',
       false,
+      'auto',
       false,
       [
         {
@@ -241,6 +255,7 @@ describe('Calculation Engine', () => {
       1,
       'buyXGetY',
       false,
+      'auto',
       false,
       [],
       x,
@@ -305,6 +320,7 @@ describe('Calculation Engine', () => {
       0,
       'buyXGetY',
       false,
+      'auto',
       false,
       [],
       x,
@@ -315,6 +331,7 @@ describe('Calculation Engine', () => {
       1,
       'Step volume Discount',
       false,
+      'auto',
       false,
       [],
       [

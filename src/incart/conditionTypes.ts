@@ -55,6 +55,11 @@ export interface CustomerGroupCondition {
   value: string[]
 }
 
+export interface CustomerTypeCondition {
+  type: 'customer_type'
+  value: 'all' | 'customer' | 'guest'
+}
+
 export type JsonConditionType =
   | QuantityAtLeastCondition
   | SubTotalAtLeastCondition
@@ -65,6 +70,7 @@ export type JsonConditionType =
   | CustomerGroupCondition
   | CategoryCondition
   | TagCondition
+  | CustomerTypeCondition
 
 export class ConditionTypes {
   static parse(
@@ -157,18 +163,14 @@ export class ConditionTypes {
         return {
           check: async (input: CalculationBuffer) => {
             const errors = []
-            if (isNil(salesRuleId)) {
+            const salesRuleUsageCount = input.usageCounts?.find(
+              usageCount => usageCount.salesRuleId === salesRuleId
+            )
+            const totalCount = salesRuleUsageCount?.total
+            if (isNil(salesRuleId) || isNil(totalCount)) {
               errors.push('Something went wrong.')
-            } else {
-              const salesRuleUsageCount = input.usageCounts?.find(
-                usageCount => usageCount.salesRuleId === salesRuleId
-              )
-              const totalCount = salesRuleUsageCount?.total
-              if (isNil(totalCount) || isNil(input.customer?.uniqueId)) {
-                errors.push('This promotion is only apply to a member.')
-              } else if (totalCount >= raw.value) {
-                errors.push('This promotion usage limit has been exceeded.')
-              }
+            } else if (totalCount >= raw.value) {
+              errors.push('This promotion usage limit has been exceeded.')
             }
             return errors
           },
@@ -177,20 +179,16 @@ export class ConditionTypes {
         return {
           check: async (input: CalculationBuffer) => {
             const errors = []
-            if (isNil(salesRuleId)) {
+            const salesRuleUsageCount = input.usageCounts?.find(
+              usageCount => usageCount.salesRuleId === salesRuleId
+            )
+            const byCustomerCount = salesRuleUsageCount?.byCustomer
+            if (isNil(salesRuleId) || isNil(byCustomerCount)) {
               errors.push('Something went wrong.')
-            } else {
-              const salesRuleUsageCount = input.usageCounts?.find(
-                usageCount => usageCount.salesRuleId === salesRuleId
+            } else if (byCustomerCount >= raw.value) {
+              errors.push(
+                'Your usage limit for this promotion has been exceeded.'
               )
-              const byCustomerCount = salesRuleUsageCount?.byCustomer
-              if (isNil(byCustomerCount) || isNil(input.customer?.uniqueId)) {
-                errors.push('This promotion is only apply to a member.')
-              } else if (byCustomerCount >= raw.value) {
-                errors.push(
-                  'Your usage limit for this promotion has been exceeded.'
-                )
-              }
             }
             return errors
           },
@@ -205,7 +203,34 @@ export class ConditionTypes {
                 setCustomerGroups.has(customerGroup)
               )
             ) {
-              errors.push("This promotion doesn't apply to your customer group")
+              errors.push(
+                "This promotion doesn't apply to your customer group."
+              )
+            }
+            return errors
+          },
+        }
+      case 'customer_type':
+        return {
+          check: async (input: CalculationBuffer) => {
+            const errors = []
+            switch (raw.value) {
+              case 'all':
+                break
+              case 'customer':
+                if (isNil(input.customer?.uniqueId)) {
+                  errors.push(
+                    'This promotion is only apply to logged in customer.'
+                  )
+                }
+                break
+              case 'guest':
+                if (input.customer?.uniqueId) {
+                  errors.push('This promotion is only apply to guest.')
+                }
+                break
+              default:
+                errors.push('Something went wrong.')
             }
             return errors
           },

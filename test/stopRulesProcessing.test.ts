@@ -36,6 +36,7 @@ describe('Calculation Engine', () => {
             index,
             'fixedPriceRule',
             stopAtIndex === index,
+            'auto',
             false,
             [],
             10
