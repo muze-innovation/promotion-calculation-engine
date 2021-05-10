@@ -20,6 +20,7 @@ describe('Calculation Engine', () => {
       0,
       'fixedDiscountPrice',
       false,
+      'auto',
       false,
       conditions,
       100
@@ -74,6 +75,7 @@ describe('Calculation Engine', () => {
       0,
       'fixedDiscountPrice',
       false,
+      'auto',
       false,
       conditions,
       100
@@ -125,6 +127,7 @@ describe('Calculation Engine', () => {
       0,
       'fixedDiscountPrice',
       false,
+      'auto',
       false,
       conditions,
       100

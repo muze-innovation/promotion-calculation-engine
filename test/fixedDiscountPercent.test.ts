@@ -39,6 +39,7 @@ describe('Discount with fixed percent', () => {
       0,
       'fixedDiscountPercent',
       false,
+      'auto',
       false,
       [
         {
@@ -76,6 +77,7 @@ describe('Discount with fixed percent', () => {
       0,
       'fixedDiscountPercent',
       false,
+      'auto',
       false,
       [],
       10
@@ -96,6 +98,83 @@ describe('Discount with fixed percent', () => {
           setFree: false,
           applicableRuleUid: 'fixed10',
           dist: inputNoRuleDistAll,
+        }),
+      ],
+    }
+    expect(result.meta).toEqual(meta)
+  })
+
+  it('can handle wholecart discount (product selected)', async () => {
+    const rule = new FixedPercentRule(
+      'fixed10',
+      0,
+      'fixedDiscountPercent',
+      false,
+      'wholeCart',
+      false,
+      [
+        {
+          type: 'uids',
+          uids: ['ABC1'],
+        },
+      ],
+      10
+    )
+
+    const input = {
+      ...inputNoRule,
+      rules: [rule],
+    }
+
+    const result = await engine.process(input, {})
+
+    const meta = {
+      applicableRuleUids: ['fixed10'],
+      wholeCartDiscount: [
+        WholeCartDiscount.make({
+          discountedAmount: 20,
+          setFree: false,
+          applicableRuleUid: 'fixed10',
+          dist: WeightDistribution.make([['ABC1', 200]]),
+        }),
+      ],
+    }
+    expect(result.meta).toEqual(meta)
+  })
+
+  it('can handle perItem discount (apply to all products)', async () => {
+    const rule = new FixedPercentRule(
+      'fixed10perc',
+      0,
+      'fixedDiscountPercent',
+      false,
+      'perItem',
+      false,
+      [],
+      10
+    )
+
+    const input = {
+      ...inputNoRule,
+      rules: [rule],
+    }
+
+    const result = await engine.process(input, {})
+
+    const meta = {
+      applicableRuleUids: ['fixed10perc'],
+      itemDiscounts: [
+        ItemDiscount.make({
+          perLineDiscountedAmount: 20,
+          setFree: false,
+          applicableRuleUid: 'fixed10perc',
+          uid: 'ABC1',
+        }),
+        ItemDiscount.make({
+          perLineDiscountedAmount: 1.1,
+          setFree: false,
+          applicableRuleUid: 'fixed10perc',
+          uid: 'ABC2',
         }),
       ],
     }

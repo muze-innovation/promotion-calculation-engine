@@ -27,19 +27,16 @@ export class CERuleContext {
   ) {}
 
   getCartSubtotal(buffer: CalculationBuffer): number {
-    // TODO: Implement this
     const { items } = this.getApplicableCartItems(buffer)
     return buffer.getCartSubtotal(items)
   }
 
   getTotalDiscountWithoutShipping(buffer: CalculationBuffer): number {
-    // TODO: Implement this
     const { uids } = this.getApplicableCartItems(buffer)
     return buffer.getTotalDiscountWithoutShipping(uids)
   }
 
   calculateCartItems(buffer: CalculationBuffer): CalculatedCartItems {
-    // TODO: Implement this
     const { items } = this.getApplicableCartItems(buffer)
     return buffer.calculateCartItems(items)
   }

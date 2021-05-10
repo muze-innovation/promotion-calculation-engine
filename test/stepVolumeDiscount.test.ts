@@ -13,6 +13,7 @@ describe('Step Volume Discount', () => {
       0,
       'Can create step volume discount rule for uid TEST with 3 item in Cart.',
       false,
+      'auto',
       false,
       [],
       [
@@ -73,6 +74,7 @@ describe('Step Volume Discount', () => {
       0,
       'Step volume Discount',
       false,
+      'auto',
       false,
       [
         {
@@ -140,6 +142,7 @@ describe('Step Volume Discount', () => {
       0,
       'Can create step volume discount rule for uid TEST with 10 item in Cart',
       false,
+      'auto',
       false,
       [],
       [
@@ -199,6 +202,7 @@ describe('Step Volume Discount', () => {
       0,
       'Cannot create step volume discount rule for not match Uid',
       false,
+      'auto',
       false,
       [
         {
@@ -251,6 +255,7 @@ describe('Step Volume Discount', () => {
           uid: 'stepVolume04',
           errors: [
             "This promotion doesn't apply to any product in this order.",
+            "Item quantities doesn't reach the minimum requirement.",
           ],
         },
       ],
@@ -264,6 +269,7 @@ describe('Step Volume Discount', () => {
       0,
       'Can calculate step only product that match product condition',
       false,
+      'auto',
       false,
       [
         {
@@ -330,6 +336,7 @@ describe('Step Volume Discount', () => {
       0,
       'Can calculate step only product that match product condition',
       false,
+      'auto',
       false,
       [
         {
@@ -402,6 +409,7 @@ describe('Step Volume Discount', () => {
       0,
       '5 items in cart get 200 discount.',
       false,
+      'auto',
       false,
       [],
       [
@@ -462,6 +470,7 @@ describe('Step Volume Discount', () => {
       0,
       '8 items in cart get 400 discount.',
       false,
+      'auto',
       false,
       [],
       [
@@ -533,6 +542,7 @@ describe('Step Volume Discount', () => {
       0,
       '1 of product uids matches salesrule uid condition',
       false,
+      'auto',
       false,
       [
         {
@@ -599,6 +609,7 @@ describe('Step Volume Discount', () => {
       0,
       'multiple product uids match salesrule uid condition',
       false,
+      'auto',
       false,
       [
         {
@@ -671,6 +682,7 @@ describe('Step Volume Discount', () => {
       0,
       'multiple product uids match salesrule uid condition',
       false,
+      'auto',
       false,
       [
         {
@@ -723,8 +735,209 @@ describe('Step Volume Discount', () => {
           uid: 'fixedStepVolume04',
           errors: [
             "This promotion doesn't apply to any product in this order.",
+            "Item quantities doesn't reach the minimum requirement.",
           ],
         },
+      ],
+    }
+    expect(result.meta).toEqual(meta)
+  })
+
+  it('no discount case: product quantity not meet salesrule requirement', async () => {
+    const stepVolumeDiscount = new StepVolumeDiscountRule(
+      'fixedStepVolume04',
+      0,
+      'multiple product uids match salesrule uid condition',
+      false,
+      'auto',
+      false,
+      [],
+      [
+        {
+          startQty: 3,
+          endQty: 4,
+          discount: 200,
+          type: 'fixed',
+        },
+        {
+          startQty: 5,
+          endQty: null,
+          discount: 500,
+          type: 'fixed',
+        },
+      ]
+    )
+
+    const input = {
+      items: [
+        {
+          uid: 'TEST4',
+          cartItemIndexKey: '0',
+          qty: 2,
+          perItemPrice: 500,
+          categories: ['Main1'],
+          tags: ['TAG#2'],
+        },
+      ],
+      rules: [stepVolumeDiscount],
+    }
+
+    const result = await engine.process(input, {})
+    const meta = {
+      unapplicableRules: [
+        {
+          uid: 'fixedStepVolume04',
+          errors: ["Item quantities doesn't reach the minimum requirement."],
+        },
+      ],
+    }
+    expect(result.meta).toEqual(meta)
+  })
+
+  it('percent discount case: whole cart discount (product selected)', async () => {
+    const stepVolumeDiscount = new StepVolumeDiscountRule(
+      'stepVolume01',
+      0,
+      'Can create step volume discount rule for uid TEST with 3 item in Cart.',
+      false,
+      'wholeCart',
+      false,
+      [
+        {
+          type: 'uids',
+          uids: ['TEST'],
+        },
+      ],
+      [
+        {
+          startQty: 1,
+          endQty: 4,
+          discount: 0,
+          type: 'percent',
+        },
+        {
+          startQty: 5,
+          endQty: 8,
+          discount: 10,
+          type: 'percent',
+        },
+        {
+          startQty: 9,
+          endQty: null,
+          discount: 20,
+          type: 'percent',
+        },
+      ]
+    )
+
+    const input = {
+      items: [
+        {
+          uid: 'TEST',
+          cartItemIndexKey: '0',
+          qty: 8,
+          perItemPrice: 200,
+          categories: ['Main'],
+          tags: ['TAG#1'],
+        },
+        {
+          uid: 'TEST2',
+          cartItemIndexKey: '0',
+          qty: 10,
+          perItemPrice: 300,
+          categories: ['Main'],
+          tags: ['TAG#1'],
+        },
+      ],
+      rules: [stepVolumeDiscount],
+    }
+
+    const result = await engine.process(input, {})
+
+    const meta = {
+      applicableRuleUids: ['stepVolume01'],
+      wholeCartDiscount: [
+        WholeCartDiscount.make({
+          applicableRuleUid: 'stepVolume01',
+          discountedAmount: 160,
+          setFree: false,
+          dist: WeightDistribution.make([['TEST', 1600]]),
+        }),
+      ],
+    }
+    expect(result.meta).toEqual(meta)
+  })
+
+  it('fixed discount case: per item discount (apply to all products)', async () => {
+    const stepVolumeDiscount = new StepVolumeDiscountRule(
+      'stepVolume01',
+      0,
+      'Can create step volume discount rule for uid TEST with 3 item in Cart.',
+      false,
+      'perItem',
+      false,
+      [],
+      [
+        {
+          startQty: 1,
+          endQty: 4,
+          discount: 0,
+          type: 'fixed',
+        },
+        {
+          startQty: 5,
+          endQty: 8,
+          discount: 300,
+          type: 'fixed',
+        },
+        {
+          startQty: 9,
+          endQty: null,
+          discount: 700,
+          type: 'fixed',
+        },
+      ]
+    )
+
+    const input = {
+      items: [
+        {
+          uid: 'TEST1',
+          cartItemIndexKey: '0',
+          qty: 5,
+          perItemPrice: 200,
+          categories: ['Main'],
+          tags: ['TAG#1'],
+        },
+        {
+          uid: 'TEST2',
+          cartItemIndexKey: '0',
+          qty: 10,
+          perItemPrice: 300,
+          categories: ['Main'],
+          tags: ['TAG#1'],
+        },
+      ],
+      rules: [stepVolumeDiscount],
+    }
+
+    const result = await engine.process(input, {})
+
+    const meta = {
+      applicableRuleUids: ['stepVolume01'],
+      itemDiscounts: [
+        ItemDiscount.make({
+          uid: 'TEST1',
+          perLineDiscountedAmount: 175,
+          setFree: false,
+          applicableRuleUid: 'stepVolume01',
+        }),
+        ItemDiscount.make({
+          uid: 'TEST2',
+          perLineDiscountedAmount: 525,
+          setFree: false,
+          applicableRuleUid: 'stepVolume01',
+        }),
       ],
     }
     expect(result.meta).toEqual(meta)

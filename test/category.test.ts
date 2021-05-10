@@ -83,6 +83,7 @@ describe('Category Conditions', () => {
       0,
       '10 THB per item on selected item',
       false,
+      'auto',
       false,
       [
         {
@@ -145,6 +146,7 @@ describe('Category Conditions', () => {
       0,
       '100 THB per item on selected item',
       false,
+      'auto',
       false,
       [
         {
@@ -186,6 +188,7 @@ describe('Category Conditions', () => {
       0,
       '100 THB per item on selected item',
       false,
+      'auto',
       false,
       [
         {
@@ -225,6 +228,7 @@ describe('Category Conditions', () => {
       0,
       '10% on selected item',
       false,
+      'auto',
       false,
       [
         {
@@ -255,6 +259,7 @@ describe('Category Conditions', () => {
       0,
       '10% on selected item',
       false,
+      'auto',
       false,
       [
         {
@@ -292,6 +297,7 @@ describe('Category Conditions', () => {
       0,
       '20% on selected >5 item',
       false,
+      'auto',
       false,
       [
         {
@@ -360,6 +366,7 @@ describe('Category Conditions', () => {
       0,
       'Buy 2 get 3 (Cheapest of least UID)',
       false,
+      'auto',
       false,
       [
         {
@@ -411,6 +418,7 @@ describe('Category Conditions', () => {
       0,
       'Buy 5 get 1 (Cheapest of least UID)',
       false,
+      'auto',
       false,
       [
         {
@@ -430,8 +438,12 @@ describe('Category Conditions', () => {
     const result = await engine.process(input, {})
 
     const meta = {
-      applicableRuleUids: [ruleIdThatMatch],
-      itemDiscounts: [],
+      unapplicableRules: [
+        {
+          uid: '0001',
+          errors: ["Item quantities doesn't reach the minimum requirement."],
+        },
+      ],
     }
     expect(result.meta).toEqual(meta)
   })

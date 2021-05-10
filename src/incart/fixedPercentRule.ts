@@ -1,9 +1,11 @@
-import { Action, UID } from 'index'
+import sumBy from 'lodash/sumBy'
+import { Action, CartItem, UID } from 'index'
 import { InCartRule } from './base'
 import { CalculationBuffer } from '../buffer'
 import { JsonConditionType } from './conditionTypes'
 import { ItemDiscount, WholeCartDiscount } from '../discounts'
 import { WeightDistribution } from '../discounts/WeightDistribution'
+import { DiscountType } from 'rule'
 
 export default class FixedPercentRule extends InCartRule {
   /**
@@ -18,6 +20,7 @@ export default class FixedPercentRule extends InCartRule {
     priority: number,
     name: string,
     stopRulesProcessing: boolean,
+    discountType: DiscountType,
     notEligibleToPriceTier: boolean,
     conditions: JsonConditionType[],
     private readonly value: number
@@ -27,9 +30,50 @@ export default class FixedPercentRule extends InCartRule {
       priority,
       name,
       stopRulesProcessing,
+      discountType,
       notEligibleToPriceTier,
       conditions
     )
+  }
+
+  private discountWholeCart(input: CalculationBuffer, items: CartItem[]) {
+    const calculatedItems = input.calculateCartItems(items)
+    const totalAmount = sumBy(calculatedItems.items, item => item.totalAmount)
+    const wholeCartDiscount = input.wholeCartDiscount || []
+    const dist = WeightDistribution.make(
+      calculatedItems.items.map(item => [`${item.uid}`, item.totalAmount])
+    )
+    wholeCartDiscount.push(
+      WholeCartDiscount.make({
+        dist,
+        discountedAmount: (totalAmount * this.value) / 100,
+        setFree: false,
+        applicableRuleUid: this.uid,
+      })
+    )
+    return {
+      ...input.itemMeta,
+      wholeCartDiscount,
+    }
+  }
+
+  private discountPerItem(input: CalculationBuffer, items: CartItem[]) {
+    const calculatedItems = input.calculateCartItems(items)
+    const itemDiscounts = input.itemDiscounts || []
+    calculatedItems.items.forEach(item =>
+      itemDiscounts.push(
+        ItemDiscount.make({
+          uid: item.uid,
+          perLineDiscountedAmount: (item.totalAmount * this.value) / 100,
+          setFree: false,
+          applicableRuleUid: this.uid,
+        })
+      )
+    )
+    return {
+      ...input.itemMeta,
+      itemDiscounts,
+    }
   }
 
   actions = [
@@ -40,47 +84,16 @@ export default class FixedPercentRule extends InCartRule {
           uids,
           isWholeCartDiscount,
         } = this.getApplicableCartItems(input)
-        const calculatedItems = input.calculateCartItems(items)
-        if (isWholeCartDiscount) {
-          const subtotal = input.getCartSubtotal(items)
-          const discountWithoutShipping = input.getTotalDiscountWithoutShipping(
-            uids
-          )
-          const total = subtotal - discountWithoutShipping
-          const wholeCartDiscount = input.wholeCartDiscount || []
-          const dist = WeightDistribution.make(
-            calculatedItems.items.map(item => [`${item.uid}`, item.totalAmount])
-          )
-          wholeCartDiscount.push(
-            WholeCartDiscount.make({
-              dist,
-              discountedAmount: (total * this.value) / 100,
-              setFree: false,
-              applicableRuleUid: this.uid,
-            })
-          )
-          return {
-            ...input.itemMeta,
-            wholeCartDiscount,
-          }
-        } else if (uids.length) {
-          const itemDiscounts = input.itemDiscounts || []
-          calculatedItems.items.forEach(item =>
-            itemDiscounts.push(
-              ItemDiscount.make({
-                uid: item.uid,
-                perLineDiscountedAmount: (item.totalAmount * this.value) / 100,
-                setFree: false,
-                applicableRuleUid: this.uid,
-              })
-            )
-          )
-          return {
-            ...input.itemMeta,
-            itemDiscounts,
-          }
+        switch (this.discountType) {
+          case 'wholeCart':
+            return this.discountWholeCart(input, items)
+          case 'perItem':
+            return this.discountPerItem(input, items)
+          case 'auto':
+            if (isWholeCartDiscount) return this.discountWholeCart(input, items)
+            else if (uids.length) return this.discountPerItem(input, items)
+            return { ...input.itemMeta }
         }
-        return { ...input.itemMeta }
       },
     },
   ]
