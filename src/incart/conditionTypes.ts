@@ -3,6 +3,7 @@ import { CalculationBuffer, CERuleContext } from '../buffer'
 
 import isNil from 'lodash/isNil'
 import isEmpty from 'lodash/isEmpty'
+import { createHash } from 'crypto'
 
 export interface SubTotalAtLeastCondition {
   type: 'subtotal_at_least'
@@ -60,6 +61,11 @@ export interface CustomerTypeCondition {
   value: 'all' | 'customer' | 'guest'
 }
 
+export interface CreditCardPrefixCondition {
+  type: 'credit_card_prefix'
+  value: string[]
+}
+
 export type JsonConditionType =
   | QuantityAtLeastCondition
   | SubTotalAtLeastCondition
@@ -71,6 +77,7 @@ export type JsonConditionType =
   | CategoryCondition
   | TagCondition
   | CustomerTypeCondition
+  | CreditCardPrefixCondition
 
 export class ConditionTypes {
   static parse(
@@ -231,6 +238,25 @@ export class ConditionTypes {
                 break
               default:
                 errors.push('Something went wrong.')
+            }
+            return errors
+          },
+        }
+      case 'credit_card_prefix':
+        return {
+          check: async (input: CalculationBuffer) => {
+            const errors = []
+            if (!input.creditCardPrefix) {
+              errors.push('Please enter your credit card and try again.')
+            } else {
+              const hashedConditionValues = raw.value.map(value =>
+                createHash('md5')
+                  .update(value)
+                  .digest('hex')
+              )
+              if (!hashedConditionValues.includes(input.creditCardPrefix)) {
+                errors.push("This promotion doesn't apply to your credit card.")
+              }
             }
             return errors
           },

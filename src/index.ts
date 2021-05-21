@@ -119,6 +119,7 @@ export interface CalculationEngineInput {
   rules: ARule[]
   usageCounts?: UsageCount[]
   ignoreCondition?: boolean
+  creditCardPrefix?: string
 }
 
 export interface UnapplicableRule {
