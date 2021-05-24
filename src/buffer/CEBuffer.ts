@@ -145,6 +145,10 @@ export class CalculationBuffer implements CalculationEngineOutput {
     return this.input.usageCounts
   }
 
+  get creditCardPrefix(): string | undefined {
+    return this.input.creditCardPrefix
+  }
+
   /**
    * Filter list of items based on UID, categories, tags,
    *
