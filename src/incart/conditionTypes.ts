@@ -3,7 +3,6 @@ import { CalculationBuffer, CERuleContext } from '../buffer'
 
 import isNil from 'lodash/isNil'
 import isEmpty from 'lodash/isEmpty'
-import { createHash } from 'crypto'
 
 export interface SubTotalAtLeastCondition {
   type: 'subtotal_at_least'
@@ -248,15 +247,8 @@ export class ConditionTypes {
             const errors = []
             if (!input.creditCardPrefix) {
               errors.push('Please enter your credit card and try again.')
-            } else {
-              const hashedConditionValues = raw.value.map(value =>
-                createHash('md5')
-                  .update(value)
-                  .digest('hex')
-              )
-              if (!hashedConditionValues.includes(input.creditCardPrefix)) {
-                errors.push("This promotion doesn't apply to your credit card.")
-              }
+            } else if (!raw.value.includes(input.creditCardPrefix)) {
+              errors.push("This promotion doesn't apply to your credit card.")
             }
             return errors
           },

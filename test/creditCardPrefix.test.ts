@@ -1,4 +1,3 @@
-import { createHash } from 'crypto'
 import { WholeCartDiscount } from '../src'
 import { WeightDistribution } from '../src/discounts/WeightDistribution'
 import { CalculationEngine } from '../src/engine'
@@ -39,9 +38,7 @@ describe('Calculation Engine', () => {
         },
       ],
       rules: [rule],
-      creditCardPrefix: createHash('md5')
-        .update('123456')
-        .digest('hex'),
+      creditCardPrefix: '123456'
     }
 
     const result = await engine.process(input, {})
@@ -90,9 +87,7 @@ describe('Calculation Engine', () => {
         },
       ],
       rules: [rule],
-      creditCardPrefix: createHash('md5')
-        .update('111111')
-        .digest('hex'),
+      creditCardPrefix: '111111'
     }
 
     const result = await engine.process(input, {})
