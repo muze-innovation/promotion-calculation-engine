@@ -1,5 +1,6 @@
 import sumBy from 'lodash/sumBy'
 import minBy from 'lodash/minBy'
+import isNil from 'lodash/isNil'
 import { Action, CartItem, UID } from 'index'
 import { InCartRule } from './base'
 import { JsonConditionType } from './conditionTypes'
@@ -37,7 +38,8 @@ export default class StepVolumeDiscountRule extends InCartRule {
     discountType: DiscountType,
     notEligibleToPriceTier: boolean,
     conditions: JsonConditionType[],
-    private readonly steps: Step[]
+    private readonly steps: Step[],
+    private readonly maxDiscount?: number
   ) {
     super(
       uid,
@@ -48,6 +50,9 @@ export default class StepVolumeDiscountRule extends InCartRule {
       notEligibleToPriceTier,
       StepVolumeDiscountRule.modifyCondition(conditions, steps)
     )
+    if (!isNil(maxDiscount) && !(maxDiscount > 0)) {
+      throw new Error('maxDiscount must be number greater than 0.')
+    }
   }
 
   /**
@@ -73,9 +78,13 @@ export default class StepVolumeDiscountRule extends InCartRule {
       calculatedItems.items.map(item => [`${item.uid}`, item.totalAmount])
     )
     if (step && step.type === 'percent') {
+      const discount = (totalAmount * step.discount) / 100
+      const totalDiscount = this.maxDiscount
+        ? Math.min(discount, this.maxDiscount)
+        : discount
       wholeCartDiscount.push(
         WholeCartDiscount.make({
-          discountedAmount: (totalAmount * step.discount) / 100,
+          discountedAmount: totalDiscount,
           setFree: false,
           applicableRuleUid: this.uid,
           dist,
@@ -108,11 +117,16 @@ export default class StepVolumeDiscountRule extends InCartRule {
         return
       }
       if (step.type === 'percent') {
+        const discount = (totalAmount * step.discount) / 100
+        const totalDiscount = this.maxDiscount
+          ? Math.min(discount, this.maxDiscount)
+          : discount
         itemDiscounts.push(
           ItemDiscount.make({
             applicableRuleUid: this.uid,
             uid: item.uid,
-            perLineDiscountedAmount: (item.totalAmount * step.discount) / 100,
+            perLineDiscountedAmount:
+              totalDiscount * (item.totalAmount / totalAmount),
             setFree: false,
           })
         )
