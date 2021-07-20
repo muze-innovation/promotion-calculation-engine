@@ -1,12 +1,15 @@
 import sumBy from 'lodash/sumBy'
 import minBy from 'lodash/minBy'
 import isNil from 'lodash/isNil'
+import Fraction from 'fraction.js'
+
 import { Action, CartItem, UID } from 'index'
 import { InCartRule } from './base'
 import { JsonConditionType } from './conditionTypes'
 import { CalculationBuffer } from '../buffer'
 import { ItemDiscount, WholeCartDiscount } from '../discounts'
 import { WeightDistribution } from '../discounts/WeightDistribution'
+import { sumBy as sumByFraction } from '../utils'
 import { DiscountType } from 'rule'
 
 interface Step {
@@ -109,7 +112,10 @@ export default class StepVolumeDiscountRule extends InCartRule {
 
   private discountPerItem(input: CalculationBuffer, items: CartItem[]) {
     const calculatedItems = input.calculateCartItems(items)
-    const totalAmount = sumBy(calculatedItems.items, item => item.totalAmount)
+    const totalAmount = sumByFraction(
+      calculatedItems.items,
+      item => item.totalAmount
+    )
     const step = this.processStep(calculatedItems.totalQty)
     const itemDiscounts = input.itemDiscounts || []
     calculatedItems.items.forEach(item => {
@@ -117,27 +123,33 @@ export default class StepVolumeDiscountRule extends InCartRule {
         return
       }
       if (step.type === 'percent') {
-        const discount = (totalAmount * step.discount) / 100
-        const totalDiscount = this.maxDiscount
-          ? Math.min(discount, this.maxDiscount)
-          : discount
+        const discount = totalAmount.mul(step.discount).div(100)
+        const totalDiscount =
+          this.maxDiscount && discount.valueOf() > this.maxDiscount
+            ? new Fraction(this.maxDiscount)
+            : discount
         itemDiscounts.push(
           ItemDiscount.make({
             applicableRuleUid: this.uid,
             uid: item.uid,
-            perLineDiscountedAmount:
-              totalDiscount * (item.totalAmount / totalAmount),
+            perLineDiscountedAmount: totalDiscount
+              .mul(new Fraction(item.totalAmount).div(totalAmount))
+              .valueOf(), // Use this to mitigate signature changes
             setFree: false,
           })
         )
       } else if (step.type === 'fixed') {
-        const discount = (item.totalAmount / totalAmount) * step.discount
+        const discount = new Fraction(item.totalAmount)
+          .div(totalAmount)
+          .mul(step.discount)
         itemDiscounts.push(
           ItemDiscount.make({
             applicableRuleUid: this.uid,
             uid: item.uid,
             perLineDiscountedAmount:
-              discount > item.totalAmount ? item.totalAmount : discount,
+              discount.valueOf() > item.totalAmount
+                ? item.totalAmount
+                : discount.valueOf(), // Use this to mitigate signature changes
             setFree: false,
           })
         )
