@@ -54,9 +54,12 @@ class TaxonomyQueryProcessor {
 
   private getPoolToQuery(item: CartItem): (string | number)[] {
     switch (this.type) {
-      case 'category': return item.categories || []
-      case 'tag': return item.tags || []
-      case 'attribute': return item.attributes?.[this.q.attributeCode!] || []
+      case 'category':
+        return item.categories || []
+      case 'tag':
+        return item.tags || []
+      case 'attribute':
+        return item.attributes?.[this.q.attributeCode!] || []
     }
   }
 
@@ -88,7 +91,10 @@ class TaxonomyQueryProcessor {
       : false
   }
 
-  static make(type: 'category' | 'tag' | 'attribute', q: TaxonomyQuery | undefined) {
+  static make(
+    type: 'category' | 'tag' | 'attribute',
+    q: TaxonomyQuery | undefined
+  ) {
     return new TaxonomyQueryProcessor(
       type,
       q || {
@@ -180,20 +186,30 @@ export class CalculationBuffer implements CalculationEngineOutput {
   public filterApplicableCartItems(
     selectedUids: UID[],
     priceTier: 'only' | 'exclude' | 'include',
-    taxonomies?: { categories?: TaxonomyQuery; tags?: TaxonomyQuery; attributes?: TaxonomyQuery }
+    taxonomies?: {
+      categories?: TaxonomyQuery
+      tags?: TaxonomyQuery
+      attributes?: TaxonomyQuery
+    }
   ): { items: CartItem[]; isWholeCartDiscount: boolean } {
     const categories = TaxonomyQueryProcessor.make(
       'category',
       taxonomies?.categories
     )
     const tags = TaxonomyQueryProcessor.make('tag', taxonomies?.tags)
-    const attributes = TaxonomyQueryProcessor.make('attribute', taxonomies?.attributes)
+    const attributes = TaxonomyQueryProcessor.make(
+      'attribute',
+      taxonomies?.attributes
+    )
     const uids = new Set<string>(
       (selectedUids && selectedUids.map(String)) || []
     )
     // No conditions applied
     const isWholeCartDiscount =
-      uids.size === 0 && !categories.isValid && !tags.isValid && !attributes.isValid
+      uids.size === 0 &&
+      !categories.isValid &&
+      !tags.isValid &&
+      !attributes.isValid
     // Return true if such object should be included in the result
     const filterPriceTier = (item: CartItem): boolean => {
       return (

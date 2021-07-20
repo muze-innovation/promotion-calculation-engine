@@ -159,10 +159,7 @@ export class ConditionTypes {
         return {
           check: async (input: CalculationBuffer) => {
             const errors = []
-            if (
-              !raw.value ||
-              isEmpty(raw.value.values)
-            ) {
+            if (!raw.value || isEmpty(raw.value.values)) {
               errors.push('Something went wrong.')
             } else {
               const { items } = context.getApplicableCartItems(input)
