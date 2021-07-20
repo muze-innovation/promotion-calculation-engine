@@ -38,16 +38,20 @@ export interface TaxonomyQuery {
    * If this value contain empty list. The taxnomoy condition is considered as disabled
    */
   values: (string | number)[]
-
-  attributeCode?: string
 }
+
+export interface AttributeQuery extends TaxonomyQuery {
+  attributeCode: string
+}
+
+type ItemQuery = AttributeQuery | TaxonomyQuery
 
 class TaxonomyQueryProcessor {
   private valueSet: Set<string>
 
   constructor(
-    public readonly type: 'category' | 'tag' | 'attribute',
-    public readonly q: TaxonomyQuery
+    public type: 'category' | 'tag' | 'attribute',
+    public readonly q: ItemQuery
   ) {
     this.valueSet = new Set<string>((q.values || []).map(String))
   }
@@ -59,7 +63,7 @@ class TaxonomyQueryProcessor {
       case 'tag':
         return item.tags || []
       case 'attribute':
-        return item.attributes?.[this.q.attributeCode!] || []
+        return item.attributes?.[(this.q as AttributeQuery).attributeCode] || []
     }
   }
 
@@ -91,10 +95,22 @@ class TaxonomyQueryProcessor {
       : false
   }
 
-  static make(
-    type: 'category' | 'tag' | 'attribute',
-    q: TaxonomyQuery | undefined
-  ) {
+  static makeAttribute(q: AttributeQuery | undefined): TaxonomyQueryProcessor {
+    return new TaxonomyQueryProcessor(
+      'attribute',
+      q || {
+        condition: 'AND',
+        exclusion: false,
+        values: [],
+        attributeCode: 'SKIP_ME_PLEASE',
+      }
+    )
+  }
+
+  static makeTaxonomy(
+    type: 'category' | 'tag',
+    q: ItemQuery | undefined
+  ): TaxonomyQueryProcessor {
     return new TaxonomyQueryProcessor(
       type,
       q || {
@@ -189,16 +205,15 @@ export class CalculationBuffer implements CalculationEngineOutput {
     taxonomies?: {
       categories?: TaxonomyQuery
       tags?: TaxonomyQuery
-      attributes?: TaxonomyQuery
+      attributes?: AttributeQuery
     }
   ): { items: CartItem[]; isWholeCartDiscount: boolean } {
-    const categories = TaxonomyQueryProcessor.make(
+    const categories = TaxonomyQueryProcessor.makeTaxonomy(
       'category',
       taxonomies?.categories
     )
-    const tags = TaxonomyQueryProcessor.make('tag', taxonomies?.tags)
-    const attributes = TaxonomyQueryProcessor.make(
-      'attribute',
+    const tags = TaxonomyQueryProcessor.makeTaxonomy('tag', taxonomies?.tags)
+    const attributes = TaxonomyQueryProcessor.makeAttribute(
       taxonomies?.attributes
     )
     const uids = new Set<string>(
