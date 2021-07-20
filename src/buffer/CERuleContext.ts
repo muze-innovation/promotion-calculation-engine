@@ -5,6 +5,7 @@ export type PriceTierFilterOption = 'only' | 'exclude' | 'include'
 export type TaxonomyConditions = {
   categories?: TaxonomyQuery
   tags?: TaxonomyQuery
+  attributes?: TaxonomyQuery
 }
 
 export interface CalculatedCartItem extends CartItem {

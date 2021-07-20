@@ -40,6 +40,15 @@ export interface TagCondition {
   }
 }
 
+export interface AttributeCondition {
+  type: 'attribute'
+  value: {
+    condition: 'and' | 'or' | 'not'
+    attributeCode: string
+    values: (string | number)[]
+  }
+}
+
 export interface UsageLimitCondition {
   type: 'usage_limit'
   value: number
@@ -75,6 +84,7 @@ export type JsonConditionType =
   | CustomerGroupCondition
   | CategoryCondition
   | TagCondition
+  | AttributeCondition
   | CustomerTypeCondition
   | CreditCardPrefixCondition
 
@@ -145,13 +155,13 @@ export class ConditionTypes {
         }
       case 'category':
       case 'tag':
+      case 'attribute':
         return {
           check: async (input: CalculationBuffer) => {
             const errors = []
             if (
               !raw.value ||
-              !raw.value.values ||
-              raw.value.values.length <= 0
+              isEmpty(raw.value.values)
             ) {
               errors.push('Something went wrong.')
             } else {

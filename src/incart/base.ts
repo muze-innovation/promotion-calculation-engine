@@ -31,6 +31,7 @@ export abstract class InCartRule extends ARule {
       : 'include'
     let categories: TaxonomyQuery | undefined = undefined
     let tags: TaxonomyQuery | undefined = undefined
+    let attributes: TaxonomyQuery | undefined = undefined
     for (const cond of this.conditions) {
       if (cond.type === 'uids') {
         uids.push(...cond.uids)
@@ -48,11 +49,19 @@ export abstract class InCartRule extends ARule {
           exclusion: cond.value.condition === 'not',
           values: cond.value.values,
         }
+      } else if (cond.type === 'attribute') {
+        attributes = cond.value && {
+          condition: cond.value.condition === 'and' ? 'AND' : 'OR',
+          exclusion: cond.value.condition === 'not',
+          attributeCode: cond.value.attributeCode,
+          values: cond.value.values,
+        }
       }
     }
     this.context = new CERuleContext(uids, priceTier, {
       categories,
       tags,
+      attributes,
     })
 
     this.parsedConditions = this.conditions.map(condition =>
