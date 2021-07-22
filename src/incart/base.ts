@@ -3,6 +3,7 @@ import { JsonConditionType } from './conditionTypes'
 import {
   CalculationBuffer,
   TaxonomyQuery,
+  AttributeQuery,
   PriceTierFilterOption,
 } from '../buffer'
 
@@ -31,7 +32,7 @@ export abstract class InCartRule extends ARule {
       : 'include'
     let categories: TaxonomyQuery | undefined = undefined
     let tags: TaxonomyQuery | undefined = undefined
-    let attributes: TaxonomyQuery | undefined = undefined
+    let attributes: AttributeQuery | undefined = undefined
     for (const cond of this.conditions) {
       if (cond.type === 'uids') {
         uids.push(...cond.uids)
