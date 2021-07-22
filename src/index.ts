@@ -74,7 +74,7 @@ export interface CartItem {
    * Engine might use these fields to calculate whether or not to apply the promotion.
    * Or calculate how much discount should this specific line get.
    */
-  categories: (string | number)[]
+  categories?: (string | number)[]
 
   /**
    * Meta information of given CartItem.
@@ -82,7 +82,15 @@ export interface CartItem {
    * Engine might use these fields to calculate whether or not to apply the promotion.
    * Or calculate how much discount should this specific line get.
    */
-  tags: string[]
+  tags?: string[]
+
+  /**
+   * Meta information of given CartItem.
+   *
+   * Engine will use these fields to calculate whether or not to apply the promotion.
+   * Or calculate how much discount should this specific line get.
+   */
+  attributes?: Partial<Record<string, (string | number)[]>>
 
   /**
    * Is item effected by PriceTier?

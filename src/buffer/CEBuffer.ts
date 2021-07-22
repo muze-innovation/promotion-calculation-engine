@@ -40,14 +40,31 @@ export interface TaxonomyQuery {
   values: (string | number)[]
 }
 
+export interface AttributeQuery extends TaxonomyQuery {
+  attributeCode: string
+}
+
+type ItemQuery = AttributeQuery | TaxonomyQuery
+
 class TaxonomyQueryProcessor {
   private valueSet: Set<string>
 
   constructor(
-    public readonly type: 'category' | 'tag',
-    public readonly q: TaxonomyQuery
+    public type: 'category' | 'tag' | 'attribute',
+    public readonly q: ItemQuery
   ) {
     this.valueSet = new Set<string>((q.values || []).map(String))
+  }
+
+  private getPoolToQuery(item: CartItem): (string | number)[] {
+    switch (this.type) {
+      case 'category':
+        return item.categories || []
+      case 'tag':
+        return item.tags || []
+      case 'attribute':
+        return item.attributes?.[(this.q as AttributeQuery).attributeCode] || []
+    }
   }
 
   get isValid(): boolean {
@@ -55,7 +72,7 @@ class TaxonomyQueryProcessor {
   }
 
   isMatch(item: CartItem): 'include' | 'exclude' | false {
-    const poolToQuery = this.type === 'category' ? item.categories : item.tags
+    const poolToQuery = this.getPoolToQuery(item)
     const matchedCount = poolToQuery.reduce<number>(
       (c, tax) => c + (this.valueSet.has(`${tax}`) ? 1 : 0),
       0
@@ -78,7 +95,22 @@ class TaxonomyQueryProcessor {
       : false
   }
 
-  static make(type: 'category' | 'tag', q: TaxonomyQuery | undefined) {
+  static makeAttribute(q: AttributeQuery | undefined): TaxonomyQueryProcessor {
+    return new TaxonomyQueryProcessor(
+      'attribute',
+      q || {
+        condition: 'AND',
+        exclusion: false,
+        values: [],
+        attributeCode: 'SKIP_ME_PLEASE',
+      }
+    )
+  }
+
+  static makeTaxonomy(
+    type: 'category' | 'tag',
+    q: ItemQuery | undefined
+  ): TaxonomyQueryProcessor {
     return new TaxonomyQueryProcessor(
       type,
       q || {
@@ -170,19 +202,29 @@ export class CalculationBuffer implements CalculationEngineOutput {
   public filterApplicableCartItems(
     selectedUids: UID[],
     priceTier: 'only' | 'exclude' | 'include',
-    taxonomies?: { categories?: TaxonomyQuery; tags?: TaxonomyQuery }
+    taxonomies?: {
+      categories?: TaxonomyQuery
+      tags?: TaxonomyQuery
+      attributes?: AttributeQuery
+    }
   ): { items: CartItem[]; isWholeCartDiscount: boolean } {
-    const categories = TaxonomyQueryProcessor.make(
+    const categories = TaxonomyQueryProcessor.makeTaxonomy(
       'category',
       taxonomies?.categories
     )
-    const tags = TaxonomyQueryProcessor.make('tag', taxonomies?.tags)
+    const tags = TaxonomyQueryProcessor.makeTaxonomy('tag', taxonomies?.tags)
+    const attributes = TaxonomyQueryProcessor.makeAttribute(
+      taxonomies?.attributes
+    )
     const uids = new Set<string>(
       (selectedUids && selectedUids.map(String)) || []
     )
     // No conditions applied
     const isWholeCartDiscount =
-      uids.size === 0 && !categories.isValid && !tags.isValid
+      uids.size === 0 &&
+      !categories.isValid &&
+      !tags.isValid &&
+      !attributes.isValid
     // Return true if such object should be included in the result
     const filterPriceTier = (item: CartItem): boolean => {
       return (
@@ -207,6 +249,12 @@ export class CalculationBuffer implements CalculationEngineOutput {
       }
       if (tags.isValid) {
         const r = tags.isMatch(item)
+        if (r) {
+          return r === 'include'
+        }
+      }
+      if (attributes.isValid) {
+        const r = attributes.isMatch(item)
         if (r) {
           return r === 'include'
         }

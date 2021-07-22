@@ -1,10 +1,11 @@
 import { CartItem, UID } from '..'
-import { CalculationBuffer, TaxonomyQuery } from './CEBuffer'
+import { AttributeQuery, CalculationBuffer, TaxonomyQuery } from './CEBuffer'
 
 export type PriceTierFilterOption = 'only' | 'exclude' | 'include'
 export type TaxonomyConditions = {
   categories?: TaxonomyQuery
   tags?: TaxonomyQuery
+  attributes?: AttributeQuery
 }
 
 export interface CalculatedCartItem extends CartItem {
