@@ -128,12 +128,15 @@ export default class StepVolumeDiscountRule extends InCartRule {
           this.maxDiscount && discount.valueOf() > this.maxDiscount
             ? new Fraction(this.maxDiscount)
             : discount
+        const itemTotalAmountRatio = totalAmount.valueOf()
+          ? new Fraction(item.totalAmount).div(totalAmount)
+          : new Fraction(0)
         itemDiscounts.push(
           ItemDiscount.make({
             applicableRuleUid: this.uid,
             uid: item.uid,
             perLineDiscountedAmount: totalDiscount
-              .mul(new Fraction(item.totalAmount).div(totalAmount))
+              .mul(itemTotalAmountRatio)
               .valueOf(), // Use this to mitigate signature changes
             setFree: false,
           })

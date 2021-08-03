@@ -78,17 +78,18 @@ export default class FixedPercentRule extends InCartRule {
       ? Math.min(discount, this.maxDiscount)
       : discount
     const itemDiscounts = input.itemDiscounts || []
-    calculatedItems.items.forEach(item =>
+    calculatedItems.items.forEach(item => {
+      const itemTotalAmountRatio = totalAmount ? item.totalAmount / totalAmount : 0
       itemDiscounts.push(
         ItemDiscount.make({
           uid: item.uid,
           perLineDiscountedAmount:
-            totalDiscount * (item.totalAmount / totalAmount),
+            totalDiscount * itemTotalAmountRatio,
           setFree: false,
           applicableRuleUid: this.uid,
         })
       )
-    )
+    })
     return {
       ...input.itemMeta,
       itemDiscounts,
