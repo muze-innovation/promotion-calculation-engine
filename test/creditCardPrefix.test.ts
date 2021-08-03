@@ -38,7 +38,7 @@ describe('Calculation Engine', () => {
         },
       ],
       rules: [rule],
-      creditCardPrefix: '123456'
+      creditCardPrefix: '123456',
     }
 
     const result = await engine.process(input, {})
@@ -87,7 +87,7 @@ describe('Calculation Engine', () => {
         },
       ],
       rules: [rule],
-      creditCardPrefix: '111111'
+      creditCardPrefix: '111111',
     }
 
     const result = await engine.process(input, {})

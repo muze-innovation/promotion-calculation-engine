@@ -1058,7 +1058,7 @@ describe('Step Volume Discount', () => {
           applicableRuleUid: 'stepVolume01',
           perLineDiscountedAmount: 0,
           setFree: false,
-          uid: 'TEST'
+          uid: 'TEST',
         }),
       ],
     }
