@@ -180,4 +180,88 @@ describe('Discount with fixed percent', () => {
     }
     expect(result.meta).toEqual(meta)
   })
+
+  it('can handle cart subtotal = 0 (wholecart discount)', async () => {
+    const rule = new FixedPercentRule(
+      'fixed10',
+      0,
+      'fixedDiscountPercent',
+      false,
+      'auto',
+      false,
+      [],
+      10
+    )
+
+    const input = {
+      items: [
+        {
+          uid: 'ABC1',
+          cartItemIndexKey: '0',
+          qty: 2,
+          perItemPrice: 0,
+          categories: ['Main'],
+          tags: ['TAG#1'],
+        },
+      ],
+      rules: [rule],
+    }
+
+    const result = await engine.process(input, {})
+
+    const meta = {
+      applicableRuleUids: ['fixed10'],
+      wholeCartDiscount: [
+        WholeCartDiscount.make({
+          discountedAmount: 0,
+          setFree: false,
+          applicableRuleUid: 'fixed10',
+          dist: WeightDistribution.make([['ABC1', 0]]),
+        }),
+      ],
+    }
+    expect(result.meta).toEqual(meta)
+  })
+
+  it('can handle cart subtotal = 0 (perItem discount)', async () => {
+    const rule = new FixedPercentRule(
+      'fixed10perc',
+      0,
+      'fixedDiscountPercent',
+      false,
+      'perItem',
+      false,
+      [],
+      10
+    )
+
+    const input = {
+      items: [
+        {
+          uid: 'ABC1',
+          cartItemIndexKey: '0',
+          qty: 2,
+          perItemPrice: 0,
+          categories: ['Main'],
+          tags: ['TAG#1'],
+        },
+      ],
+      rules: [rule],
+    }
+
+    const result = await engine.process(input, {})
+
+    const meta = {
+      applicableRuleUids: ['fixed10perc'],
+      itemDiscounts: [
+        ItemDiscount.make({
+          perLineDiscountedAmount: 0,
+          setFree: false,
+          applicableRuleUid: 'fixed10perc',
+          uid: 'ABC1',
+        }),
+      ],
+    }
+    expect(result.meta).toEqual(meta)
+  })
 })

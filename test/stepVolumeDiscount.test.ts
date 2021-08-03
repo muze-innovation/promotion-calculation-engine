@@ -942,4 +942,126 @@ describe('Step Volume Discount', () => {
     }
     expect(result.meta).toEqual(meta)
   })
+
+  it('percent discount case: cart subtotal = 0 (wholeCart discount) ', async () => {
+    const stepVolumeDiscount = new StepVolumeDiscountRule(
+      'stepVolume01',
+      0,
+      'Can create step volume discount rule for uid TEST with 3 item in Cart.',
+      false,
+      'wholeCart',
+      false,
+      [],
+      [
+        {
+          startQty: 1,
+          endQty: 4,
+          discount: 0,
+          type: 'percent',
+        },
+        {
+          startQty: 5,
+          endQty: 8,
+          discount: 10,
+          type: 'percent',
+        },
+        {
+          startQty: 9,
+          endQty: null,
+          discount: 20,
+          type: 'percent',
+        },
+      ]
+    )
+
+    const input = {
+      items: [
+        {
+          uid: 'TEST',
+          cartItemIndexKey: '0',
+          qty: 8,
+          perItemPrice: 0,
+          categories: ['Main'],
+          tags: ['TAG#1'],
+        },
+      ],
+      rules: [stepVolumeDiscount],
+    }
+
+    const result = await engine.process(input, {})
+
+    const meta = {
+      applicableRuleUids: ['stepVolume01'],
+      wholeCartDiscount: [
+        WholeCartDiscount.make({
+          applicableRuleUid: 'stepVolume01',
+          discountedAmount: 0,
+          setFree: false,
+          dist: WeightDistribution.make([['TEST', 0]]),
+        }),
+      ],
+    }
+    expect(result.meta).toEqual(meta)
+  })
+
+  it('percent discount case: cart subtotal = 0 (perItem discount) ', async () => {
+    const stepVolumeDiscount = new StepVolumeDiscountRule(
+      'stepVolume01',
+      0,
+      'Can create step volume discount rule for uid TEST with 3 item in Cart.',
+      false,
+      'perItem',
+      false,
+      [],
+      [
+        {
+          startQty: 1,
+          endQty: 4,
+          discount: 0,
+          type: 'percent',
+        },
+        {
+          startQty: 5,
+          endQty: 8,
+          discount: 10,
+          type: 'percent',
+        },
+        {
+          startQty: 9,
+          endQty: null,
+          discount: 20,
+          type: 'percent',
+        },
+      ]
+    )
+
+    const input = {
+      items: [
+        {
+          uid: 'TEST',
+          cartItemIndexKey: '0',
+          qty: 8,
+          perItemPrice: 0,
+          categories: ['Main'],
+          tags: ['TAG#1'],
+        },
+      ],
+      rules: [stepVolumeDiscount],
+    }
+
+    const result = await engine.process(input, {})
+
+    const meta = {
+      applicableRuleUids: ['stepVolume01'],
+      itemDiscounts: [
+        ItemDiscount.make({
+          applicableRuleUid: 'stepVolume01',
+          perLineDiscountedAmount: 0,
+          setFree: false,
+          uid: 'TEST',
+        }),
+      ],
+    }
+    expect(result.meta).toEqual(meta)
+  })
 })
