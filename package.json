@@ -2,7 +2,7 @@
   "name": "promotion-calculation-engine",
   "author": "Muze Innovation CO., LTD.",
   "description": "inCart open source package for E-Commerce Platform Promotion Calculation.",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",

@@ -206,6 +206,8 @@ export type CalculationEngineOutput = CalculationEngineInput &
 
 export { CalculationEngine } from './engine'
 
+export { ARule } from './rule'
+
 export {
   BuyXGetYRule,
   FixedPercentRule,
